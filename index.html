@@ -222,7 +222,11 @@ nav button.on .ic{animation:navp .5s cubic-bezier(.2,1.6,.4,1)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-iteration-count:1!important;transition:none!important}}
 </style>
 <style>
-body.wait{cursor:progress}body.wait #app{opacity:.85;pointer-events:none}
+body.wait{cursor:progress}
+#sync{position:absolute;bottom:130px;left:50%;transform:translateX(-50%);z-index:60;display:none;align-items:center;gap:8px;background:var(--dk);color:#fff;border:2px solid var(--dk);padding:3px 10px 3px 6px;font:700 11px Outfit,system-ui,sans-serif;letter-spacing:.08em;box-shadow:3px 3px 0 var(--yl);pointer-events:none}
+body.wait #sync{display:flex}
+#sync i{width:14px;height:14px;border:3px solid var(--yl);border-top-color:transparent;border-radius:50%;animation:spn .7s linear infinite}
+@keyframes spn{to{transform:rotate(360deg)}}
 #app.nolog header,#app.nolog #nav{display:none}
 input:focus,textarea:focus{outline:3px solid var(--yl)}
 button:disabled{opacity:.5}
@@ -230,7 +234,7 @@ button:disabled{opacity:.5}
 </style>
 </head>
 <body>
-<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v11)</div>
+<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v14)</div>
 <script>(function(){function show(t){var b=document.getElementById("boot");if(b){b.style.display="block";b.innerHTML+="<p style='color:#B0105E;font-weight:700;word-break:break-all'>"+String(t).replace(/</g,"&lt;")+"</p>"}}window.addEventListener("unhandledrejection",function(e){show("Error: "+(e.reason&&e.reason.message||e.reason))});window.onerror=function(m,u,l,c){var info="";try{var src=(window.__src||"").split("\n"),ln=src[l-1]||"",cc=Math.max(0,(c||1)-1),seg=ln.substr(Math.max(0,cc-50),100),codes="";for(var i=0;i<seg.length;i++){var k=seg.charCodeAt(i);if(k<32||k>126)codes+="["+k+"]"}info=" | teks: "+seg+" | kode aneh: "+codes+" | panjang baris: "+ln.length}catch(x){info=" | gagal baca: "+x.message}show("Error: "+m+" (baris "+l+", kolom "+c+")"+info)}})();</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -265,7 +269,7 @@ button:disabled{opacity:.5}
 </header>
 <main id="main"><section class="screen" id="s-login"></section><section class="screen" id="s-home"></section><section class="screen" id="s-quest"></section><section class="screen" id="s-spin"></section><section class="screen" id="s-town"></section><section class="screen" id="s-names"></section><section class="screen" id="s-crew"></section><section class="screen" id="s-log"></section><section class="screen" id="s-brain"></section><section class="screen" id="s-palet"></section></main>
 <nav id="nav"></nav>
-<div id="toast" role="status" aria-live="polite"></div>
+<div id="toast" role="status" aria-live="polite"></div><div id="sync" role="status"></div>
 <div id="modal"><div id="mbox"></div></div>
 </div>
 <script type="text/plain" id="appsrc">
@@ -1152,13 +1156,15 @@ function call(action,payload){
     google.script.run.withSuccessHandler(r=>res(r||{error:"Tidak ada jawaban dari server"})).withFailureHandler(e=>res({error:(e&&e.message)||String(e)})).api(action,TOK,payload||{});
   });
 }
-async function act(action,payload,quiet){
-  if(busy)return null;busy=true;document.body.classList.add("wait");
-  const r=await call(action,payload);busy=false;document.body.classList.remove("wait");
-  if(r.error){if(r.login){TOK=null;try{localStorage.removeItem("lqp_tok")}catch(e){}D=null;showLogin();return null}
+let pend=0,chain=Promise.resolve();
+function act(action,payload,quiet){const j=chain.then(()=>doAct(action,payload,quiet));chain=j.catch(()=>{});return j}
+async function doAct(action,payload,quiet){
+  pend++;document.body.classList.add("wait");
+  const r=await call(action,payload);pend--;if(!pend)document.body.classList.remove("wait");
+  if(r.error){if(r.login){TOK=null;try{localStorage.removeItem("lqp_tok");localStorage.removeItem("lqp_cache")}catch(e){}D=null;showLogin();return null}
     if(!quiet)toast(r.error);return {error:r.error}}
   if(r.token){TOK=r.token;try{localStorage.setItem("lqp_tok",TOK)}catch(e){}}
-  D=r;return r;
+  D=r;try{localStorage.setItem("lqp_cache",JSON.stringify(r))}catch(e){}return r;
 }
 const NAMA_ACT={};const PARENT={names:"home",crew:"home",log:"home",brain:"home",palet:"home"};
 const TITLES={home:["BASE CAMP",""],quest:["CATAT XP","QUEST BOARD"],spin:["1 TIKET = 1 SPIN","SPIN ZONE"],town:["PERINGKAT","TOWN HALL"],names:["PROSPEK","DAFTAR NAMA"],crew:["LEADER","CREW HQ"],log:["KALENDER","BATTLE LOG"],brain:["5 MENIT","BRAIN BUFF"],palet:["TAMPILAN","WARNA"]};
@@ -1256,11 +1262,15 @@ function actForm(id){
     const ex=D.names.find(x=>x.nama.toLowerCase()===low),p={act:id,tgl:Q("#inDate").value||D.today,cat:Q("#inNote").value.trim(),hasil};
     if(isDrop){if(ex){err(ex.nama+" sudah ada di Daftar Nama.");return}p.namaBaru=n}
     else if(ex)p.nid=ex.id;else if(picked&&picked.nw&&picked.n.toLowerCase()===low)p.namaBaru=n;else{err("Nama ini belum ada di Daftar Nama. Tap \u201c+ Tambah\u201d untuk menambahkannya.");return}
-    const before=D.daily.every(Boolean),r=await act("add",p);if(!r||r.error){if(r&&r.error)err(r.error);return}
-    closeModal();const h=r.hasil,tag=h.te!==D.today?` (${fmtTgl(h.te)})`:"";
+    const before=D.daily.every(Boolean),a2=D.acts.find(x=>x[0]===id),opt=a2&&!a2[5]&&p.tgl===D.today;
+    closeModal();
+    if(opt){D.xpDay+=a2[2];D.xpWeek+=a2[2];toast("+"+a2[2]+" XP \u00b7 "+a2[1]);render()}else toast("Menyimpan...");
+    const r=await act("add",p);
+    if(!r||r.error){toast((r&&r.error)||"Gagal menyimpan");await act("state",null,1);render();return}
+    const h=r.hasil,tag=h.te!==D.today?` (${fmtTgl(h.te)})`:"";
     const c=D.counts[id]||0;
     if(h.perlu5&&r.entries.filter(e=>e.act===id&&e.xp>0&&e.te===h.te&&e.status==="aktif").length===0)toast(`${h.act} ${Math.min(r.entries.filter(e=>e.act===id&&e.te===h.te&&e.status==="aktif").length,h.perlu5)}/${h.perlu5} orang${tag}`);
-    else{toast(`+${h.xp} XP \u00b7 ${h.act}${tag}`);pop(Q("#chXp"))}
+    else if(!opt){toast(`+${h.xp} XP \u00b7 ${h.act}${tag}`);pop(Q("#chXp"))}
     if(!before&&r.daily.every(Boolean)){confetti();toast("Daily Quest selesai! +1 tiket")}
     render();
   };
@@ -1275,11 +1285,15 @@ function rSpin(){
   <div class="note" style="margin-top:10px">1 hari Daily Quest 4 dari 4 = 1 tiket. Tiket bisa ditabung dan tidak hangus. Setiap spin pasti dapat uang.</div>
   ${D.spins.length?`<div class="lbl" style="margin:12px 0 6px">SPIN TERAKHIR</div>`+D.spins.map(s=>`<div class="row" style="min-height:44px"><span class="tag" style="background:${s.rar==="Legend"?"var(--yl)":s.rar==="Epic"?"var(--pk)":"var(--tl)"}">${s.rar.toUpperCase()}</span><span class="t"><b style="font-size:15px">${rp(s.uang)}</b><span>${s.waktu.slice(0,16)}</span></span></div>`).join(""):""}`;
 }
+let spinning=false;
 async function doSpin(){
+  if(spinning)return;
   if(!D.tiket){toast("Belum ada tiket. Selesaikan Daily Quest dulu.");return}
-  const v=Q("#vault");if(v){v.style.animation="shake .4s 3";}
-  await new Promise(r=>setTimeout(r,1000));
-  const r=await act("spin");if(!r||r.error)return;const h=r.hasil;
+  spinning=true;
+  const v=Q("#vault");if(v){v.style.animation="shake .4s 2"}
+  const out=await Promise.all([act("spin"),new Promise(r=>setTimeout(r,800))]);
+  spinning=false;if(v)v.style.animation="";
+  const r=out[0];if(!r||r.error)return;const h=r.hasil;
   confetti();modal(`<div style="text-align:center"><div class="lbl">${h.rar.toUpperCase()}</div><div class="d" style="font-size:44px;margin:8px 0">${rp(h.uang)}</div><div class="note">Masuk saldo hadiah. Total ${rp(r.saldo)}.</div><button class="btn pk" id="mYes" style="margin-top:12px">OK</button></div>`);
   Q("#mYes").onclick=()=>{closeModal();render()};render();
 }
@@ -1399,7 +1413,7 @@ document.addEventListener("click",async e=>{
   if(b=t.closest("[data-d]")){const i=+b.dataset.d;if(i===1){go("brain");return}toast(DAILYTIP[i]);return}
   if(b=t.closest("[data-q]")){qTab=b.dataset.q;rQuest();return}
   if(b=t.closest("[data-a]")){actForm(b.dataset.a);return}
-  if(b=t.closest("[data-undo]")){const id=b.dataset.undo,en=D.entries.find(x=>x.id===id);modal(`<div class="d" style="font-size:20px">Batalkan ${esc(en.an)}?</div><div class="note" style="margin-top:6px"><b>${esc(en.nama)}</b> \u00b7 ${en.jam}${en.xp?`<br>XP berkurang <b>${en.xp}</b>`:""}. Pembatalan tercatat untuk audit leader.</div><div style="display:flex;gap:6px;margin-top:14px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Tidak</button><button class="btn sm" id="mYes" style="flex:1;background:#B0105E;color:#fff">Ya, batalkan</button></div>`);Q("#mNo").onclick=closeModal;Q("#mYes").onclick=async()=>{const r=await act("undo",{id});closeModal();if(r&&!r.error){toast("Dibatalkan");render()}};return}
+  if(b=t.closest("[data-undo]")){const id=b.dataset.undo,en=D.entries.find(x=>x.id===id);modal(`<div class="d" style="font-size:20px">Batalkan ${esc(en.an)}?</div><div class="note" style="margin-top:6px"><b>${esc(en.nama)}</b> \u00b7 ${en.jam}${en.xp?`<br>XP berkurang <b>${en.xp}</b>`:""}. Pembatalan tercatat untuk audit leader.</div><div style="display:flex;gap:6px;margin-top:14px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Tidak</button><button class="btn sm" id="mYes" style="flex:1;background:#B0105E;color:#fff">Ya, batalkan</button></div>`);Q("#mNo").onclick=closeModal;Q("#mYes").onclick=async()=>{closeModal();if(en.status==="aktif"){en.status="batal";if(en.te===D.today)D.xpDay=Math.max(0,D.xpDay-(en.xp||0));D.xpWeek=Math.max(0,D.xpWeek-(en.xp||0));toast("Dibatalkan");render()}const r=await act("undo",{id});if(!r||r.error){await act("state",null,1)}render()};return}
   if(t.closest("#spinGo")){doSpin();return}
   if(b=t.closest("[data-tt]")){tTab=b.dataset.tt;rTown();return}
   if(t.closest("#addNama")){namaForm();return}
@@ -1411,7 +1425,7 @@ document.addEventListener("click",async e=>{
   if(b=t.closest("[data-day]")){const k=b.dataset.day;if(!pickD)pickD=k;else{rFrom=pickD<k?pickD:k;rTo=pickD<k?k:pickD;pickD=""}rLog();return}
   if(b=t.closest("[data-r]")){const n=+b.dataset.r;pickD="";if(n===0){rFrom=null;rTo=null}else{rTo=D.today;const p=D.today.split("-");const d=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]-(n-1)));rFrom=d.toISOString().slice(0,10)}rLog();return}
   if(b=t.closest("[data-pal]")){setPal(b.dataset.pal,1);rPalet();toast("Warna "+PAL[palK][0]+" dipakai");return}
-  if(t.closest("#logout")){TOK=null;try{localStorage.removeItem("lqp_tok")}catch(x){}D=null;showLogin();return}
+  if(t.closest("#logout")){TOK=null;try{localStorage.removeItem("lqp_tok");localStorage.removeItem("lqp_cache")}catch(x){}D=null;showLogin();return}
   if(t.closest("#bCopy")){copy(prompt_(),"Prompt tersalin! Tempel ke AI kamu.");return}
   if(t.closest("#bDone")){const r=await act("brain");if(r&&!r.error){toast("Brain Buff selesai!");if(r.daily.every(Boolean)){confetti()}go("home")}return}
   if(b=t.closest("[data-b]")){bTop=+b.dataset.b;renderBrain();return}
@@ -1420,10 +1434,15 @@ document.addEventListener("click",async e=>{
   if(b=t.closest("[data-bl]")){bLang=b.dataset.bl;renderBrain();return}
 });
 Q("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
-Q("#back").innerHTML=ic("back",24);Q("#av").innerHTML=mas(40);
+Q("#sync").innerHTML=mas(22)+"<span>MENYIMPAN</span><i></i>";Q("#back").innerHTML=ic("back",24);Q("#av").innerHTML=mas(40);
 {let k="asli";try{k=localStorage.getItem("lq_pal")||"asli"}catch(e){}setPal(k)}
 (async()=>{
   if(!TOK){showLogin();return}
+  let c=null;try{c=JSON.parse(localStorage.getItem("lqp_cache")||"null")}catch(e){}
+  if(c&&c.me&&c.acts){D=c;start();
+    const r=await act("state",null,1);
+    if(r&&!r.error&&!Q("#modal").classList.contains("on")&&Q("#s-login").classList.contains("on")===false)render();
+    return}
   const r=await act("state",null,1);
   if(r&&!r.error)start();else showLogin();
 })();
