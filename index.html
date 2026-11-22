@@ -1215,6 +1215,7 @@ function go(s){
 }
 function render(){
   if(!D)return;
+  if(D.lockT===undefined){D.daily[0]=false;if(!window.__oldsrv){window.__oldsrv=1;setTimeout(()=>toast("Server belum diperbarui: pasang Code.gs terbaru (New version)"),600)}}
   Q("#chTix").innerHTML=`<span class="wig">${ic("ticket",20)}</span><span>${D.tiket}</span>`;
   Q("#chXp").innerHTML=`${ic("bolt",20)}<span>${num(D.xpWeek)}</span>`;
   ({home:rHome,quest:rQuest,spin:rSpin,town:rTown,names:rNames,crew:rCrew,guild:rGuild,log:rLog,brain:rBrain,palet:rPalet}[tab]||rHome)();
