@@ -1566,7 +1566,7 @@ function rng(){const [Y,M]=D.today.split("-").map(Number),dim=new Date(Date.UTC(
   const list=Object.values(am).sort((p,q)=>q[4]-p[4]);
   return{Y,M,from,to,tot,aktif,best,bestK,days,key,dim,ca,list}}
 function rincian(s){const C=[["Hustle","var(--tl)"],["Squad","var(--pk)"],["Solo","var(--yl)"]];
-  return `<div class="lbl" style="margin:12px 0 6px">RINCIAN POIN \u00b7 ${fmtTgl(s.from)} SAMPAI ${fmtTgl(s.to)}</div><div style="display:flex;gap:6px">${C.map(([k,c])=>`<div class="p" style="flex:1;padding:8px;background:${c}"><div class="lbl" style="font-size:10px">${k.toUpperCase()}</div><div class="d" style="font-size:20px">${num(s.ca[k]||0)}</div></div>`).join("")}</div>`+(s.list.length?C.map(([k,c])=>{const L=s.list.filter(x=>x[2]===k);return L.length?`<div class="lbl" style="margin:10px 0 4px">${k.toUpperCase()} \u00b7 ${num(s.ca[k]||0)} XP</div>`+L.map(x=>`<div class="row" style="min-height:44px;padding:6px 10px"><span class="t"><b style="font-size:14px">${x[1]}</b><span>${x[3]}x dicatat</span></span><b>${num(x[4])} XP</b></div>`).join(""):""}).join(""):`<div class="note">Belum ada poin di rentang ini.</div>`)}
+  return `<div class="lbl" style="margin:12px 0 6px">RINCIAN POIN \u00b7 ${fmtTgl(s.from)} SAMPAI ${fmtTgl(s.to)}</div><div style="display:flex;gap:6px">${C.map(([k,c])=>`<div class="p" style="flex:1;padding:8px;background:${c}"><div class="lbl" style="font-size:10px">${k.toUpperCase()}</div><div class="d" style="font-size:20px">${num(s.ca[k]||0)}</div></div>`).join("")}</div>`+(s.list.length?C.map(([k,c])=>{const L=s.list.filter(x=>x[2]===k);return L.length?`<div class="lbl" style="margin:10px 0 4px">${k.toUpperCase()} \u00b7 ${num(s.ca[k]||0)} XP</div>`+L.map(x=>`<div class="row" style="min-height:44px;padding:6px 10px"><span class="t"><b style="font-size:14px">${x[1]}</b><span>${x[3]}x dicatat</span></span><b>${num(x[4])} XP</b></div>`).join(""):""}).join(""):`<div class="note">${D.dayAct?"Belum ada poin di rentang ini.":"Server belum diperbarui. Pasang Code.gs terbaru (New version)."}</div>`)}
 const BLN=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 function rLog(){
   const s=rng(),first=new Date(Date.UTC(s.Y,s.M-1,1)).getUTCDay(),off=(first+6)%7,td=+D.today.slice(8);
@@ -1588,7 +1588,7 @@ function rFlex(){
   <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><span class="d" style="font-size:38px;line-height:1;color:#FF3E9A">${num(s.tot)}</span><span class="d" style="font-size:14px">XP</span></div>
   <div style="display:flex;gap:6px;margin-top:10px">${CC.map(([k,c])=>`<div style="flex:1;background:${c};color:#12082A;padding:5px 8px"><div class="lbl" style="font-size:10px">${k.toUpperCase()}</div><div class="d" style="font-size:16px">${num(s.ca[k]||0)}</div></div>`).join("")}</div>
   ${CC.map(([k,c])=>{const Lr=s.list.filter(x=>x[2]===k);return Lr.length?`<div class="lbl" style="font-size:10px;color:${c};margin:12px 0 3px">${k.toUpperCase()}</div><div style="font-size:13px;font-weight:700;line-height:1.55;max-width:200px">${Lr.map(x=>`<div style="display:flex;justify-content:space-between"><span>${x[1]} ${x[3]}x</span><span style="color:#FFD23F">${num(x[4])}</span></div>`).join("")}</div>`:""}).join("")}
-  ${s.list.length?"":`<div class="note" style="color:#fff">Belum ada poin di rentang ini.</div>`}
+  ${s.list.length?"":`<div class="note" style="color:#fff">${D.dayAct?"Belum ada poin di rentang ini.":"Server belum diperbarui. Pasang Code.gs terbaru (New version)."}</div>`}
   <div style="position:absolute;right:14px;top:14px">${personHTML(m,44)}</div><div style="position:absolute;right:6px;bottom:0">${mas(100)}</div><div style="position:absolute;left:14px;bottom:14px;font-weight:700;font-size:13px">${esc(D.me.nama.toUpperCase())}<br><span style="color:#FFD23F">#LegacyQuest</span></div></div>`
   :`<div class="flex" id="fCard" style="aspect-ratio:${story?"9/14":"1/1"};max-width:${story?"300px":"100%"}"><div class="lbl" style="color:#FFD23F">LEGACYQUEST \u00b7 BATTLE LOG</div><div style="font-weight:700;font-size:13px;margin-top:2px">${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}</div>
   <div class="d" style="font-size:${story?54:44}px;line-height:1.05;color:#FF3E9A;margin-top:${story?30:14}px">${num(s.tot)}</div><div class="d" style="font-size:18px">XP DIKUMPULKAN</div>
@@ -1624,7 +1624,7 @@ async function flexPng(){
     CC.forEach(([k,col],i)=>{const bx=pad+i*(bw+20);x.fillStyle=col;x.fillRect(bx,by,bw,bh);T(k.toUpperCase(),bx+26,by+56,"700 30px "+FB,"#12082A");T(num(s.ca[k]||0),bx+26,by+134,`64px ${FD}`,"#12082A")});
     let ly=by+bh+90;
     CC.forEach(([k,col])=>{const Lr=s.list.filter(r=>r[2]===k);if(!Lr.length)return;T(k.toUpperCase(),pad,ly,"700 32px "+FB,col);ly+=56;Lr.forEach(r=>{T(`${r[1]} ${r[3]}x`,pad,ly,"700 40px "+FB,"#fff");T(num(r[4]),pad+620,ly,"700 40px "+FB,"#FFD23F","right");ly+=60});ly+=34});
-    if(!s.list.length)T("Belum ada poin di rentang ini.",pad,ly,"700 38px "+FB,"#fff");
+    if(!s.list.length)T(D.dayAct?"Belum ada poin di rentang ini.":"Server belum diperbarui.",pad,ly,"700 38px "+FB,"#fff");
   }
   try{const m=meP(),sz=det?150:190,ax=W-pad-sz,ay=pad;x.fillStyle="#fff";x.fillRect(ax-14,ay-14,sz+28,sz+28);
     let src;if(isFoto(m))src=FOT[m.kode].d;else src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(avSvgP(m,sz).replace(/<svg /,'<svg xmlns="http://www.w3.org/2000/svg" '));
@@ -1742,10 +1742,10 @@ function rGuild(){
   const mine=L.filter(p=>p.peran!=="leader"&&p.langsung),under=ld.map(l=>[l,L.filter(p=>p.peran!=="leader"&&p.via===l.nama)]);
   Q("#s-guild").innerHTML=`<div class="p og" style="margin-bottom:6px"><div class="lbl">GUILD MAP \u00b7 SELURUH TIM \u00b7 MINGGU INI</div><div class="d" style="font-size:34px;line-height:1.1;margin-top:4px">${num(tot)} XP</div><div style="font-weight:700;font-size:13px;margin-top:2px">${L.length} orang \u00b7 ${act} sudah mencatat hari ini</div></div>
   <div class="p yl" style="margin-bottom:6px">${alert.length?`<div class="lbl">PERLU DISAPA</div>`+alert.slice(0,5).map(x=>`<div style="font-weight:700;font-size:15px;margin-top:2px">${esc(x.nama)} \u00b7 ${esc(x.why.toLowerCase())}</div>`).join(""):`<div class="lbl">SEMUA AMAN</div>`}</div>
-  <div class="lbl" style="margin:10px 2px 6px">TAP NAMA UNTUK LIHAT CATATAN</div>`
-  +(ld.length?sec("LEADER DI BAWAH KAMU")+under.map(([l,ps])=>gRow(l,{tap:1,tag:1})+(ps.length?`<div style="margin:-2px 0 8px 14px;padding:8px 8px 2px;border-left:6px solid var(--pu);background:rgba(91,42,168,.08)"><div class="lbl" style="margin:0 0 6px;color:var(--pu)">TIM ${esc(l.nama.split(/[ &]+/)[0].toUpperCase())} \u00b7 ${ps.length} PARTNER \u00b7 ${num(ps.reduce((s,p)=>s+(p.xp||0),0))} XP</div>${ps.map(p=>gRow(p,{tap:1})).join("")}</div>`:"")).join(""):"")
-  +(mine.length?sec("PARTNER LANGSUNG KAMU")+mine.map(p=>gRow(p,{tap:1})).join(""):"")
-  +`<div class="note">Leader melihat seluruh keturunannya, lengkap dengan catatan.</div>`;
+  <div class="lbl" style="margin:10px 2px 6px">${D.me.peran==="admin"?"PERINGKAT TIM":"TAP NAMA UNTUK LIHAT CATATAN"}</div>`
+  +(ld.length?sec("LEADER DI BAWAH KAMU")+under.map(([l,ps])=>gRow(l,{tap:D.me.peran!=="admin"?1:0,tag:1})+(ps.length?`<div style="margin:-2px 0 8px 14px;padding:8px 8px 2px;border-left:6px solid var(--pu);background:rgba(91,42,168,.08)"><div class="lbl" style="margin:0 0 6px;color:var(--pu)">TIM ${esc(l.nama.split(/[ &]+/)[0].toUpperCase())} \u00b7 ${ps.length} PARTNER \u00b7 ${num(ps.reduce((s,p)=>s+(p.xp||0),0))} XP</div>${ps.map(p=>gRow(p,{tap:D.me.peran!=="admin"?1:0})).join("")}</div>`:"")).join(""):"")
+  +(mine.length?sec("PARTNER LANGSUNG KAMU")+mine.map(p=>gRow(p,{tap:D.me.peran!=="admin"?1:0})).join(""):"")
+  +`<div class="note">${D.me.peran==="admin"?"Admin hanya melihat XP dan hari aktif. Catatan pribadi tidak terlihat.":"Leader melihat seluruh keturunannya, lengkap dengan catatan."}</div>`;
 }
 
 /* ---------- Daftar Nama ---------- */
