@@ -234,7 +234,7 @@ button:disabled{opacity:.5}
 </style>
 </head>
 <body>
-<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v14)</div>
+<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v15)</div>
 <script>(function(){function show(t){var b=document.getElementById("boot");if(b){b.style.display="block";b.innerHTML+="<p style='color:#B0105E;font-weight:700;word-break:break-all'>"+String(t).replace(/</g,"&lt;")+"</p>"}}window.addEventListener("unhandledrejection",function(e){show("Error: "+(e.reason&&e.reason.message||e.reason))});window.onerror=function(m,u,l,c){var info="";try{var src=(window.__src||"").split("\n"),ln=src[l-1]||"",cc=Math.max(0,(c||1)-1),seg=ln.substr(Math.max(0,cc-50),100),codes="";for(var i=0;i<seg.length;i++){var k=seg.charCodeAt(i);if(k<32||k>126)codes+="["+k+"]"}info=" | teks: "+seg+" | kode aneh: "+codes+" | panjang baris: "+ln.length}catch(x){info=" | gagal baca: "+x.message}show("Error: "+m+" (baris "+l+", kolom "+c+")"+info)}})();</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -1349,8 +1349,7 @@ function waLink(n,via){const m=via?`Halo ${via}, bagaimana kabar ${n}? Beberapa 
 function cMission(C){
   const left=C.sapa.filter(x=>!x.selesai).length;
   const sapa=C.sapa.length?`<div class="lh" style="margin-top:8px"><span>MISSION MINGGU INI</span><span>${left} dari ${C.sapa.length}</span></div>`+C.sapa.map(s=>`<div class="row" style="display:block;padding:10px;opacity:${s.selesai?.55:1};border-left:8px solid ${s.selesai?"var(--tl)":s.tag==="BERHENTI"?"var(--pk)":"var(--yl)"}"><div style="display:flex;gap:10px;align-items:center"><span class="ib" style="background:var(--tl);font-weight:800;border:2px solid var(--dk)">${esc(s.nama)[0]}</span><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:6px;align-items:center"><b style="font-size:16px">${esc(s.nama)}</b><span class="tag" style="background:${s.selesai?"var(--tl)":"var(--yl)"};font-size:10px">${s.selesai?"SUDAH \u2713":s.tag}</span></div><div style="font-size:12px;font-weight:600;color:var(--mut);margin-top:2px">${s.why}</div></div></div><div style="display:grid;grid-template-columns:3fr 2fr;gap:6px;margin-top:10px"><a class="btn sm pk" href="${waLink(s.nama,s.via)}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;text-decoration:none;margin:0">${s.via?"KABARI "+esc(s.via.toUpperCase()):"SAPA"}</a><button class="btn sm" data-misi="${s.kode}" style="margin:0">${s.selesai?"BATAL":"SELESAI"}</button></div></div>`).join(""):`<div class="note" style="margin-top:8px">Tidak ada mission minggu ini. Semua aktif.</div>`;
-  const dir=C.list.filter(p=>p.langsung);
-  return sapa+`<div class="lh"><span>RESET PIN</span><span>${dir.length} orang</span></div>`+dir.map(p=>`<div class="row" style="min-height:48px"><span class="t"><b style="font-size:14px">${esc(p.nama)}</b><span>${p.kode}</span></span><button class="cc" data-reset="${p.kode}" style="margin:0;min-height:38px">Reset PIN</button></div>`).join("");
+  return sapa
 }
 function cAdmin(C){
   const A=D.admin||[];
