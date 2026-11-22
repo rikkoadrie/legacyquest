@@ -1562,8 +1562,11 @@ function quickLog(nid,actId){
 /* ---------- Battle Log + Flex ---------- */
 let fMode="story";
 function rng(){const [Y,M]=D.today.split("-").map(Number),dim=new Date(Date.UTC(Y,M,0)).getUTCDate(),key=d=>`${Y}-${String(M).padStart(2,"0")}-${String(d).padStart(2,"0")}`,from=rFrom||key(1),to=rTo||D.today;
-  let tot=0,aktif=0,best=0,days=0;for(let d=1;d<=dim;d++){const k=key(d);if(k>=from&&k<=to&&k<=D.today){days++;const x=D.dayXp[k]||0;tot+=x;if(x)aktif++;if(x>best)best=x}}
-  return{Y,M,from,to,tot,aktif,best,days,key,dim}}
+  let tot=0,aktif=0,best=0,bestK="",days=0;const ca={Hustle:0,Squad:0,Solo:0},am={};for(let d=1;d<=dim;d++){const k=key(d);if(k>=from&&k<=to&&k<=D.today){days++;const x=D.dayXp[k]||0;tot+=x;if(x)aktif++;if(x>best){best=x;bestK=k}const da=(D.dayAct||{})[k]||{};for(const id in da){const a=D.acts.find(z=>z[0]===id);if(!a)continue;ca[a[3]]=(ca[a[3]]||0)+da[id][1];const m=am[id]=am[id]||[id,a[1],a[3],0,0];m[3]+=da[id][0];m[4]+=da[id][1]}}}
+  const list=Object.values(am).sort((p,q)=>q[4]-p[4]);
+  return{Y,M,from,to,tot,aktif,best,bestK,days,key,dim,ca,list}}
+function rincian(s){const C=[["Hustle","var(--tl)"],["Squad","var(--pk)"],["Solo","var(--yl)"]];
+  return `<div class="lbl" style="margin:12px 0 6px">RINCIAN POIN \u00b7 ${fmtTgl(s.from)} SAMPAI ${fmtTgl(s.to)}</div><div style="display:flex;gap:6px">${C.map(([k,c])=>`<div class="p" style="flex:1;padding:8px;background:${c}"><div class="lbl" style="font-size:10px">${k.toUpperCase()}</div><div class="d" style="font-size:20px">${num(s.ca[k]||0)}</div></div>`).join("")}</div>`+(s.list.length?C.map(([k,c])=>{const L=s.list.filter(x=>x[2]===k);return L.length?`<div class="lbl" style="margin:10px 0 4px">${k.toUpperCase()} \u00b7 ${num(s.ca[k]||0)} XP</div>`+L.map(x=>`<div class="row" style="min-height:44px;padding:6px 10px"><span class="t"><b style="font-size:14px">${x[1]}</b><span>${x[3]}x dicatat</span></span><b>${num(x[4])} XP</b></div>`).join(""):""}).join(""):`<div class="note">Belum ada poin di rentang ini.</div>`)}
 const BLN=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 function rLog(){
   const s=rng(),first=new Date(Date.UTC(s.Y,s.M-1,1)).getUTCDay(),off=(first+6)%7,td=+D.today.slice(8);
@@ -1575,39 +1578,58 @@ function rLog(){
   <div class="note">${pickD?`Mulai ${fmtTgl(pickD)} (${num(D.dayXp[pickD]||0)} XP). Tap tanggal akhir untuk jumlahkan XP. Tap tanggal yang sama untuk 1 hari.`:"Tap tanggal awal, lalu tanggal akhir: XP otomatis dijumlahkan. Kotak kuning = rentang flex."}</div>
   <div class="p cr c3"><div class="lbl">RENTANG TANGGAL</div><div style="display:flex;gap:6px;margin-top:6px"><div style="flex:1"><label style="margin-top:0">Dari</label><input type="date" id="dFrom" min="${s.key(1)}" max="${D.today}" value="${s.from}"></div><div style="flex:1"><label style="margin-top:0">Sampai</label><input type="date" id="dTo" min="${s.key(1)}" max="${D.today}" value="${s.to}"></div></div>
   <div style="margin-top:8px"><button class="cc" data-r="1">Hari ini</button><button class="cc" data-r="7">7 hari</button><button class="cc" data-r="0">Bulan ini</button></div></div>
-  <button class="btn pk" data-go="flex" style="margin-top:6px">BUAT FLEX CARD</button>`;
+  ${rincian(s)}<button class="btn pk" data-go="flex" style="margin-top:10px">BUAT FLEX CARD</button>`;
 }
 function rFlex(){
-  const s=rng(),story=fMode==="story",m=meP();
-  Q("#s-flex").innerHTML=`<div class="tabs">${[["story","Story 9:16"],["feed","Feed 1:1"]].map(([k,l])=>`<button class="${fMode===k?"on":""}" data-f="${k}">${l}</button>`).join("")}</div>
-  <div class="flex" id="fCard" style="aspect-ratio:${story?"9/14":"1/1"};max-width:${story?"300px":"100%"}"><div class="lbl" style="color:#FFD23F">LEGACYQUEST \u00b7 BATTLE LOG</div><div style="font-weight:700;font-size:13px;margin-top:2px">${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}</div>
+  const s=rng(),det=fMode==="detail",story=fMode==="story",m=meP();
+  const CC=[["Hustle","#19C6B7"],["Squad","#FF3E9A"],["Solo","#FFD23F"]];
+  const tabs=`<div class="tabs">${[["story","Story 9:16"],["feed","Feed 1:1"],["detail","Detail"]].map(([k,l])=>`<button class="${fMode===k?"on":""}" data-f="${k}">${l}</button>`).join("")}</div>`;
+  const card=det?`<div class="flex" id="fCard" style="max-width:300px;min-height:500px;padding-bottom:70px"><div class="lbl" style="color:#FFD23F">LEGACYQUEST \u00b7 RINCIAN POIN</div><div style="font-weight:700;font-size:13px;margin-top:2px">${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}</div>
+  <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><span class="d" style="font-size:38px;line-height:1;color:#FF3E9A">${num(s.tot)}</span><span class="d" style="font-size:14px">XP</span></div>
+  <div style="display:flex;gap:6px;margin-top:10px">${CC.map(([k,c])=>`<div style="flex:1;background:${c};color:#12082A;padding:5px 8px"><div class="lbl" style="font-size:10px">${k.toUpperCase()}</div><div class="d" style="font-size:16px">${num(s.ca[k]||0)}</div></div>`).join("")}</div>
+  ${CC.map(([k,c])=>{const Lr=s.list.filter(x=>x[2]===k);return Lr.length?`<div class="lbl" style="font-size:10px;color:${c};margin:12px 0 3px">${k.toUpperCase()}</div><div style="font-size:13px;font-weight:700;line-height:1.55;max-width:200px">${Lr.map(x=>`<div style="display:flex;justify-content:space-between"><span>${x[1]} ${x[3]}x</span><span style="color:#FFD23F">${num(x[4])}</span></div>`).join("")}</div>`:""}).join("")}
+  ${s.list.length?"":`<div class="note" style="color:#fff">Belum ada poin di rentang ini.</div>`}
+  <div style="position:absolute;right:14px;top:14px">${personHTML(m,44)}</div><div style="position:absolute;right:6px;bottom:0">${mas(100)}</div><div style="position:absolute;left:14px;bottom:14px;font-weight:700;font-size:13px">${esc(D.me.nama.toUpperCase())}<br><span style="color:#FFD23F">#LegacyQuest</span></div></div>`
+  :`<div class="flex" id="fCard" style="aspect-ratio:${story?"9/14":"1/1"};max-width:${story?"300px":"100%"}"><div class="lbl" style="color:#FFD23F">LEGACYQUEST \u00b7 BATTLE LOG</div><div style="font-weight:700;font-size:13px;margin-top:2px">${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}</div>
   <div class="d" style="font-size:${story?54:44}px;line-height:1.05;color:#FF3E9A;margin-top:${story?30:14}px">${num(s.tot)}</div><div class="d" style="font-size:18px">XP DIKUMPULKAN</div>
   <div style="display:flex;gap:6px;margin-top:14px"><div style="flex:1;background:#FFD23F;color:#12082A;padding:8px"><div class="lbl">HARI AKTIF</div><div class="d" style="font-size:22px">${s.aktif}/${s.days}</div></div><div style="flex:1;background:#19C6B7;color:#12082A;padding:8px"><div class="lbl">STREAK</div><div class="d" style="font-size:22px">${D.streak}</div></div><div style="flex:1;background:#FF8A2B;color:#12082A;padding:8px"><div class="lbl">TERBAIK</div><div class="d" style="font-size:22px">${num(s.best)}</div></div></div>
-  <div style="position:absolute;right:14px;top:14px">${personHTML(m,52)}</div><div style="position:absolute;right:6px;bottom:0">${mas(story?150:110)}</div><div style="position:absolute;left:14px;bottom:14px;font-weight:700;font-size:13px">${esc(D.me.nama.toUpperCase())}<br><span style="color:#FFD23F">#LegacyQuest</span></div></div>
+  <div style="position:absolute;right:14px;top:14px">${personHTML(m,52)}</div><div style="position:absolute;right:6px;bottom:0">${mas(story?150:110)}</div><div style="position:absolute;left:14px;bottom:14px;font-weight:700;font-size:13px">${esc(D.me.nama.toUpperCase())}<br><span style="color:#FFD23F">#LegacyQuest</span></div></div>`;
+  Q("#s-flex").innerHTML=tabs+card+`
   <div style="display:flex;gap:6px;margin-top:8px"><button class="btn pk" id="fShare" style="flex:1">BAGIKAN</button><button class="btn" id="fSave" style="flex:1;color:var(--yl)">SIMPAN PNG</button></div>
   <div class="note">Bagikan membuka pilihan Instagram, WhatsApp, dan aplikasi lain di HP kamu. Di komputer, gambar tersimpan lalu kamu unggah sendiri.</div>`;
   needFotos([m]);
 }
 function loadImg(src){return new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src})}
 async function flexPng(){
-  const s=rng(),story=fMode==="story",W=1080,H=story?1920:1080,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
-  const cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim(),FD="'Bowlby One',Impact,sans-serif",FB="Inter,'Helvetica Neue',Arial,sans-serif";
+  const s=rng(),det=fMode==="detail",story=fMode==="story",W=1080,pad=70,FD="'Bowlby One',Impact,sans-serif",FB="Inter,'Helvetica Neue',Arial,sans-serif";
+  const CC=[["Hustle","#19C6B7"],["Squad","#FF3E9A"],["Solo","#FFD23F"]],cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  let H=story?1920:1080;
+  if(det){const rows=s.list.length,grp=CC.filter(([k])=>s.list.some(r=>r[2]===k)).length;H=Math.max(1920,560+grp*90+rows*60+300)}
+  const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
   try{await document.fonts.load("40px 'Bowlby One'");await document.fonts.load("700 30px Inter")}catch(e){}
   x.fillStyle="#12082A";x.fillRect(0,0,W,H);
-  const T=(t,xx,yy,font,col,al)=>{x.font=font;x.fillStyle=col;x.textAlign=al||"left";x.textBaseline="alphabetic";x.fillText(t,xx,yy)},pad=70;
-  T("LEGACYQUEST \u00b7 BATTLE LOG",pad,pad+34,"700 34px "+FB,"#FFD23F");
+  const T=(t,xx,yy,font,col,al)=>{x.font=font;x.fillStyle=col;x.textAlign=al||"left";x.textBaseline="alphabetic";x.fillText(t,xx,yy)};
+  T(det?"LEGACYQUEST \u00b7 RINCIAN POIN":"LEGACYQUEST \u00b7 BATTLE LOG",pad,pad+34,"700 34px "+FB,"#FFD23F");
   T(`${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}`,pad,pad+90,"700 42px "+FB,"#fff");
-  const y0=story?600:430;
-  T(num(s.tot),pad,y0,`${story?240:190}px ${FD}`,cv("--pk")||"#FF3E9A");
-  T("XP DIKUMPULKAN",pad,y0+96,`66px ${FD}`,"#fff");
-  const bw=(W-pad*2-40)/3,by=y0+170,bh=200;
-  [["HARI AKTIF",`${s.aktif}/${s.days}`,"#FFD23F"],["STREAK",String(D.streak),"#19C6B7"],["TERBAIK",num(s.best),"#FF8A2B"]].forEach((b,i)=>{const bx=pad+i*(bw+20);x.fillStyle=b[2];x.fillRect(bx,by,bw,bh);T(b[0],bx+26,by+62,"700 30px "+FB,"#12082A");T(b[1],bx+26,by+150,`70px ${FD}`,"#12082A")});
-  // avatar kanan atas
-  try{const m=meP(),sz=190,ax=W-pad-sz,ay=pad;x.fillStyle="#fff";x.fillRect(ax-14,ay-14,sz+28,sz+28);
+  const bw=(W-pad*2-40)/3;
+  if(!det){
+    const y0=story?600:430;
+    T(num(s.tot),pad,y0,`${story?240:190}px ${FD}`,cv("--pk")||"#FF3E9A");
+    T("XP DIKUMPULKAN",pad,y0+96,`66px ${FD}`,"#fff");
+    const by=y0+170,bh=200;
+    [["HARI AKTIF",`${s.aktif}/${s.days}`,"#FFD23F"],["STREAK",String(D.streak),"#19C6B7"],["TERBAIK",num(s.best),"#FF8A2B"]].forEach((b,i)=>{const bx=pad+i*(bw+20);x.fillStyle=b[2];x.fillRect(bx,by,bw,bh);T(b[0],bx+26,by+62,"700 30px "+FB,"#12082A");T(b[1],bx+26,by+150,`70px ${FD}`,"#12082A")});
+  }else{
+    T(num(s.tot),pad,pad+300,`170px ${FD}`,cv("--pk")||"#FF3E9A");T("XP",pad+num(s.tot).length*118,pad+300,`60px ${FD}`,"#fff");
+    const by=pad+370,bh=170;
+    CC.forEach(([k,col],i)=>{const bx=pad+i*(bw+20);x.fillStyle=col;x.fillRect(bx,by,bw,bh);T(k.toUpperCase(),bx+26,by+56,"700 30px "+FB,"#12082A");T(num(s.ca[k]||0),bx+26,by+134,`64px ${FD}`,"#12082A")});
+    let ly=by+bh+90;
+    CC.forEach(([k,col])=>{const Lr=s.list.filter(r=>r[2]===k);if(!Lr.length)return;T(k.toUpperCase(),pad,ly,"700 32px "+FB,col);ly+=56;Lr.forEach(r=>{T(`${r[1]} ${r[3]}x`,pad,ly,"700 40px "+FB,"#fff");T(num(r[4]),pad+620,ly,"700 40px "+FB,"#FFD23F","right");ly+=60});ly+=34});
+    if(!s.list.length)T("Belum ada poin di rentang ini.",pad,ly,"700 38px "+FB,"#fff");
+  }
+  try{const m=meP(),sz=det?150:190,ax=W-pad-sz,ay=pad;x.fillStyle="#fff";x.fillRect(ax-14,ay-14,sz+28,sz+28);
     let src;if(isFoto(m))src=FOT[m.kode].d;else src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(avSvgP(m,sz).replace(/<svg /,'<svg xmlns="http://www.w3.org/2000/svg" '));
     x.drawImage(await loadImg(src),ax,ay,sz,sz)}catch(e){}
-  // maskot kanan bawah
-  try{const im=await loadImg(MASC),mw=story?560:420,mh=mw*im.height/im.width;x.drawImage(im,W-mw-30,H-mh-20,mw,mh)}catch(e){}
+  try{const im=await loadImg(MASC),mw=det?380:story?560:420,mh=mw*im.height/im.width;x.drawImage(im,W-mw-30,H-mh-20,mw,mh)}catch(e){}
   T(D.me.nama.toUpperCase(),pad,H-pad-46,"700 44px "+FB,"#fff");T("#LegacyQuest",pad,H-pad,"700 44px "+FB,"#FFD23F");
   return new Promise(ok=>c.toBlob(ok,"image/png"))
 }
