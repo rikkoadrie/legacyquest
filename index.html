@@ -234,7 +234,7 @@ button:disabled{opacity:.5}
 </style>
 </head>
 <body>
-<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v15)</div>
+<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v17)</div>
 <script>(function(){function show(t){var b=document.getElementById("boot");if(b){b.style.display="block";b.innerHTML+="<p style='color:#B0105E;font-weight:700;word-break:break-all'>"+String(t).replace(/</g,"&lt;")+"</p>"}}window.addEventListener("unhandledrejection",function(e){show("Error: "+(e.reason&&e.reason.message||e.reason))});window.onerror=function(m,u,l,c){var info="";try{var src=(window.__src||"").split("\n"),ln=src[l-1]||"",cc=Math.max(0,(c||1)-1),seg=ln.substr(Math.max(0,cc-50),100),codes="";for(var i=0;i<seg.length;i++){var k=seg.charCodeAt(i);if(k<32||k>126)codes+="["+k+"]"}info=" | teks: "+seg+" | kode aneh: "+codes+" | panjang baris: "+ln.length}catch(x){info=" | gagal baca: "+x.message}show("Error: "+m+" (baris "+l+", kolom "+c+")"+info)}})();</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -1140,7 +1140,7 @@ function mascColor(k){const c=MC[k];if(!c){mascApply(MASCOT);return}
 let palK="asli";
 function setPal(k,save){if(!PAL[k])k="asli";palK=k;mascColor(k);const v=PAL[k][1];for(const x in v)document.documentElement.style.setProperty(x,v[x]);if(save){try{localStorage.setItem("lq_pal",k)}catch(e){}}}
 /* ===== LegacyQuest Pilot: aplikasi ===== */
-let TOK=null,D=null,tab="home",qTab="Hustle",tTab="week",cTab="stats",rFrom=null,rTo=null,pickD="",busy=false,mode="login";
+let TOK=null,D=null,tab="home",qTab="Hustle",tTab="week",gTab=null,cTab="stats",rFrom=null,rTo=null,pickD="",busy=false,mode="login";
 try{TOK=localStorage.getItem("lqp_tok")}catch(e){}
 const GAS=typeof google!=="undefined"&&google.script&&google.script.run;
 const API_URL="https://script.google.com/macros/s/AKfycbx6FGFGSx5j0xncAYFGA6cOd18gxFJDNVCK_dBpg0j8JS9dwzDHtNmt-mo2ltmg_pxU/exec";
@@ -1166,8 +1166,8 @@ async function doAct(action,payload,quiet){
   if(r.token){TOK=r.token;try{localStorage.setItem("lqp_tok",TOK)}catch(e){}}
   D=r;try{localStorage.setItem("lqp_cache",JSON.stringify(r))}catch(e){}return r;
 }
-const NAMA_ACT={};const PARENT={names:"home",crew:"home",log:"home",brain:"home",palet:"home"};
-const TITLES={home:["BASE CAMP",""],quest:["CATAT XP","QUEST BOARD"],spin:["1 TIKET = 1 SPIN","SPIN ZONE"],town:["PERINGKAT","TOWN HALL"],names:["PROSPEK","DAFTAR NAMA"],crew:["LEADER","CREW HQ"],log:["KALENDER","BATTLE LOG"],brain:["5 MENIT","BRAIN BUFF"],palet:["TAMPILAN","WARNA"]};
+const NAMA_ACT={};const PARENT={names:"home",guild:"home",crew:"home",log:"home",brain:"home",palet:"home"};
+const TITLES={home:["BASE CAMP",""],quest:["CATAT XP","QUEST BOARD"],spin:["1 TIKET = 1 SPIN","SPIN ZONE"],town:["PERINGKAT","TOWN HALL"],names:["PROSPEK","DAFTAR NAMA"],crew:["LEADER","CREW HQ"],guild:["TIM","GUILD MAP"],log:["KALENDER","BATTLE LOG"],brain:["5 MENIT","BRAIN BUFF"],palet:["TAMPILAN","WARNA"]};
 const NAV=[["home","Base Camp","home"],["quest","Quest","quest"],["spin","Spin","ticket"],["town","Town Hall","trophy"]];
 const rootOf=s=>PARENT[s]||s;
 const fmtTgl=t=>{const p=t.split("-");return +p[2]+" "+["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][+p[1]-1]};
@@ -1210,9 +1210,57 @@ function render(){
   if(!D)return;
   Q("#chTix").innerHTML=`<span class="wig">${ic("ticket",20)}</span><span>${D.tiket}</span>`;
   Q("#chXp").innerHTML=`${ic("bolt",20)}<span>${num(D.xpWeek)}</span>`;
-  ({home:rHome,quest:rQuest,spin:rSpin,town:rTown,names:rNames,crew:rCrew,log:rLog,brain:rBrain,palet:rPalet}[tab]||rHome)();
+  ({home:rHome,quest:rQuest,spin:rSpin,town:rTown,names:rNames,crew:rCrew,guild:rGuild,log:rLog,brain:rBrain,palet:rPalet}[tab]||rHome)();
 }
 
+const AICON={call:"phone",chat:"chat",ice:"snow",drop:"user",warm:"user",dive:"search",sync:"users",lsync:"users",spitch:"bolt",plus:"user",coop:"users",meet:"users",npa:"user",naa:"users",concept:"star",demo:"bolt",client:"bolt",ref:"user",post:"chat"};
+const DESC={"call": "Telepon 5 orang untuk bikin janji temu", "chat": "Chat 5 orang, dua arah, untuk bikin janji temu", "ice": "Tatap muka orang baru \u00b7 1 orang 1x seumur hidup", "drop": "Nama baru + WA/IG", "warm": "Ketemu untuk kenal kesibukan dan kebutuhan awal orangnya", "dive": "Tatap muka gali data dan kebutuhan", "sync": "Meeting direct partner", "lsync": "Meeting leader group", "spitch": "BTL pribadi", "plus": "Bawa capartner ke BTL", "coop": "Join field work", "meet": "Datang ke Elevate Sabtu 08.30", "npa": "Bantu calon partner dapat kode agent", "naa": "Partner direct closing pertama kali", "concept": "Edukasi asuransi ke calon nasabah", "demo": "Cerita ilustrasi \u00b7 per jenis produk", "client": "Closing \u00b7 per SPAJ", "ref": "Dapat referensi dan dikontak", "post": "Posting edukasi \u00b7 maks 200 XP/minggu"};
+
+/* ---------- avatar (dari prototype) ---------- */
+const HC="#2A1608",HJ="#FF3E9A";
+function hairParts(g,h,hc){
+ hc=hc||HC;const c=`fill="${hc}"`;
+ const cap=(hl)=>`<path d="M27 46C24 12 76 12 73 46C${hl}Z" ${c}/>`;
+ const hl1="70 34 62 29 50 29C38 29 30 34 27 46";
+ if(g==="w"){
+  if(h===0)return{b:`<path d="M36 26C20 34 16 66 19 90L40 90C37 80 34 70 34 56L42 26Z" ${c}/><path d="M64 26C80 34 84 66 81 90L60 90C63 80 66 70 66 56L58 26Z" ${c}/>`,ne:1,f:`<path d="M26 52C21 10 79 10 74 52C72 44 68 37 62 32C54 39 40 41 31 43C28 46 27 49 26 52Z" ${c}/>`};
+  if(h===1)return{b:`<path d="M36 26C20 34 18 60 22 76L38 74C34 68 34 60 34 52L42 26Z" ${c}/><path d="M64 26C80 34 82 60 78 76L62 74C66 68 66 60 66 52L58 26Z" ${c}/>`,ne:1,f:`<path d="M26 52C21 10 79 10 74 52C70 42 62 35 50 33C38 35 30 42 26 52Z" ${c}/>`};
+  if(h===2)return{b:`<circle cx="50" cy="12" r="10" ${c}/>`,f:cap(hl1)};
+  if(h===3)return{b:`<path d="M68 28C94 22 96 62 80 76C86 58 80 46 66 42Z" ${c}/>`,f:cap(hl1)+`<circle cx="70" cy="30" r="3.5" fill="${HJ}"/>`};
+  return{b:"",f:`<path fill-rule="evenodd" fill="${HJ}" stroke="#12082A" stroke-width="2" d="M50 11C27 11 18 32 20 56C21 72 17 84 12 92L88 92C83 84 79 72 80 56C82 32 73 11 50 11ZM30.5 46C30.5 28 35 22.5 50 22.5C65 22.5 69.5 28 69.5 46C69.5 61 61 72 50 72C39 72 30.5 61 30.5 46Z"/>`,hij:1};
+ }
+
+ if(h===0)return{b:"",f:cap(hl1)};
+ if(h===1)return{b:"",f:cap(hl1)+`<path d="M29 29C31 11 50 3 68 11C77 16 77 25 72 31C64 21 46 19 29 29Z" ${c}/>`};
+ if(h===2)return{b:"",f:`<path d="M27 46C24 12 76 12 73 46C72 36 62 24 42 27C34 29 29 36 27 46Z" ${c}/>`};
+ return{b:"",f:`<g ${c}><circle cx="31" cy="30" r="9"/><circle cx="41" cy="20" r="10"/><circle cx="54" cy="18" r="10"/><circle cx="65" cy="25" r="9"/><circle cx="71" cy="37" r="7"/><circle cx="28" cy="40" r="6"/></g>`}}
+const AVCSS='<style>.hd{transform-box:fill-box;transform-origin:50% 100%;animation:avt 4.5s ease-in-out infinite}.ey{transform-box:fill-box;transform-origin:center;animation:avb 5s infinite}@keyframes avt{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}@keyframes avb{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}@media (prefers-reduced-motion:reduce){.hd,.ey{animation:none}}</style>';
+function avDraw(c,sz,eq,bg,label){
+ eq=eq||{};const g=c.g,sk=c.skin,hp=hairParts(g,c.hair,c.hc),hc=c.hc||HC;
+ const pick=sl=>eq[sl]&&wearOf(eq[sl]);
+ const baju=pick("baju"),jak=pick("jaket"),ks=pick("kacamata"),tp=pick("topi"),ak=pick("aksesori");
+ const body=baju?baju[1]:`<path d="M14 100C14 76 86 76 86 100Z" fill="${g==="w"?"#FF8A2B":"#12082A"}"/>`;
+ const head=ak&&ak[0]==="head"?ak[1]:"",faceAk=ak&&ak[0]==="face"?ak[1]:"",neck=ak&&ak[0]==="neck"?ak[1]:"";
+ const rx=g==="w"?21:23,L=50-rx,R=50+rx;
+ const dk="rgba(18,8,42,.55)";const st=c.st||"k",ST=st==="f"?"none":"#12082A",ch=st==="c";
+ const headP=`M${L} 46C${L} 28 ${L+4} 21 50 21C${R-4} 21 ${R} 28 ${R} 46C${R} 62 62 74 50 74C38 74 ${L} 62 ${L} 46Z`;
+ const brow=g==="w"?`<path d="M34 41.5Q40 37 46.5 40.5M53.5 40.5Q60 37 66 41.5" stroke="${hc}" stroke-width="2" fill="none" stroke-linecap="round"/>`:`<path d="M33.5 41L46.5 39.5M53.5 39.5L66.5 41" stroke="${hc}" stroke-width="3.2" stroke-linecap="round"/>`;
+ const ew=ch?5.6:4.4,eh=ch?6.4:5;
+ const eye=x=>st==="f"?`<g class="ey"><ellipse cx="${x}" cy="49" rx="2.9" ry="3.4" fill="#2A1608"/><circle cx="${x+1}" cy="47.8" r="1" fill="#fff"/></g>`:`<g class="ey"><ellipse cx="${x}" cy="48.5" rx="${ew}" ry="${eh}" fill="#fff" stroke="${ST}" stroke-width="1.2"/><circle cx="${x}" cy="49.2" r="${ch?4:3}" fill="#3B1F12"/><circle cx="${x}" cy="49.2" r="${ch?2.4:1.7}" fill="#12082A"/><circle cx="${x+1.2}" cy="47.6" r="${ch?1.7:1.1}" fill="#fff"/></g>`;
+ const lash=g==="w"?`<path d="M36.6 46l-2.6-2M63.4 46l2.6-2" stroke="${ST}" stroke-width="1.8" stroke-linecap="round"/>`:"";
+ const mouth=st==="f"?`<path d="M43.5 61Q50 67 56.5 61" stroke="#8C1F3F" stroke-width="2.2" fill="none" stroke-linecap="round"/>`:ch?`<path d="M44.5 62Q50 68 55.5 62Z" fill="#8C1F3F" stroke="${ST}" stroke-width="1.3" stroke-linejoin="round"/>`:`<path d="M42 60.5Q50 62 58 60.5Q57 69 50 69Q43 69 42 60.5Z" fill="#8C1F3F" stroke="${ST}" stroke-width="1.4" stroke-linejoin="round"/><path d="M43.6 61.4Q50 62.6 56.4 61.4L56 63.4Q50 64.6 44 63.4Z" fill="#fff"/>`;
+ const lipc=g==="w"?`<path d="M42 60.5Q50 62 58 60.5" stroke="#E0457B" stroke-width="1.8" fill="none" stroke-linecap="round"/>`:"";
+ const nose=st==="f"?"":`<path d="M49 53Q51.6 56.6 48.6 57.2" stroke="${dk}" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+ const blush=`<ellipse cx="35" cy="57" rx="5" ry="3" fill="#FF5C8A" opacity=".28"/><ellipse cx="65" cy="57" rx="5" ry="3" fill="#FF5C8A" opacity=".28"/>`;
+ const ears=hp.hij||hp.ne?"":`<ellipse cx="${L+.5}" cy="51" rx="3.2" ry="4.8" fill="${sk}" stroke="${ST}" stroke-width="1.3"/><ellipse cx="${R-.5}" cy="51" rx="3.2" ry="4.8" fill="${sk}" stroke="${ST}" stroke-width="1.3"/>`;
+ const shine=`<path d="M34 30Q42 22 52 23" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".28"/>`;
+ return `<svg viewBox="0 0 100 100" width="${sz}" height="${sz}" role="img" aria-label="${label||"Avatar"}" style="display:block">${AVCSS}${bg}<g${ch?` transform="translate(50 100) scale(.8) translate(-50 -100)"`:""}>${body}${jak?jak[1]:""}${hp.hij?"":`<path d="M43 62V76Q50 82 57 76V62Z" fill="${sk}" stroke="${ST}" stroke-width="1.4"/><path d="M43 66Q50 72 57 66V62H43Z" fill="${dk}" opacity=".18"/>`}${neck}</g><g class="hd"${ch?` transform="translate(50 74) scale(1.22) translate(-50 -74)"`:""}>${hp.b}${ears}<path d="${headP}" fill="${sk}" stroke="${ST}" stroke-width="1.5"/>${blush}${hp.f}${shine}${brow}${eye(41)}${eye(59)}${lash}${nose}${mouth}${lipc}${ks?ks[1]:""}${faceAk}${head}${tp?tp[1]:""}</g></svg>`}
+const AVBG=["#19C6B7","#FF8A2B","#9B6BFF","#FF3E9A","#FFD23F"],AVSK=["#F7D2B0","#F1C7A0","#D9A074","#C98A5E","#A9714B"],AVHC=["#12082A","#3B1F12","#5A3A1E","#7A2B16"],AVM=[["p",0],["w",0],["w",2],["p",2],["p",1],["w",1]];
+function avFor(nama,sz){let h=0;const s=String(nama||"?");for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;const m=AVM[h%6];
+ return avDraw({g:m[0],hair:m[1],skin:AVSK[(h>>>3)%5],hc:AVHC[(h>>>5)%4]},sz,{},`<rect width="100" height="100" fill="${AVBG[(h>>>7)%5]}"/>`,"Avatar "+s)}
+const wrapFr=inner=>`<span class="fw" style="background:#fff;border:3px solid var(--dk);padding:4px;box-shadow:4px 4px 0 var(--dk)"><span class="in" style="border:0">${inner}</span></span>`;
+const crownSvg=`<svg class="crown" width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><path d="M3 30L0 6l12 10L22 0l10 16L44 6l-3 24Z" fill="#12082A"/><path d="M8 25L6 13l8 7 8-12 8 12 8-7-2 12Z" fill="#FF3E9A"/></svg>`;
+const STC=["#FFF4E6","#FFD23F","#19C6B7","#FF8A2B","#FF3E9A","#B9A0FF"];
 /* ---------- Base Camp ---------- */
 function rHome(){
   const done=D.daily.filter(Boolean).length,pct=Math.min(100,Math.round(D.xpWeek/D.target*100)),L=D.me.peran!=="partner";
@@ -1225,7 +1273,7 @@ function rHome(){
    <div class="p og" style="min-height:96px"><div class="lbl">SALDO</div><div class="d" style="font-size:18px;margin-top:4px">${rp(D.saldo)}</div><div style="font-weight:700;font-size:11px">cash di Elevate</div></div></div></div>
   <div class="p cr c3" style="margin-top:6px"><div class="lbl">DAILY QUEST \u00b7 ${done} DARI 4</div><div style="margin-top:4px">${DAILY.map((n,i)=>`<button class="dr" data-d="${i}"><span class="chk ${D.daily[i]?"on":""}">${D.daily[i]?ic("check",16):""}</span><span class="n" style="${D.daily[i]?"text-decoration:line-through":""}">${n}</span><span class="st">${D.daily[i]?"SELESAI":i===2?D.rt+"/2":"BELUM"}</span></button>`).join("")}</div></div>
   <div class="grid" style="margin-top:6px"><button class="tile pk" data-go="names"><span>${ic("list",26)}</span>Daftar Nama</button><button class="tile tl" data-go="brain"><span>${ic("bulb",26)}</span>Brain Buff</button><button class="tile og" data-go="log"><span>${ic("cal",26)}</span>Battle Log</button></div>
-  ${L?`<button class="p pu c3" data-go="crew" style="margin-top:6px;border:0;display:flex;align-items:center;gap:10px;min-height:56px;color:#fff"><span class="d" style="flex:1;font-size:18px">${D.me.peran==="admin"?"ADMIN":"CREW HQ"}</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}
+  ${L?`<button class="p dk c3" data-go="guild" style="margin-top:6px;border:1px solid var(--yl);display:flex;align-items:center;gap:10px;min-height:52px;color:#fff"><span class="d" style="flex:1;font-size:16px;color:var(--yl)">GUILD MAP</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}${L?`<button class="p pu c3" data-go="crew" style="margin-top:6px;border:0;display:flex;align-items:center;gap:10px;min-height:56px;color:#fff"><span class="d" style="flex:1;font-size:18px">${D.me.peran==="admin"?"ADMIN":"CREW HQ"}</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}
   <button class="p dk c3" data-go="palet" style="margin-top:6px;border:0;display:flex;align-items:center;gap:10px;min-height:52px;color:#fff"><span class="d" style="flex:1;font-size:16px;color:var(--yl)">WARNA APP</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>
   <div class="note" style="text-align:center"><button id="logout" style="border:0;background:none;text-decoration:underline;font-weight:700;color:var(--mut);min-height:44px">Keluar</button></div>`;
 }
@@ -1236,7 +1284,7 @@ function rQuest(){
   const list=D.acts.filter(a=>a[3]===qTab);
   Q("#s-quest").innerHTML=`<div class="p yl" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between" class="lbl"><span>XP HARI INI</span><span>${num(D.xpDay)} XP</span></div><div class="bar" style="margin-top:6px"><i style="width:${pct}%"></i></div></div>
   <div class="tabs">${["Hustle","Squad","Solo"].map(k=>`<button class="${qTab===k?"on":""}" data-q="${k}">${k}</button>`).join("")}</div>
-  ${list.map(a=>{const c=D.counts[a[0]]||0;return `<div class="row"><span class="ib" style="background:var(--cr)">${ic(ICON[a[3]],22)}</span><span class="t"><b>${a[1]}</b><span>${a[5]?`${Math.min(c,a[5])}/${a[5]} orang${c>=a[5]?" \u00b7 XP masuk":""}`:(c?`Dicatat ${c}x hari ini`:"")}</span></span><span class="xpb">+${a[2]}</span><button class="sq" data-a="${a[0]}" aria-label="Catat ${a[1]}">${ic("plus",24)}</button></div>`}).join("")}
+  ${list.map(a=>{const c=D.counts[a[0]]||0;return `<div class="row"><span class="ib" style="background:var(--cr)">${ic(AICON[a[0]]||ICON[a[3]],22)}</span><span class="t"><b>${a[1]}</b><span>${DESC[a[0]]||""}</span>${a[5]||c?`<span style="color:var(--pkd);font-weight:700">${a[5]?`${Math.min(c,a[5])}/${a[5]} orang${c>=a[5]?" \u00b7 XP masuk":""}`:`Dicatat ${c}x hari ini`}</span>`:""}</span><span class="xpb">+${a[2]}</span><button class="sq" data-a="${a[0]}" aria-label="Catat ${a[1]}">${ic("plus",24)}</button></div>`}).join("")}
   <div class="lbl" style="margin:14px 0 6px">CATATAN TERBARU</div>
   ${D.entries.length?D.entries.slice(0,12).map(e=>`<div class="row" style="align-items:flex-start;${e.status!=="aktif"?"opacity:.5":""}"><span class="ib" style="background:var(--tl);font-weight:700">${esc(e.nama)[0]||"?"}</span><span class="t"><b style="${e.status!=="aktif"?"text-decoration:line-through":""}">${esc(e.nama)}</b><span>${e.an} \u00b7 ${e.te!==e.tc?"untuk "+fmtTgl(e.te)+" \u00b7 ":""}${e.tc===D.today?"":fmtTgl(e.tc)+" "}${e.jam}${e.xp?" \u00b7 +"+e.xp+" XP":""}</span>${e.cat?`<span style="color:var(--dk);font-weight:600;margin-top:2px">${esc(e.cat)}</span>`:""}</span>${e.bisaBatal?`<button class="tag" data-undo="${e.id}" style="background:#fff;min-height:36px">Batalkan</button>`:""}</div>`).join(""):`<div class="note">Belum ada catatan. Tap + di atas.</div>`}`;
 }
@@ -1277,37 +1325,93 @@ function actForm(id){
 }
 
 /* ---------- Spin ---------- */
+function vaultHTML(L,can){const n=D.daily.filter(Boolean).length;
+ const inner=L?`<div class="vstars">${Array.from({length:{Rare:3,Epic:4,Legend:5}[L.rar]},()=>`<span>${ic("star",20)}</span>`).join("")}</div><div class="d" style="font-size:34px;margin-top:6px">${rp(L.uang)}</div>`:`<div class="d" style="font-size:34px;color:#4A3A78">???</div>`;
+ const lock=!can&&!L?`<div class="vlock"><svg width="52" height="62" viewBox="0 0 40 48" aria-hidden="true"><path d="M10 22V14a10 10 0 0 1 20 0v8" fill="none" stroke="#fff" stroke-width="5"/><rect x="4" y="22" width="32" height="24" fill="#FFD23F"/><circle cx="20" cy="33" r="3.5" fill="#12082A"/></svg><b class="d">BELUM ADA TIKET</b><div class="ch">${[0,1,2,3].map(i=>`<i class="${D.daily[i]?"on":""}"></i>`).join("")}</div><p>Daily Quest ${n} dari 4. Selesaikan 4 centang untuk dapat 1 tiket.</p></div>`:"";
+ return `<div class="dots"></div><div class="tag">BRANKAS HARIAN</div><div class="vW ${L?"":"idle"}"><div class="vIn ${L?L.rar.toLowerCase()+" lit":""}" id="vIn">${inner}</div><div class="vDoor ${L?"open":""}" id="vDoor"><div class="vRing"></div><i class="bt a"></i><i class="bt b"></i><i class="bt c"></i><i class="bt d"></i><div class="ptr"></div><div class="dial" id="dial"><i></i></div><div class="hdl" id="hdl"></div></div></div><div class="vfl" id="vfl"></div>${lock}`}
 function rSpin(){
-  const can=D.tiket>0,n=D.daily.filter(Boolean).length;
-  Q("#s-spin").innerHTML=`<div class="p dk" style="text-align:center;padding:26px 14px;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px"><div id="vault" class="d" style="font-size:64px;color:var(--yl);line-height:1">${can?"\ud83d\udd13":"\ud83d\udd12"}</div><div class="d" style="font-size:22px;color:#fff">BRANKAS</div><div style="font-weight:700;color:#D9CCF3;font-size:13px">${can?"Tiketmu cukup. Buka sekarang!":"Belum ada tiket \u00b7 Daily Quest "+n+"/4"}</div></div>
-  <button class="btn pk" id="spinGo" style="margin-top:8px" ${can?"":"disabled"}>${can?"BUKA BRANKAS \u00b7 "+D.tiket+" TIKET":"BELUM ADA TIKET"}</button>
-  <div class="p cr c3" style="margin-top:8px"><div style="display:flex;justify-content:space-between"><span class="lbl">SALDO HADIAH</span><b class="d" style="font-size:16px">${rp(D.saldo)}</b></div><div class="bar l" style="margin-top:6px"><i style="width:${Math.min(100,Math.round(D.saldo/500))}%"></i></div><div class="note" style="margin:6px 0 0">Saldo minimal Rp50.000 sampai Jumat 15.00 masuk daftar cash Elevate Sabtu. Tidak hadir di Elevate, hadiah hangus.</div></div>
-  <div class="note" style="margin-top:10px">1 hari Daily Quest 4 dari 4 = 1 tiket. Tiket bisa ditabung dan tidak hangus. Setiap spin pasti dapat uang.</div>
+  if(spinning)return;
+  const can=D.tiket>0,n=D.daily.filter(Boolean).length,sd=D.saldo,pc=Math.min(100,sd/500);
+  const note=sd>=50000?`<div style="background:var(--yl);border:2px solid var(--dk);padding:10px"><div class="d" style="font-size:18px">SALDO SIAP DICAIRKAN</div><div style="font-weight:700;font-size:14px;margin-top:4px">Kamu masuk daftar cash Elevate Sabtu. Ambil langsung dari Ko Andre.</div><div style="font-weight:800;font-size:13px;margin-top:6px;color:#B0105E">Tidak hadir di Elevate = hadiah hangus.</div></div>`:`<div style="background:#fff;border:2px solid var(--dk);padding:10px"><div class="d" style="font-size:18px">KURANG ${rp(50000-sd)} LAGI</div><div style="font-weight:600;font-size:13px;margin-top:4px">Capai Rp50.000 sebelum Jumat 15.00 untuk dapat cash di Elevate hari Sabtu.</div></div>`;
+  Q("#s-spin").innerHTML=`<div class="vstage" id="vstage">${vaultHTML(null,can)}</div>
+  <div class="grid" style="margin-top:6px"><div class="p pk" style="min-height:52px;text-align:center;display:flex;align-items:center;justify-content:center"><div class="d" style="font-size:16px">RARE</div></div><div class="p pu" style="min-height:52px;text-align:center;display:flex;align-items:center;justify-content:center"><div class="d" style="font-size:16px">EPIC</div></div><div class="p yl" style="min-height:52px;text-align:center;display:flex;align-items:center;justify-content:center"><div class="d" style="font-size:16px">LEGEND</div></div></div>
+  <div class="p cr c3" style="margin-top:6px"><div style="display:flex;justify-content:space-between"><span class="lbl">SALDO HADIAH</span><b class="d" style="font-size:16px">${rp(sd)}</b></div><div class="bar l" style="margin-top:6px"><i style="width:${pc}%"></i></div><div role="status" style="margin-top:8px">${note}</div></div>
+  <button class="btn pk" id="spinGo" style="margin-top:6px" ${can?"":"disabled"}>${can?"BUKA BRANKAS \u00b7 "+D.tiket+" TIKET":"BELUM ADA TIKET \u00b7 DAILY QUEST "+n+"/4"}</button>
+  <div class="note">1 hari Daily Quest 4 dari 4 = 1 tiket. Tiket bisa ditabung dan tidak hangus. Setiap spin pasti dapat uang.</div>
   ${D.spins.length?`<div class="lbl" style="margin:12px 0 6px">SPIN TERAKHIR</div>`+D.spins.map(s=>`<div class="row" style="min-height:44px"><span class="tag" style="background:${s.rar==="Legend"?"var(--yl)":s.rar==="Epic"?"var(--pk)":"var(--tl)"}">${s.rar.toUpperCase()}</span><span class="t"><b style="font-size:15px">${rp(s.uang)}</b><span>${s.waktu.slice(0,16)}</span></span></div>`).join(""):""}`;
 }
 let spinning=false;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function countUp(el,to,ms){const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-k,3);el.textContent=rp(Math.round(to*e));if(k<1)requestAnimationFrame(f)})(t0)}
 async function doSpin(){
   if(spinning)return;
   if(!D.tiket){toast("Belum ada tiket. Selesaikan Daily Quest dulu.");return}
-  spinning=true;
-  const v=Q("#vault");if(v){v.style.animation="shake .4s 2"}
-  const out=await Promise.all([act("spin"),new Promise(r=>setTimeout(r,800))]);
-  spinning=false;if(v)v.style.animation="";
-  const r=out[0];if(!r||r.error)return;const h=r.hasil;
-  confetti();modal(`<div style="text-align:center"><div class="lbl">${h.rar.toUpperCase()}</div><div class="d" style="font-size:44px;margin:8px 0">${rp(h.uang)}</div><div class="note">Masuk saldo hadiah. Total ${rp(r.saldo)}.</div><button class="btn pk" id="mYes" style="margin-top:12px">OK</button></div>`);
-  Q("#mYes").onclick=()=>{closeModal();render()};render();
+  spinning=true;Q("#spinGo").disabled=true;
+  const call_=act("spin"),d=Q("#dial"),door=Q("#vDoor"),vin=Q("#vIn");Q(".vW").classList.remove("idle");
+  let a=0;
+  for(const [deg,ms] of [[540,520],[-360,460],[260,460]]){a+=deg;d.style.transition=`transform ${ms}ms cubic-bezier(.3,.1,.2,1)`;d.style.transform=`rotate(${a}deg)`;await wait(ms+40);door.classList.add("click");await wait(90);door.classList.remove("click")}
+  const r=await call_;
+  if(!r||r.error){spinning=false;render();return}
+  const L=r.hasil;Q("#hdl").classList.add("turn");await wait(350);
+  vin.className="vIn "+L.rar.toLowerCase();vin.innerHTML=`<div class="vstars">${Array.from({length:{Rare:3,Epic:4,Legend:5}[L.rar]},(_,i)=>`<span style="animation-delay:${.3+i*.1}s">${ic("star",20)}</span>`).join("")}</div><div class="d" style="font-size:34px;margin-top:6px" id="vAmt">${rp(0)}</div>`;
+  door.classList.add("open");await wait(450);Q("#vfl").classList.add("go");countUp(Q("#vAmt"),L.uang,900);vin.classList.add("lit");confetti();toast(L.rar.toUpperCase()+"! "+rp(L.uang)+" masuk saldo");await wait(1100);
+  spinning=false;render();
 }
 
 /* ---------- Town Hall ---------- */
 function rTown(){
-  const k=tTab==="day"?"day":"week",a=[...D.town].sort((x,y)=>y[k]-x[k]);
-  Q("#s-town").innerHTML=`<div class="tabs">${[["day","Hari ini"],["week","Minggu ini"]].map(([x,l])=>`<button class="${tTab===x?"on":""}" data-tt="${x}">${l}</button>`).join("")}</div>`+a.map((p,i)=>`<div class="row" style="${p.me?"background:var(--yl)":""}"><b class="d" style="width:30px;font-size:18px;${i<3?"color:var(--pkd)":""}">${i+1}</b><span class="ib" style="background:${["var(--pk)","var(--tl)","var(--og)"][i%3]};font-weight:800">${esc(p.nama)[0]}</span><span class="t"><b>${esc(p.nama)}${p.me?" (kamu)":""}</b></span><b>${num(p[k])} XP</b></div>`).join("")+`<div class="note">Peringkat tampil untuk semua orang di pilot.</div>`;
+  const me=D.me.peran,hasRole=D.town.some(p=>p.peran);
+  const groups=!hasRole||me==="partner"?[]:me==="admin"?[["leader","Leader"],["partner","Partner"]]:[["tim","Tim saya"],["leader","Leader"],["partner","Partner"]];
+  if(!gTab||(groups.length&&!groups.some(g=>g[0]===gTab)))gTab=groups.length?groups[0][0]:"partner";
+  const k=tTab==="day"?"day":"week";
+  const a=D.town.filter(p=>!hasRole||!groups.length?true:gTab==="tim"?p.tim:p.peran===gTab).sort((x,y)=>y[k]-x[k]);
+  const tabs=(arr,cur,at)=>`<div class="tabs">${arr.map(([x,l])=>`<button class="${cur===x?"on":""}" ${at}="${x}">${l}</button>`).join("")}</div>`;
+  const note=me==="partner"?"Peringkat sesama partner.":"Tim saya: partner di bawah garis kamu.";
+  const nm=p=>esc(p.nama)+(p.me?" (kamu)":"");
+  const sp=(l,t,d,sz=18)=>`<span class="sp" style="left:${l}%;top:${t}%;animation-delay:${d}s">${ic("star",sz)}</span>`;
+  let pod="";
+  if(a.length){
+    const p1=a[0],p2=a[1],p3=a[2];
+    pod=`<div class="p hall k1 rise"><div class="rays"></div>${sp(8,14,0)}${sp(86,10,.5,22)}${sp(12,60,1,14)}${sp(88,56,.3,16)}<div class="ghost" style="left:-6px;bottom:-14px;font-size:150px">1</div><div class="lbl" style="position:relative;z-index:2">JUARA 1 \u00b7 ${tTab==="day"?"HARI INI":"MINGGU INI"}</div><div style="margin-top:26px"><div class="phW">${crownSvg}<div class="fr">${wrapFr(avFor(p1.nama,116))}</div><div class="medal">1</div></div></div><div class="nm"><div class="d" style="font-size:26px;line-height:1">${nm(p1).toUpperCase()}</div><div class="d" style="font-size:22px;margin-top:6px;color:var(--pkd)">${num(p1[k])} XP</div></div></div>`;
+    const sm=(p,r,col,txt)=>`<div class="p hall rise" style="background:var(--${col});${txt?"color:#fff;":""}animation-delay:${r===2?".15s":".3s"}"><div class="ghost" style="right:2px;bottom:-12px;font-size:96px;color:rgba(18,8,42,.12)">${r}</div><div class="lbl" style="position:relative;z-index:2">JUARA ${r}</div><div style="margin-top:10px"><div class="phW"><div class="fr">${wrapFr(avFor(p.nama,78))}</div><div class="medal" style="width:28px;height:28px;font-size:14px">${r}</div></div></div><div class="nm" style="margin-top:10px"><div class="d" style="font-size:16px;line-height:1.05">${nm(p).toUpperCase()}</div><div style="font-weight:700;font-size:14px;margin-top:3px">${num(p[k])} XP</div></div></div>`;
+    if(p2)pod+=`<div class="hallrow">${sm(p2,2,"pk")}${p3?sm(p3,3,"og"):"<div></div>"}</div>`;
+  }
+  Q("#s-town").innerHTML=(groups.length?tabs(groups,gTab,"data-tg"):"")+tabs([["day","Hari ini"],["week","Minggu ini"]],tTab,"data-tt")+(a.length?pod+`<div style="margin-top:6px">`+a.slice(3).map((p,i)=>`<div class="row" style="${p.me?"background:var(--yl)":""}"><b class="d" style="width:26px;font-size:16px">${i+4}</b><span style="flex:none;display:block;padding:2px">${wrapFr(avFor(p.nama,38))}</span><span class="t"><b>${nm(p)}</b></span><b>${num(p[k])} XP</b></div>`).join("")+`</div>`:`<div class="note" style="text-align:center;padding:20px 0">Belum ada peserta di kelompok ini.</div>`)+`<div class="note">${note}</div>`;
+}
+
+/* ---------- Guild Map ---------- */
+let gOpen="";
+function gRow(p,o){
+  const xp=p.xp||0,pc=Math.min(100,Math.round(100*xp/(D.target||2500))),open=gOpen===p.kode&&o.tap,dn=["S","S","R","K","J","S","M"];
+  const last=p.diam===0?"Hari ini":p.diam===1?"Kemarin":p.diam>=99?"Belum mencatat":p.diam+" hari lalu";
+  const tag=o.tag?`<span class="tag" style="display:inline-block;font-size:10px;padding:0 5px;margin-left:6px;vertical-align:2px;background:${p.peran==="leader"?"var(--pu);color:#fff":"var(--cr)"}">${p.peran.toUpperCase()}</span>`:"";
+  return `<div class="row" ${o.tap?`data-gm="${p.kode}"`:""} style="flex-wrap:wrap;align-items:flex-start;padding:10px;gap:10px;${o.tap?"cursor:pointer;":""}">
+  <span style="flex:none;display:block">${avFor(p.nama,44)}</span>
+  <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px;line-height:1.2">${esc(p.nama)}${tag}</div>
+   <div style="font-size:12px;font-weight:600;color:var(--mut);margin:2px 0 6px">Aktif ${p.hari}/7 hari \u00b7 ${last}</div>
+   <div style="display:flex;gap:3px">${(p.hr||[]).map((d,k)=>`<span style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid var(--dk);background:${d?"var(--tl)":"#F1ECF8"}">${dn[k]}</span>`).join("")}</div></div>
+  <div style="flex:none;text-align:right"><div class="d" style="font-size:20px;line-height:1">${num(xp)}</div><div style="font-size:11px;font-weight:700;color:var(--mut)">XP</div><div style="font-size:12px;font-weight:800;margin-top:6px">${pc}%</div>
+   <div style="width:48px;height:6px;border:2px solid var(--dk);background:#fff;margin-top:2px;box-sizing:content-box"><i style="display:block;height:100%;width:${pc}%;background:var(--pk)"></i></div></div>
+  ${open?`<div style="flex-basis:100%;border-top:2px dashed var(--dk);padding-top:6px">${(p.log||[]).length?p.log.map(l=>`<div style="padding:4px 0;font-size:13px"><b>${esc(l[0])}</b> \u00b7 ${esc(l[1])}${l[2]?`<span style="color:var(--mut)"> \u00b7 ${esc(l[2])}</span>`:""}</div>`).join(""):`<div class="note">Belum ada catatan minggu ini.</div>`}</div>`:""}</div>`;
+}
+function rGuild(){
+  const C=D.crew;if(!C){Q("#s-guild").innerHTML="";return}
+  const L=C.list,tot=L.reduce((s,p)=>s+(p.xp||0),0),act=L.filter(p=>p.diam===0).length;
+  const ld=L.filter(p=>p.peran==="leader"),sec=t=>`<div class="lbl" style="margin:12px 2px 6px">${t}</div>`;
+  const alert=C.sapa.filter(x=>!x.selesai);
+  const mine=L.filter(p=>p.peran!=="leader"&&p.langsung),under=ld.map(l=>[l,L.filter(p=>p.peran!=="leader"&&p.via===l.nama)]);
+  Q("#s-guild").innerHTML=`<div class="p og" style="margin-bottom:6px"><div class="lbl">GUILD MAP \u00b7 SELURUH TIM \u00b7 MINGGU INI</div><div class="d" style="font-size:34px;line-height:1.1;margin-top:4px">${num(tot)} XP</div><div style="font-weight:700;font-size:13px;margin-top:2px">${L.length} orang \u00b7 ${act} sudah mencatat hari ini</div></div>
+  <div class="p yl" style="margin-bottom:6px">${alert.length?`<div class="lbl">PERLU DISAPA</div>`+alert.slice(0,5).map(x=>`<div style="font-weight:700;font-size:15px;margin-top:2px">${esc(x.nama)} \u00b7 ${esc(x.why.toLowerCase())}</div>`).join(""):`<div class="lbl">SEMUA AMAN</div>`}</div>
+  <div class="lbl" style="margin:10px 2px 6px">TAP NAMA UNTUK LIHAT CATATAN</div>`
+  +(ld.length?sec("LEADER DI BAWAH KAMU")+under.map(([l,ps])=>gRow(l,{tap:1,tag:1})+(ps.length?`<div style="margin:-2px 0 8px 14px;padding:8px 8px 2px;border-left:6px solid var(--pu);background:rgba(91,42,168,.08)"><div class="lbl" style="margin:0 0 6px;color:var(--pu)">TIM ${esc(l.nama.split(/[ &]+/)[0].toUpperCase())} \u00b7 ${ps.length} PARTNER \u00b7 ${num(ps.reduce((s,p)=>s+(p.xp||0),0))} XP</div>${ps.map(p=>gRow(p,{tap:1})).join("")}</div>`:"")).join(""):"")
+  +(mine.length?sec("PARTNER LANGSUNG KAMU")+mine.map(p=>gRow(p,{tap:1})).join(""):"")
+  +`<div class="note">Leader melihat seluruh keturunannya, lengkap dengan catatan.</div>`;
 }
 
 /* ---------- Daftar Nama ---------- */
 function rNames(){
   Q("#s-names").innerHTML=`<div class="p pk" style="margin-bottom:6px"><div class="lbl">DAFTAR NAMA</div><div class="d" style="font-size:26px">${D.names.length} nama</div><div style="font-weight:700;font-size:13px">Leader kamu bisa melihat daftar ini.</div></div>
-  <button class="btn" id="addNama" style="margin-bottom:8px">+ TAMBAH NAMA</button>`+(D.names.length?D.names.map((n,i)=>`<button class="row" data-n="${n.id}" style="width:100%;text-align:left"><b class="d" style="width:26px;font-size:15px">${i+1}</b><span class="t"><b style="font-size:15px">${esc(n.nama)}</b>${n.cat?`<span>${esc(n.cat)}</span>`:""}</span><span class="tag" style="background:var(--yl)">${n.status.toUpperCase()}</span></button>`).join(""):`<div class="note">Belum ada nama. Tambah dari sini, atau saat mencatat poin.</div>`);
+  <button class="btn" id="addNama" style="margin-bottom:8px">+ TAMBAH NAMA</button>`+(D.names.length?D.names.map((n,i)=>`<button class="row" data-n="${n.id}" style="width:100%;text-align:left"><b class="d" style="width:26px;font-size:15px">${i+1}</b><span class="t"><b style="font-size:15px">${esc(n.nama)}</b>${n.cat?`<span>${esc(n.cat)}</span>`:""}</span><span class="tag" style="background:${STC[Math.max(0,D.status.indexOf(n.status))]}">${esc(n.status)}</span></button>`).join(""):`<div class="note">Belum ada nama. Tambah dari sini, atau saat mencatat poin.</div>`);
 }
 function namaForm(){
   modal(`<div class="d" style="font-size:20px">Tambah nama</div><label for="nNm">Nama</label><input id="nNm" autocomplete="off"><label for="nCt">Catatan (opsional)</label><input id="nCt"><div id="nEr" class="note" style="color:#B0105E"></div><div style="display:flex;gap:6px;margin-top:10px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Batal</button><button class="btn sm pk" id="mYes" style="flex:1">Simpan</button></div>`);
@@ -1414,7 +1518,9 @@ document.addEventListener("click",async e=>{
   if(b=t.closest("[data-a]")){actForm(b.dataset.a);return}
   if(b=t.closest("[data-undo]")){const id=b.dataset.undo,en=D.entries.find(x=>x.id===id);modal(`<div class="d" style="font-size:20px">Batalkan ${esc(en.an)}?</div><div class="note" style="margin-top:6px"><b>${esc(en.nama)}</b> \u00b7 ${en.jam}${en.xp?`<br>XP berkurang <b>${en.xp}</b>`:""}. Pembatalan tercatat untuk audit leader.</div><div style="display:flex;gap:6px;margin-top:14px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Tidak</button><button class="btn sm" id="mYes" style="flex:1;background:#B0105E;color:#fff">Ya, batalkan</button></div>`);Q("#mNo").onclick=closeModal;Q("#mYes").onclick=async()=>{closeModal();if(en.status==="aktif"){en.status="batal";if(en.te===D.today)D.xpDay=Math.max(0,D.xpDay-(en.xp||0));D.xpWeek=Math.max(0,D.xpWeek-(en.xp||0));toast("Dibatalkan");render()}const r=await act("undo",{id});if(!r||r.error){await act("state",null,1)}render()};return}
   if(t.closest("#spinGo")){doSpin();return}
+  if(b=t.closest("[data-gm]")){gOpen=gOpen===b.dataset.gm?"":b.dataset.gm;rGuild();return}
   if(b=t.closest("[data-tt]")){tTab=b.dataset.tt;rTown();return}
+  if(b=t.closest("[data-tg]")){gTab=b.dataset.tg;rTown();return}
   if(t.closest("#addNama")){namaForm();return}
   if(b=t.closest("[data-n]")){namaDetail(b.dataset.n);return}
   if(b=t.closest("[data-ct]")){cTab=b.dataset.ct;rCrew();return}
