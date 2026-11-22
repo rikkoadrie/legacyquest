@@ -234,7 +234,7 @@ button:disabled{opacity:.5}
 </style>
 </head>
 <body>
-<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v18)</div>
+<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v19)</div>
 <script>(function(){function show(t){var b=document.getElementById("boot");if(b){b.style.display="block";b.innerHTML+="<p style='color:#B0105E;font-weight:700;word-break:break-all'>"+String(t).replace(/</g,"&lt;")+"</p>"}}window.addEventListener("unhandledrejection",function(e){show("Error: "+(e.reason&&e.reason.message||e.reason))});window.onerror=function(m,u,l,c){var info="";try{var src=(window.__src||"").split("\n"),ln=src[l-1]||"",cc=Math.max(0,(c||1)-1),seg=ln.substr(Math.max(0,cc-50),100),codes="";for(var i=0;i<seg.length;i++){var k=seg.charCodeAt(i);if(k<32||k>126)codes+="["+k+"]"}info=" | teks: "+seg+" | kode aneh: "+codes+" | panjang baris: "+ln.length}catch(x){info=" | gagal baca: "+x.message}show("Error: "+m+" (baris "+l+", kolom "+c+")"+info)}})();</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -267,7 +267,7 @@ button:disabled{opacity:.5}
 <div class="ttl"><small id="hsub"></small><b class="d" id="htitle"></b></div>
 <div class="chip y" id="chTix"></div><div class="chip" id="chXp"></div>
 </header>
-<main id="main"><section class="screen" id="s-login"></section><section class="screen" id="s-home"></section><section class="screen" id="s-quest"></section><section class="screen" id="s-spin"></section><section class="screen" id="s-town"></section><section class="screen" id="s-names"></section><section class="screen" id="s-crew"></section><section class="screen" id="s-guild"></section><section class="screen" id="s-log"></section><section class="screen" id="s-brain"></section><section class="screen" id="s-palet"></section></main>
+<main id="main"><section class="screen" id="s-login"></section><section class="screen" id="s-home"></section><section class="screen" id="s-quest"></section><section class="screen" id="s-spin"></section><section class="screen" id="s-town"></section><section class="screen" id="s-names"></section><section class="screen" id="s-crew"></section><section class="screen" id="s-guild"></section><section class="screen" id="s-log"></section><section class="screen" id="s-brain"></section><section class="screen" id="s-palet"></section><section class="screen" id="s-koleksi"></section><section class="screen" id="s-flex"></section><section class="screen" id="s-info"></section></main>
 <nav id="nav"></nav>
 <div id="toast" role="status" aria-live="polite"></div><div id="sync" role="status"></div>
 <div id="modal"><div id="mbox"></div></div>
@@ -1111,6 +1111,12 @@ function toast(t){const e=Q("#toast");e.textContent=t;e.classList.add("on");clea
 function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
 function modal(html){Q("#mbox").innerHTML=html;Q("#modal").classList.add("on")}
 function closeModal(){Q("#modal").classList.remove("on")}
+(function(){const m=Q("#modal"),vv=window.visualViewport;
+ const fit=()=>{if(!vv)return;m.style.bottom="auto";m.style.height=vv.height+"px";m.style.top=vv.offsetTop+"px"};
+ if(vv){vv.addEventListener("resize",fit);vv.addEventListener("scroll",fit);fit()}
+ m.addEventListener("focusin",e=>{const t=e.target;if(!/INPUT|TEXTAREA/.test(t.tagName))return;setTimeout(()=>{fit();try{t.scrollIntoView({block:"center",behavior:"smooth"})}catch(x){}},300)})})();
+document.addEventListener("change",e=>{const t=e.target;if(t.id==="phFile"){photoPicked(t.files[0]);t.value="";return}if(t.id==="dFrom"||t.id==="dTo"){let a=Q("#dFrom").value,b=Q("#dTo").value;if(!a||!b)return;if(a>b)[a,b]=[b,a];rFrom=a;rTo=b;pickD="";rLog()}});
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target&&e.target.id==="pMas"){e.preventDefault();e.target.click()}});
 Q("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 function confetti(){const a=Q("#app"),cols=["#FF3E9A","#19C6B7","#FFD23F","#5B2AA8","#FF8A2B"];for(let i=0;i<46;i++){const c=document.createElement("i");c.className="cf";c.style.left=Math.random()*100+"%";c.style.background=cols[i%5];c.style.setProperty("--dx",(Math.random()*160-80)+"px");c.style.animationDelay=Math.random()*.3+"s";a.appendChild(c);setTimeout(()=>c.remove(),2000)}}
 function pop(el){if(!el)return;el.classList.remove("numpop");void el.offsetWidth;el.classList.add("numpop")}
@@ -1166,18 +1172,19 @@ async function doAct(action,payload,quiet){
   if(r.token){TOK=r.token;try{localStorage.setItem("lqp_tok",TOK)}catch(e){}}
   D=r;try{localStorage.setItem("lqp_cache",JSON.stringify(r))}catch(e){}return r;
 }
-const NAMA_ACT={};const PARENT={names:"home",guild:"home",crew:"home",log:"home",brain:"home",palet:"home"};
-const TITLES={home:["BASE CAMP",""],quest:["CATAT XP","QUEST BOARD"],spin:["1 TIKET = 1 SPIN","SPIN ZONE"],town:["PERINGKAT","TOWN HALL"],names:["PROSPEK","DAFTAR NAMA"],crew:["LEADER","CREW HQ"],guild:["TIM","GUILD MAP"],log:["KALENDER","BATTLE LOG"],brain:["5 MENIT","BRAIN BUFF"],palet:["TAMPILAN","WARNA"]};
+const NAMA_ACT={};const PARENT={names:"home",guild:"home",crew:"home",log:"home",brain:"home",palet:"home",info:"home",flex:"log",koleksi:"home"};
+const TITLES={home:["BASE CAMP",""],quest:["CATAT XP","QUEST BOARD"],spin:["1 TIKET = 1 SPIN","SPIN ZONE"],town:["PERINGKAT","TOWN HALL"],names:["PROSPEK","DAFTAR NAMA"],crew:["LEADER","CREW HQ"],guild:["TIM","GUILD MAP"],log:["KALENDER","BATTLE LOG"],brain:["5 MENIT","BRAIN BUFF"],palet:["TAMPILAN","THEME"],info:["PANDUAN","INFO GAME"],flex:["BAGIKAN","FLEX CARD"],koleksi:["ISI PROFIL","KOLEKSI"]};
 const NAV=[["home","Base Camp","home"],["quest","Quest","quest"],["spin","Spin","ticket"],["town","Town Hall","trophy"]];
-const rootOf=s=>PARENT[s]||s;
+const rootOf=s=>PARENT[s]?rootOf(PARENT[s]):s;
 const fmtTgl=t=>{const p=t.split("-");return +p[2]+" "+["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][+p[1]-1]};
 const DAILY=["Lock In","Brain Buff","Real Talk","Save Point"];
 function lockForm(){
   modal(`<div class="d" style="font-size:20px">LOCK IN</div><div class="note" style="margin:2px 0 0">Tetapkan target XP hari ini. Saran: 417 XP (2.500 : 6 hari kerja).</div><label for="lkT">Target XP hari ini</label><input id="lkT" type="number" inputmode="numeric" min="100" max="5000" value="${D.lockT||417}"><div id="lkE" class="note" style="color:#B0105E"></div><div style="display:flex;gap:6px;margin-top:10px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Batal</button><button class="btn sm pk" id="mYes" style="flex:1">LOCK IN</button></div>`);
   Q("#mNo").onclick=closeModal;
   Q("#mYes").onclick=async()=>{const v=Math.round(+Q("#lkT").value);if(!(v>=100&&v<=5000)){Q("#lkE").textContent="Isi 100 sampai 5.000.";return}
-    const before=D.daily.every(Boolean);closeModal();const r=await act("lock",{target:v});if(!r||r.error){toast((r&&r.error)||"Gagal menyimpan");return}
-    toast("Lock In! Target "+num(v)+" XP");if(!before&&r.daily.every(Boolean)){confetti();toast("Daily Quest selesai! +1 tiket")}render()};
+    const before=D.daily.every(Boolean);closeModal();D.lockT=v;D.daily[0]=true;toast("Lock In! Target "+num(v)+" XP");render();
+    const r=await act("lock",{target:v},1);if(!r||r.error){toast((r&&r.error)||"Gagal menyimpan");await act("state",null,1);render();return}
+    if(!before&&r.daily.every(Boolean)){confetti();toast("Daily Quest selesai! +1 tiket")}render()};
 }
 const DAILYTIP=["Ketuk untuk set target hari ini","","Otomatis: tercentang setelah 2 orang berbeda tatap muka tercatat hari ini","Otomatis: tercentang setelah ada 1 aktivitas tercatat hari ini"];
 const ICON={Hustle:"phone",Squad:"users",Solo:"star"};
@@ -1218,7 +1225,7 @@ function render(){
   if(D.lockT===undefined){D.daily[0]=false;if(!window.__oldsrv){window.__oldsrv=1;setTimeout(()=>toast("Server belum diperbarui: pasang Code.gs terbaru (New version)"),600)}}
   Q("#chTix").innerHTML=`<span class="wig">${ic("ticket",20)}</span><span>${D.tiket}</span>`;
   Q("#chXp").innerHTML=`${ic("bolt",20)}<span>${num(D.xpWeek)}</span>`;
-  ({home:rHome,quest:rQuest,spin:rSpin,town:rTown,names:rNames,crew:rCrew,guild:rGuild,log:rLog,brain:rBrain,palet:rPalet}[tab]||rHome)();
+  ({home:rHome,quest:rQuest,spin:rSpin,town:rTown,names:rNames,crew:rCrew,guild:()=>{rGuild();needFotos(guildPeople())},log:rLog,brain:rBrain,palet:rPalet,info:rInfo,flex:rFlex,koleksi:rKoleksi}[tab]||rHome)();
 }
 
 const AICON={call:"phone",chat:"chat",ice:"snow",drop:"user",warm:"user",dive:"search",sync:"users",lsync:"users",spitch:"bolt",plus:"user",coop:"users",meet:"users",npa:"user",naa:"users",concept:"star",demo:"bolt",client:"bolt",ref:"user",post:"chat"};
@@ -1270,32 +1277,391 @@ const wrapFr=inner=>`<span class="fw" style="background:#fff;border:3px solid va
 const crownSvg=`<svg class="crown" width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><path d="M3 30L0 6l12 10L22 0l10 16L44 6l-3 24Z" fill="#12082A"/><path d="M8 25L6 13l8 7 8-12 8 12 8-7-2 12Z" fill="#FF3E9A"/></svg>`;
 const STC=["#FFF4E6","#FFD23F","#19C6B7","#FF8A2B","#FF3E9A","#B9A0FF"];
 /* ---------- Base Camp ---------- */
+
+/* =================== v19: disalin dari prototype =================== */
+const SKIN={Rare:["Frame Pantai","Frame Palem"],Epic:["Frame Neon Pink","Frame Teal Malam"],Legend:["Frame Sunset Emas","Frame Mahkota"]};
+const MONEY={Rare:1000,Epic:3000,Legend:5000};
+const RCOL={Rare:"var(--pk)",Epic:"#B9A0FF",Legend:"var(--yl)"};
+const FR=[
+ {id:"pantai",n:"Frame Pantai",r:"Rare",c:"var(--pk)",dec:'<svg class="dec" style="right:-8px;bottom:-8px" width="26" height="26" viewBox="0 0 24 24" fill="#FFD23F" stroke="#12082A" stroke-width="1.6"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3M4 4l2 2M18 18l2 2M20 4l-2 2M4 20l2-2" fill="none"/></svg>'},
+ {id:"palem",n:"Frame Palem",r:"Rare",c:"var(--pk)",dec:'<svg class="dec" style="left:-10px;top:-12px" width="34" height="34" viewBox="0 0 34 34"><path d="M17 33V16" stroke="#12082A" stroke-width="3"/><path d="M17 16C8 16 4 10 3 6c7 0 12 3 14 10zM17 16c9 0 13-6 14-10-7 0-12 3-14 10zM17 16C14 8 15 4 17 1c2 3 3 7 0 15z" fill="#19C6B7" stroke="#12082A" stroke-width="2"/></svg>'},
+ {id:"pixel",n:"Frame Pixel",r:"Rare",c:"var(--pk)",dec:""},
+ {id:"api",n:"Frame Api",r:"Epic",c:"#9B6BFF",dec:""},
+ {id:"neon",n:"Frame Neon Pink",r:"Epic",c:"#9B6BFF",dec:""},
+ {id:"teal",n:"Frame Teal Malam",r:"Epic",c:"#9B6BFF",dec:'<svg class="dec" style="right:-8px;top:-10px" width="26" height="26" viewBox="0 0 24 24" fill="#FFD23F" stroke="#12082A" stroke-width="1.4"><path d="M12 2l2.6 6.4 6.9.6-5.2 4.5 1.6 6.7L12 16.7 6.1 20.2l1.6-6.7L2.5 9l6.9-.6z"/></svg>'},
+ {id:"sunset",n:"Frame Sunset Emas",r:"Legend",c:"var(--yl)",dec:""},
+ {id:"crown",n:"Frame Mahkota",r:"Legend",c:"var(--yl)",dec:'<svg class="dec" style="left:50%;top:-24px;margin-left:-20px" width="40" height="30" viewBox="0 0 44 34"><path d="M3 30L0 6l12 10L22 0l10 16L44 6l-3 24Z" fill="#12082A"/><path d="M8 25L6 13l8 7 8-12 8 12 8-7-2 12Z" fill="#FFD23F"/></svg>'}];
+const FRN=Object.fromEntries(FR.map(f=>[f.n,f.id])),FRI=Object.fromEntries(FR.map(f=>[f.id,f]));
+const CAT=[...FR.map(f=>({id:f.id,n:f.n,cat:"frame",r:f.r})),
+ {id:"kota",n:"Latar Kota Malam",cat:"latar",r:"Rare"},{id:"pantaiL",n:"Latar Pantai",cat:"latar",r:"Rare"},{id:"garis",n:"Latar Garis Neon",cat:"latar",r:"Rare"},{id:"awan",n:"Latar Awan",cat:"latar",r:"Rare"},{id:"sunsetL",n:"Latar Sunset",cat:"latar",r:"Epic"},{id:"galaksi",n:"Latar Galaksi",cat:"latar",r:"Legend"},
+ {id:"sbintang",n:"Stiker Bintang",cat:"stiker",r:"Rare"},{id:"shati",n:"Stiker Hati",cat:"stiker",r:"Rare"},{id:"spetir",n:"Stiker Petir",cat:"stiker",r:"Epic"},{id:"strofi",n:"Stiker Trofi",cat:"stiker",r:"Epic"},
+ {id:"nemas",n:"Nama Emas",cat:"efek",r:"Epic"},{id:"nneon",n:"Nama Neon",cat:"efek",r:"Legend"},
+ {id:"bulat",n:"Kacamata Bulat",cat:"kacamata",r:"Rare"},{id:"kotak",n:"Kacamata Kotak",cat:"kacamata",r:"Rare"},{id:"aviator",n:"Kacamata Aviator",cat:"kacamata",r:"Epic"},
+ {id:"kupluk",n:"Topi Kupluk",cat:"topi",r:"Rare"},{id:"baseball",n:"Topi Baseball",cat:"topi",r:"Rare"},{id:"bucket",n:"Topi Bucket",cat:"topi",r:"Rare"},{id:"fedora",n:"Topi Fedora",cat:"topi",r:"Epic"},
+ {id:"kaos",n:"Kaos Polos",cat:"baju",r:"Rare"},{id:"kemeja",n:"Kemeja Putih",cat:"baju",r:"Rare"},{id:"hoodie",n:"Hoodie Ungu",cat:"baju",r:"Rare"},{id:"batik",n:"Batik Emas",cat:"baju",r:"Epic"},
+ {id:"denim",n:"Jaket Denim",cat:"jaket",r:"Rare"},{id:"bomber",n:"Jaket Bomber",cat:"jaket",r:"Rare"},{id:"jneon",n:"Jaket Neon",cat:"jaket",r:"Legend"},
+ {id:"headphone",n:"Headphone",cat:"aksesori",r:"Rare"},{id:"kalung",n:"Kalung",cat:"aksesori",r:"Rare"},{id:"syal",n:"Syal Kuning",cat:"aksesori",r:"Rare"},{id:"lanyard",n:"Lanyard ID",cat:"aksesori",r:"Rare"},{id:"bandana",n:"Bandana",cat:"aksesori",r:"Rare"},{id:"anting",n:"Anting",cat:"aksesori",r:"Rare"}];
+const CATI=Object.fromEntries(CAT.map(i=>[i.id,i]));
+const SKINS=["#F7D2B0","#F1C7A0","#D9A074","#C98A5E","#A9714B","#7A4A2B"];
+const AVSLOTS=[["kacamata","Kacamata"],["topi","Topi"],["baju","Baju"],["jaket","Jaket"],["aksesori","Aksesori"]];
+let _u=0;
+function latarSvg(id){const u="g"+(++_u);
+ const L={
+ kota:'<rect width="100" height="100" fill="#1B1040"/><g fill="#3A2A78"><rect x="6" y="50" width="16" height="50"/><rect x="26" y="36" width="18" height="64"/><rect x="48" y="56" width="14" height="44"/><rect x="66" y="42" width="20" height="58"/></g><g fill="#FFD23F"><rect x="30" y="42" width="4" height="4"/><rect x="36" y="52" width="4" height="4"/><rect x="70" y="48" width="4" height="4"/><rect x="78" y="60" width="4" height="4"/><rect x="10" y="60" width="4" height="4"/></g>',
+ pantaiL:'<rect width="100" height="60" fill="#19C6B7"/><rect y="60" width="100" height="40" fill="#FFD23F"/><circle cx="78" cy="24" r="10" fill="#FF8A2B"/>',
+ garis:'<rect width="100" height="100" fill="#5B2AA8"/><path d="M-10 30L40 -10M10 60L70 -10M30 90L100 20M60 110L110 60" stroke="#FF3E9A" stroke-width="8"/>',
+ awan:'<rect width="100" height="100" fill="#19C6B7"/><g fill="#fff"><circle cx="30" cy="30" r="10"/><circle cx="42" cy="32" r="12"/><circle cx="70" cy="62" r="9"/><circle cx="80" cy="64" r="11"/></g>',
+ sunsetL:`<defs><linearGradient id="${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B2AA8"/><stop offset=".4" stop-color="#FF3E9A"/><stop offset=".7" stop-color="#FF8A2B"/><stop offset="1" stop-color="#FFD23F"/></linearGradient></defs><rect width="100" height="100" fill="url(#${u})"/>`,
+ galaksi:`<defs><radialGradient id="${u}" cx=".3" cy=".3" r=".9"><stop offset="0" stop-color="#7A3BE0"/><stop offset="1" stop-color="#0B0620"/></radialGradient></defs><rect width="100" height="100" fill="url(#${u})"/><g fill="#fff"><circle cx="18" cy="20" r="1.4"/><circle cx="70" cy="14" r="1.8"/><circle cx="84" cy="40" r="1.2"/><circle cx="30" cy="62" r="1.5"/><circle cx="60" cy="80" r="1.2"/><circle cx="90" cy="86" r="1.6"/><circle cx="10" cy="88" r="1.2"/></g>`};
+ return L[id]||'<rect width="100" height="100" fill="#FF3E9A"/>'}
+const O='stroke="#12082A" stroke-width="2"';
+const WEAR={
+ // slot -> id -> svg
+ baju:{kaos:`<path d="M14 100C14 76 86 76 86 100Z" fill="#19C6B7"/>`,
+  kemeja:`<path d="M14 100C14 76 86 76 86 100Z" fill="#fff" ${O}/><path d="M50 78v22M40 78l10 10 10-10" stroke="#12082A" stroke-width="1.6" fill="none"/>`,
+  hoodie:`<path d="M14 100C14 76 86 76 86 100Z" fill="#9B6BFF"/><path d="M30 80Q50 94 70 80L70 74Q50 68 30 74Z" fill="#7A4BD8"/><path d="M44 86v8M56 86v8" stroke="#fff" stroke-width="1.8"/>`,
+  batik:`<path d="M14 100C14 76 86 76 86 100Z" fill="#8A4B1E"/><g fill="#FFD23F"><circle cx="30" cy="90" r="3"/><circle cx="50" cy="84" r="3"/><circle cx="70" cy="90" r="3"/><circle cx="40" cy="97" r="2.5"/><circle cx="60" cy="97" r="2.5"/></g>`},
+ jaket:{denim:`<path d="M10 100C10 74 90 74 90 100Z" fill="#3B6BA8" ${O}/><path d="M50 78v22" stroke="#12082A" stroke-width="2"/><circle cx="34" cy="90" r="2" fill="#FFD23F"/>`,
+  bomber:`<path d="M10 100C10 74 90 74 90 100Z" fill="#FF8A2B" ${O}/><path d="M50 78v22" stroke="#12082A" stroke-width="2"/><rect x="10" y="94" width="80" height="6" fill="#12082A"/>`,
+  jneon:`<path d="M10 100C10 74 90 74 90 100Z" fill="#12082A" ${O}/><path d="M28 80L24 100M72 80L76 100M50 78v22" stroke="#FF3E9A" stroke-width="3"/>`},
+ neck:{kalung:`<path d="M38 74Q50 86 62 74" stroke="#FFD23F" stroke-width="2.4" fill="none"/><circle cx="50" cy="83" r="3" fill="#FFD23F" stroke="#12082A" stroke-width="1.2"/>`,
+  syal:`<path d="M34 72Q50 84 66 72L66 80Q50 92 34 80Z" fill="#FFD23F" ${O}/><rect x="58" y="78" width="8" height="16" fill="#FFD23F" ${O}/>`,
+  lanyard:`<path d="M38 70L50 92L62 70" stroke="#FF3E9A" stroke-width="3" fill="none"/><rect x="45" y="90" width="10" height="9" fill="#fff" stroke="#12082A" stroke-width="1.6"/>`},
+ face:{bulat:`<g fill="none" stroke="#12082A" stroke-width="2.4"><circle cx="41" cy="48" r="7"/><circle cx="59" cy="48" r="7"/><path d="M48 48h4"/></g>`,
+  kotak:`<g fill="none" stroke="#12082A" stroke-width="2.4"><rect x="33" y="42" width="16" height="12" rx="2"/><rect x="51" y="42" width="16" height="12" rx="2"/><path d="M49 47h2"/></g>`,
+  aviator:`<g stroke="#E0A800" stroke-width="2.2" fill="rgba(18,8,42,.6)"><path d="M33 42h16v8c0 6-4 9-8 9s-8-3-8-9z"/><path d="M51 42h16v8c0 6-4 9-8 9s-8-3-8-9z"/><path d="M49 44h2"/></g>`,
+  anting:`<circle cx="28" cy="58" r="3" fill="#FFD23F" stroke="#12082A" stroke-width="1.4"/><circle cx="72" cy="58" r="3" fill="#FFD23F" stroke="#12082A" stroke-width="1.4"/>`},
+ head:{kupluk:`<path d="M26 34C26 10 74 10 74 34Z" fill="#FF3E9A" ${O}/><rect x="25" y="30" width="50" height="8" fill="#FFD23F" ${O}/><circle cx="50" cy="10" r="4" fill="#FFD23F" ${O}/>`,
+  baseball:`<path d="M26 32C26 12 74 12 74 32Z" fill="#19C6B7" ${O}/><path d="M58 30h28c0 6-10 7-28 4Z" fill="#0E9487" ${O}/>`,
+  bucket:`<path d="M28 30C28 12 72 12 72 30Z" fill="#FF8A2B" ${O}/><rect x="16" y="28" width="68" height="7" rx="3" fill="#FF8A2B" ${O}/>`,
+  fedora:`<path d="M32 30C32 14 68 14 68 30Z" fill="#12082A"/><rect x="31" y="25" width="38" height="5" fill="#FFD23F"/><ellipse cx="50" cy="31" rx="34" ry="5" fill="#12082A"/>`,
+  headphone:`<path d="M26 46C26 14 74 14 74 46" fill="none" stroke="#12082A" stroke-width="4"/><rect x="21" y="42" width="9" height="15" rx="3" fill="#FF3E9A" ${O}/><rect x="70" y="42" width="9" height="15" rx="3" fill="#FF3E9A" ${O}/>`,
+  bandana:`<path d="M26 34Q50 24 74 34L74 41Q50 32 26 41Z" fill="#FF3E9A" ${O}/>`}};
+const WSLOT={kacamata:["face"],aksesori:null,topi:["head"],baju:["baju"],jaket:["jaket"]};
+function wearOf(id){for(const g in WEAR)if(WEAR[g][id])return[g,WEAR[g][id]]}
+const HAIRS={w:["Panjang","Bob","Cepol","Kuncir","Hijab"],p:["Pendek","Jambul","Rapi","Keriting"]};
+const FRN_={};
+let FOT={};try{FOT=JSON.parse(localStorage.getItem("lqp_fot")||"{}")}catch(e){}
+function saveFot(){try{localStorage.setItem("lqp_fot",JSON.stringify(FOT))}catch(e){}}
+let fotReq={};
+function needFotos(list){
+  const k=(list||[]).filter(p=>p&&p.kode&&p.pf&&p.pf.foto&&!(FOT[p.kode]&&FOT[p.kode].v===p.pf.foto)&&!fotReq[p.kode]);
+  if(!k.length)return;k.forEach(p=>fotReq[p.kode]=1);
+  call("fotos",{kodes:k.map(p=>p.kode)}).then(r=>{k.forEach(p=>delete fotReq[p.kode]);
+    if(r&&r.fotos){k.forEach(p=>{if(r.fotos[p.kode])FOT[p.kode]={v:p.pf.foto,d:r.fotos[p.kode]}});saveFot();if(["town","guild","koleksi","flex"].includes(tab))render()}})}
+const AVHC2=["#12082A","#3B1F12","#5A3A1E","#7A2B16"],AVBG2=["#19C6B7","#FF8A2B","#9B6BFF","#FF3E9A","#FFD23F"];
+function hsh(s){let h=0;s=String(s||"?");for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h}
+function avDef(nama){const h=hsh(nama),g=h%2?"w":"p";return{g,hair:(h>>>1)%HAIRS[g].length,skin:(h>>>4)%5,st:"k",bg:AVBG2[(h>>>8)%5],hc:AVHC2[(h>>>11)%4]}}
+const meP=()=>({kode:D.me.kode,nama:D.me.nama,pf:D.prof||{}});
+const isFoto=p=>{const pf=p.pf||{};return pf.foto&&!pf.useAv&&FOT[p.kode]&&FOT[p.kode].v===pf.foto};
+function avSvgP(p,sz,eqx,bgx){
+  const pf=p.pf||{},d=avDef(p.nama),av=Object.assign({},d,pf.av||{}),eq=eqx||pf.eq||{};
+  const bg=bgx||(eq.latar?latarSvg(eq.latar):`<rect width="100" height="100" fill="${d.bg}"/>`);
+  return avDraw({g:av.g,hair:av.hair,skin:SKINS[av.skin]||SKINS[1],hc:d.hc,st:av.st||"k"},sz,eq,bg,"Avatar")}
+function avHTML(p,sz){
+  if(isFoto(p))return `<img src="${FOT[p.kode].d}" width="${sz}" height="${sz}" style="object-fit:cover;display:block" alt="Foto">`;
+  return avSvgP(p,sz)}
+const nmStyle=id=>id==="nemas"?"background:#12082A;color:#FFD23F;padding:0 6px":id==="nneon"?"background:#12082A;color:#FF3E9A;text-shadow:0 0 8px #FF3E9A;padding:0 6px":"";
+const nmOf=p=>`<span style="${nmStyle(p.pf&&p.pf.eq&&p.pf.eq.efek)}">${esc(p.nama)}</span>`;
+function stkSvg(id,sz){const P={sbintang:['#FF3E9A','<path d="M12 4l2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6z" fill="#FFD23F"/>'],shati:['#19C6B7','<path d="M12 19s-7-4.5-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.5-7 10-7 10z" fill="#fff"/>'],spetir:['#FFD23F','<path d="M13 3L6 13h5l-1 8 8-11h-5z" fill="#12082A"/>'],strofi:['#FF8A2B','<path d="M8 5h8v5a4 4 0 0 1-8 0zM6 5h2v3a2 2 0 0 1-2-2zM18 5h-2v3a2 2 0 0 0 2-2zM11 14h2v3h3v2H8v-2h3z" fill="#12082A"/>']}[id];
+ return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="${P[0]}" stroke="#12082A" stroke-width="1.6"/>${P[1]}</svg>`}
+function wrapFrame(id,inner){const f=FRI[id];if(!f)return `<span class="fw" style="background:#fff;border:3px solid var(--dk);padding:4px;box-shadow:4px 4px 0 var(--dk)"><span class="in" style="border:0">${inner}</span></span>`;return `<span class="fw f-${id}"><span class="in">${inner}</span>${f.dec}</span>`}
+function personHTML(p,sz){const pf=p.pf||{},k=pf.eq&&pf.eq.stiker;
+  return `<span style="position:relative;display:inline-block">${wrapFrame(pf.frame,avHTML(p,sz))}${k?`<span style="position:absolute;left:-6px;bottom:-6px;z-index:5">${stkSvg(k,Math.round(sz*.4))}</span>`:""}</span>`}
+
+/* ---------- Base Camp ---------- */
+const TIPS0=["Call dulu, 5 orang cukup!","Ice Breaker cuma 1x per orang.","Real Talk: ngobrol langsung 2 orang.","Name Drop bikin daftar namamu tumbuh."];
+let tipI=0;const MON=["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGU","SEP","OKT","NOV","DES"];
+function tipsList(){const t=TIPS0.slice(),n=D.daily.filter(Boolean).length;if(D.streak>0)t.unshift(`Streak ${D.streak} hari, jangan putus ya!`);if(n===3)t.unshift("Tinggal 1 centang lagi, lalu spin!");return t}
+function nextQuest(){const c=D.counts||{};
+  for(const [k,tx,need] of [["call","telepon 5 orang",5],["chat","chat 5 orang",5],["dive","tatap muka gali kebutuhan",1],["drop","tambah nama baru",1]]){if((c[k]||0)<need){const a=D.acts.find(x=>x[0]===k);return{txt:`${a[1]} \u00b7 ${tx}`,xp:a[2]}}}
+  return null}
 function rHome(){
-  const done=D.daily.filter(Boolean).length,pct=Math.min(100,Math.round(D.xpWeek/D.target*100)),L=D.me.peran!=="partner";
+  const done=D.daily.filter(Boolean).length,pct=Math.min(100,Math.round(D.xpWeek/D.target*100)),L=D.me.peran!=="partner",can=D.tiket>0,nq=nextQuest(),mon=MON[+D.today.slice(5,7)-1];
   Q("#s-home").innerHTML=`<div class="grid">
-  <button class="p pk c2" data-go="log" style="min-height:140px"><div class="lbl">XP MINGGU INI</div><div class="d" style="font-size:44px;line-height:1.05">${num(D.xpWeek)}</div><div style="font-weight:700;font-size:13px">dari ${num(D.target)} XP \u00b7 ${pct}%</div><div class="bar" style="margin-top:8px"><i style="width:${pct}%"></i></div></button>
-  <button class="p yl" data-go="spin" style="min-height:140px;display:flex;flex-direction:column;justify-content:space-between"><div class="lbl">TIKET</div><div class="d" style="font-size:38px;display:flex;align-items:center;gap:6px"><span class="wig">${ic("ticket",30)}</span>${D.tiket}</div><div style="font-weight:700;font-size:12px">1 tiket = 1 spin</div></button>
-  <div class="p tl c2" style="min-height:200px"><div class="lbl">${esc(D.me.nama.toUpperCase())}</div><div class="d" style="font-size:24px;line-height:1.1;margin-top:4px">${done===4?"MANTAP!":"HALO!"}</div><div class="note" style="color:var(--dk);max-width:150px">${done===4?"Daily Quest lengkap. Jangan lupa spin.":(4-done)+" Daily Quest lagi hari ini."}</div><div style="position:absolute;right:4px;bottom:0">${mas(140)}</div></div>
+  <div class="p pk c2" style="min-height:150px"><div class="lbl">XP MINGGU INI</div><div class="d" style="font-size:46px;line-height:1.05">${num(D.xpWeek)}</div><div style="font-weight:700;font-size:13px">dari ${num(D.target)} XP \u00b7 ${pct}%</div><div class="bar" style="margin-top:10px"><i style="width:${pct}%"></i></div></div>
+  <button class="p yl" data-go="spin" style="min-height:150px;display:flex;flex-direction:column;justify-content:space-between"><div class="lbl">TIKET</div><div class="d" style="font-size:38px;display:flex;align-items:center;gap:6px"><span class="wig">${ic("ticket",30)}</span>${D.tiket}</div><div style="font-size:12px;font-weight:700">1 tiket = 1 spin</div></button>
+  <div class="p tl c2" id="pMas" style="min-height:250px;cursor:pointer" role="button" tabindex="0" aria-label="Maskot, tap untuk tips"><div class="lbl">${esc(D.me.nama.toUpperCase())}</div><div class="d" style="font-size:26px;line-height:1.1;margin-top:4px">${done===4?"MANTAP!":"HALO!"}</div><div class="bubble" id="bub">Tap aku buat tips!</div><div style="position:absolute;right:4px;bottom:0">${mas(150,"mHome")}</div></div>
   <div style="display:grid;gap:6px;grid-template-rows:1fr 1fr">
-   <div class="p pu" style="min-height:96px"><div class="lbl">STREAK</div><div class="d" style="font-size:34px;display:flex;align-items:center;gap:6px">${D.streak}<span class="flick">${ic("flame",26)}</span></div><div style="font-weight:700;font-size:12px">hari</div></div>
-   <div class="p og" style="min-height:96px"><div class="lbl">SALDO</div><div class="d" style="font-size:18px;margin-top:4px">${rp(D.saldo)}</div><div style="font-weight:700;font-size:11px">cash di Elevate</div></div></div></div>
+   <div class="p pu" style="min-height:102px"><div class="lbl">STREAK</div><div class="d" style="font-size:36px;display:flex;align-items:center;gap:6px">${D.streak}<span class="flick">${ic("flame",28)}</span></div><div style="font-weight:700;font-size:12px">hari</div></div>
+   <button class="p og" data-go="log" style="min-height:102px"><div class="lbl">SEASON</div><div class="d" style="font-size:22px;margin-top:4px">${mon}</div><div style="font-weight:700;font-size:12px">buka Battle Log</div></button></div></div>
   <div class="p cr c3" style="margin-top:6px"><div class="lbl">DAILY QUEST \u00b7 ${done} DARI 4</div><div style="margin-top:4px">${DAILY.map((n,i)=>`<button class="dr" data-d="${i}"><span class="chk ${D.daily[i]?"on":""}">${D.daily[i]?ic("check",16):""}</span><span class="n" style="${D.daily[i]?"text-decoration:line-through":""}">${n}</span><span class="st">${D.daily[i]?"SELESAI":i===2?D.rt+"/2":"BELUM"}</span></button>`).join("")}</div></div>
-  <div class="grid" style="margin-top:6px"><button class="tile pk" data-go="names"><span>${ic("list",26)}</span>Daftar Nama</button><button class="tile tl" data-go="brain"><span>${ic("bulb",26)}</span>Brain Buff</button><button class="tile og" data-go="log"><span>${ic("cal",26)}</span>Battle Log</button></div>
-  ${L||D.guildTim?`<button class="p dk c3" data-go="guild" style="margin-top:6px;border:1px solid var(--yl);display:flex;align-items:center;gap:10px;min-height:52px;color:#fff"><span class="d" style="flex:1;font-size:16px;color:var(--yl)">GUILD MAP</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}${L?`<button class="p pu c3" data-go="crew" style="margin-top:6px;border:0;display:flex;align-items:center;gap:10px;min-height:56px;color:#fff"><span class="d" style="flex:1;font-size:18px">${D.me.peran==="admin"?"ADMIN":"CREW HQ"}</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}
-  <button class="p dk c3" data-go="palet" style="margin-top:6px;border:0;display:flex;align-items:center;gap:10px;min-height:52px;color:#fff"><span class="d" style="flex:1;font-size:16px;color:var(--yl)">WARNA APP</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>
+  ${nq?`<button class="p yl c3" id="pNext" style="margin-top:6px;display:flex;align-items:center;gap:10px"><span style="flex:1;text-align:left"><div class="lbl">QUEST BERIKUTNYA</div><div style="font-weight:700;font-size:16px">${nq.txt}</div></div></span><span class="d" style="font-size:15px">+${nq.xp} XP</span></button>`:`<div class="p yl c3" style="margin-top:6px"><div class="lbl">QUEST BERIKUTNYA</div><div style="font-weight:700;font-size:16px">Semua Hustle dasar hari ini selesai</div></div>`}
+  <div class="grid" style="margin-top:6px"><button class="tile pk" data-go="names"><span>${ic("list",26)}</span>Daftar Nama</button><button class="tile tl" data-go="info"><span>${ic("info",26)}</span>Info Game</button><button class="tile og" data-go="brain"><span>${ic("bulb",26)}</span>Brain Buff</button></div>
+  ${L||D.guildTim?`<button class="p dk c3" data-go="guild" style="margin-top:6px;border:1px solid var(--yl);display:flex;align-items:center;gap:10px;min-height:56px;color:#fff"><span class="d" style="flex:1;font-size:18px;color:var(--yl)">GUILD MAP</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}
+  ${L?`<button class="p pu c3" data-go="crew" style="margin-top:6px;border:0;display:flex;align-items:center;gap:10px;min-height:56px;color:#fff"><span class="d" style="flex:1;font-size:18px">${D.me.peran==="admin"?"ADMIN":"CREW HQ"}</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}
+  <button class="btn" id="homeSpin" style="margin-top:6px" ${can?"":"disabled"}><span style="display:inline-flex;align-items:center;gap:8px"><span class="wig">${ic("ticket",22)}</span>${can?"SPIN \u00b7 "+D.tiket+" TIKET":"BELUM ADA TIKET \u00b7 DAILY QUEST "+done+"/4"}</span></button>
   <div class="note" style="text-align:center"><button id="logout" style="border:0;background:none;text-decoration:underline;font-weight:700;color:var(--mut);min-height:44px">Keluar</button></div>`;
 }
 
 /* ---------- Quest ---------- */
 function rQuest(){
-  const pct=Math.min(100,Math.round(D.xpDay/(D.lockT||417)*100));
-  const list=D.acts.filter(a=>a[3]===qTab);
-  Q("#s-quest").innerHTML=`<div class="p yl" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between" class="lbl"><span>XP HARI INI</span><span>${num(D.xpDay)} / ${num(D.lockT||417)} XP</span></div><div class="bar" style="margin-top:6px"><i style="width:${pct}%"></i></div></div>
+  const T=D.lockT||417,pct=Math.min(100,Math.round(D.xpDay/T*100));
+  const list=D.acts.filter(a=>a[3]===qTab),today=(D.entries||[]).filter(e=>e.tc===D.today&&e.status==="aktif");
+  Q("#s-quest").innerHTML=`<div class="p yl" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between" class="lbl"><span>XP HARI INI</span><span>${num(D.xpDay)} / ${num(T)} XP</span></div><div class="bar" style="margin-top:6px"><i style="width:${pct}%"></i></div></div>
   <div class="tabs">${["Hustle","Squad","Solo"].map(k=>`<button class="${qTab===k?"on":""}" data-q="${k}">${k}</button>`).join("")}</div>
-  ${list.map(a=>{const c=D.counts[a[0]]||0;return `<div class="row"><span class="ib" style="background:var(--cr)">${ic(AICON[a[0]]||ICON[a[3]],22)}</span><span class="t"><b>${a[1]}</b><span>${DESC[a[0]]||""}</span>${a[5]||c?`<span style="color:var(--pkd);font-weight:700">${a[5]?`${Math.min(c,a[5])}/${a[5]} orang${c>=a[5]?" \u00b7 XP masuk":""}`:`Dicatat ${c}x hari ini`}</span>`:""}</span><span class="xpb">+${a[2]}</span><button class="sq" data-a="${a[0]}" aria-label="Catat ${a[1]}">${ic("plus",24)}</button></div>`}).join("")}
-  <div class="lbl" style="margin:14px 0 6px">CATATAN TERBARU</div>
-  ${D.entries.length?D.entries.slice(0,12).map(e=>`<div class="row" style="align-items:flex-start;${e.status!=="aktif"?"opacity:.5":""}"><span class="ib" style="background:var(--tl);font-weight:700">${esc(e.nama)[0]||"?"}</span><span class="t"><b style="${e.status!=="aktif"?"text-decoration:line-through":""}">${esc(e.nama)}</b><span>${e.an} \u00b7 ${e.te!==e.tc?"untuk "+fmtTgl(e.te)+" \u00b7 ":""}${e.tc===D.today?"":fmtTgl(e.tc)+" "}${e.jam}${e.xp?" \u00b7 +"+e.xp+" XP":""}</span>${e.cat?`<span style="color:var(--dk);font-weight:600;margin-top:2px">${esc(e.cat)}</span>`:""}</span>${e.bisaBatal?`<button class="tag" data-undo="${e.id}" style="background:#fff;min-height:36px">Batalkan</button>`:""}</div>`).join(""):`<div class="note">Belum ada catatan. Tap + di atas.</div>`}`;
+  ${list.map(a=>{const c=D.counts[a[0]]||0;return `<div class="row"><span class="ib" style="background:var(--cr)">${ic(AICON[a[0]]||ICON[a[3]],22)}</span><span class="t"><b>${a[1]}</b><span>${DESC[a[0]]||""}</span>${a[5]||c?`<span style="color:var(--pkd);font-weight:700">${a[5]?`${Math.min(c,a[5])}/${a[5]} orang${c>=a[5]?" \u00b7 XP masuk":""}`:`Dicatat ${c}x hari ini`}</span>`:""}</span><span class="xpb">+${a[2]}</span><button class="sq" data-a="${a[0]}" ${c>=(a[3]==="Hustle"?(a[0]==="drop"?999:99):9)?"disabled":""} aria-label="Catat ${a[1]}">${ic(c>=(a[3]==="Hustle"?(a[0]==="drop"?999:99):9)?"check":"plus",c>=(a[3]==="Hustle"?(a[0]==="drop"?999:99):9)?22:24)}</button></div>`}).join("")}
+  <div class="lbl" style="margin:14px 0 6px">CATATAN HARI INI</div>
+  ${today.length?today.slice(0,30).map(e=>`<div class="row" style="align-items:flex-start"><span class="ib" style="background:var(--tl);font-weight:700">${esc(e.nama)[0]||"?"}</span><span class="t"><b>${esc(e.nama)}</b><span>${e.an} \u00b7 ${e.te!==e.tc?"untuk "+fmtTgl(e.te)+" \u00b7 ":""}${e.jam}${e.xp?" \u00b7 +"+e.xp+" XP":""}</span>${e.cat?`<span style="color:var(--dk);font-weight:600;margin-top:2px">${esc(e.cat)}</span>`:""}</span>${e.bisaBatal?`<button class="tag" data-undo="${e.id}" style="background:#fff;min-height:36px">Batalkan</button>`:""}</div>`).join(""):`<div class="note">Belum ada catatan hari ini. Tap + di atas.</div>`}`;
 }
+
+/* ---------- Spin ---------- */
+function vaultHTML(L,can){const n=D.daily.filter(Boolean).length;
+ const inner=L?`<div class="vstars">${Array.from({length:{Rare:3,Epic:4,Legend:5}[L.rar]},()=>`<span>${ic("star",20)}</span>`).join("")}</div><div class="d" style="font-size:34px;margin-top:6px">${rp(L.uang)}</div>${L.item&&CATI[L.item]?`<div style="font-weight:700;font-size:14px">+ ${CATI[L.item].n}</div>`:""}`:`<div class="d" style="font-size:34px;color:#4A3A78">???</div>`;
+ const lock=!can&&!L?`<div class="vlock"><svg width="52" height="62" viewBox="0 0 40 48" aria-hidden="true"><path d="M10 22V14a10 10 0 0 1 20 0v8" fill="none" stroke="#fff" stroke-width="5"/><rect x="4" y="22" width="32" height="24" fill="#FFD23F"/><circle cx="20" cy="33" r="3.5" fill="#12082A"/></svg><b class="d">BELUM ADA TIKET</b><div class="ch">${[0,1,2,3].map(i=>`<i class="${D.daily[i]?"on":""}"></i>`).join("")}</div><p>Daily Quest ${n} dari 4. Selesaikan 4 centang untuk dapat 1 tiket.</p></div>`:"";
+ return `<div class="dots"></div><div class="tag">BRANKAS HARIAN</div><div class="vW ${L?"":"idle"}"><div class="vIn ${L?L.rar.toLowerCase()+" lit":""}" id="vIn">${inner}</div><div class="vDoor ${L?"open":""}" id="vDoor"><div class="vRing"></div><i class="bt a"></i><i class="bt b"></i><i class="bt c"></i><i class="bt d"></i><div class="ptr"></div><div class="dial" id="dial"><i></i></div><div class="hdl" id="hdl"></div></div></div><div class="vfl" id="vfl"></div>${lock}`}
+function rSpin(){
+  if(spinning)return;
+  const can=D.tiket>0,n=D.daily.filter(Boolean).length,sd=D.saldo,pc=Math.min(100,sd/500),own=D.owned||[];
+  const note=sd>=50000?`<div style="background:var(--yl);border:2px solid var(--dk);padding:10px"><div class="d" style="font-size:18px">SALDO SIAP DICAIRKAN</div><div style="font-weight:700;font-size:14px;margin-top:4px">Kamu masuk daftar cash Elevate Sabtu. Ambil langsung dari Ko Andre.</div><div style="font-weight:800;font-size:13px;margin-top:6px;color:#B0105E">Tidak hadir di Elevate = hadiah hangus.</div></div>`:`<div style="background:#fff;border:2px solid var(--dk);padding:10px"><div class="d" style="font-size:18px">KURANG ${rp(50000-sd)} LAGI</div><div style="font-weight:600;font-size:13px;margin-top:4px">Capai Rp50.000 sebelum Jumat 15.00 untuk dapat cash di Elevate hari Sabtu.</div></div>`;
+  Q("#s-spin").innerHTML=`<div class="vstage" id="vstage">${vaultHTML(null,can)}</div>
+  <div class="grid" style="margin-top:6px"><div class="p pk" style="min-height:52px;text-align:center;display:flex;align-items:center;justify-content:center"><div class="d" style="font-size:16px">RARE</div></div><div class="p pu" style="min-height:52px;text-align:center;display:flex;align-items:center;justify-content:center"><div class="d" style="font-size:16px">EPIC</div></div><div class="p yl" style="min-height:52px;text-align:center;display:flex;align-items:center;justify-content:center"><div class="d" style="font-size:16px">LEGEND</div></div></div>
+  <div class="p cr c3" style="margin-top:6px"><div style="display:flex;justify-content:space-between"><span class="lbl">SALDO HADIAH</span><b class="d" style="font-size:16px">${rp(sd)}</b></div><div class="bar l" style="margin-top:6px"><i style="width:${pc}%"></i></div><div role="status" style="margin-top:8px">${note}</div></div>
+  <button class="btn" data-go="koleksi" style="margin-top:6px;color:var(--yl)">KOLEKSI FRAME \u00b7 ${FR.filter(f=>own.includes(f.id)).length}/${FR.length}</button>
+  <button class="btn pk" id="spinGo" style="margin-top:6px" ${can?"":"disabled"}>${can?"BUKA BRANKAS \u00b7 "+D.tiket+" TIKET":"BELUM ADA TIKET \u00b7 DAILY QUEST "+n+"/4"}</button>
+  <div class="note">1 hari Daily Quest 4 dari 4 = 1 tiket. Tiket bisa ditabung dan tidak hangus. Setiap spin pasti dapat uang + item.</div>
+  ${D.spins.length?`<div class="lbl" style="margin:12px 0 6px">SPIN TERAKHIR</div>`+D.spins.map(s=>`<div class="row" style="min-height:44px"><span class="tag" style="background:${s.rar==="Legend"?"var(--yl)":s.rar==="Epic"?"var(--pk)":"var(--tl)"}">${s.rar.toUpperCase()}</span><span class="t"><b style="font-size:15px">${rp(s.uang)}</b><span>${s.waktu.slice(0,16)}</span></span></div>`).join(""):""}`;
+}
+async function doSpin(){
+  if(spinning)return;
+  if(!D.tiket){toast("Belum ada tiket. Selesaikan Daily Quest dulu.");return}
+  if(tab!=="spin")go("spin");
+  spinning=true;const sb=Q("#spinGo");if(sb)sb.disabled=true;
+  const call_=act("spin"),d=Q("#dial"),door=Q("#vDoor"),vin=Q("#vIn");Q(".vW").classList.remove("idle");
+  let a=0;
+  for(const [deg,ms] of [[540,520],[-360,460],[260,460]]){a+=deg;d.style.transition=`transform ${ms}ms cubic-bezier(.3,.1,.2,1)`;d.style.transform=`rotate(${a}deg)`;await wait(ms+40);door.classList.add("click");await wait(90);door.classList.remove("click")}
+  const r=await call_;
+  if(!r||r.error){spinning=false;render();return}
+  const L=r.hasil;Q("#hdl").classList.add("turn");await wait(350);
+  vin.className="vIn "+L.rar.toLowerCase();vin.innerHTML=`<div class="vstars">${Array.from({length:{Rare:3,Epic:4,Legend:5}[L.rar]},(_,i)=>`<span style="animation-delay:${.3+i*.1}s">${ic("star",20)}</span>`).join("")}</div><div class="d" style="font-size:34px;margin-top:6px" id="vAmt">${rp(0)}</div>${L.item&&CATI[L.item]?`<div style="font-weight:700;font-size:14px">+ ${CATI[L.item].n}</div>`:""}`;
+  door.classList.add("open");await wait(450);Q("#vfl").classList.add("go");countUp(Q("#vAmt"),L.uang,900);vin.classList.add("lit");confetti();toast(L.rar.toUpperCase()+"! "+rp(L.uang)+" masuk saldo"+(L.isNew?" \u00b7 item baru!":""));await wait(1100);
+  spinning=false;render();
+}
+
+/* ---------- Town Hall ---------- */
+function rTown(){
+  const me=D.me.peran,hasRole=D.town.some(p=>p.peran);
+  const groups=!hasRole||me==="partner"?[]:me==="admin"?[["leader","Leader"],["partner","Partner"]]:[["tim","Direct Partner"],["leader","Leader"],["partner","Partner"]];
+  if(!gTab||(groups.length&&!groups.some(g=>g[0]===gTab)))gTab=groups.length?groups[0][0]:"partner";
+  const k=tTab==="day"?"day":"week";
+  const a=D.town.filter(p=>!hasRole||!groups.length?true:gTab==="tim"?p.tim:p.peran===gTab).sort((x,y)=>y[k]-x[k]).map(p=>p.me?Object.assign({},p,{pf:D.prof||p.pf}):p);
+  const tabs=(arr,cur,at)=>`<div class="tabs">${arr.map(([x,l])=>`<button class="${cur===x?"on":""}" ${at}="${x}">${l}</button>`).join("")}</div>`;
+  const nm=p=>nmOf(p)+(p.me?" (kamu)":"");
+  const sp=(l,t,d,sz=18)=>`<span class="sp" style="left:${l}%;top:${t}%;animation-delay:${d}s">${ic("star",sz)}</span>`;
+  let pod="";
+  if(a.length){
+    const p1=a[0],p2=a[1],p3=a[2];
+    pod=`<div class="p hall k1 rise"><div class="rays"></div>${sp(8,14,0)}${sp(86,10,.5,22)}${sp(12,60,1,14)}${sp(88,56,.3,16)}<div class="ghost" style="left:-6px;bottom:-14px;font-size:150px">1</div><div class="lbl" style="position:relative;z-index:2">JUARA 1 \u00b7 ${tTab==="day"?"HARI INI":"MINGGU INI"}</div><div style="margin-top:26px"><div class="phW">${crownSvg}<div class="fr">${personHTML(p1,116)}</div><div class="medal">1</div></div></div><div class="nm"><div class="d" style="font-size:26px;line-height:1">${nm(p1).toUpperCase()}</div><div class="d" style="font-size:22px;margin-top:6px;color:var(--pkd)">${num(p1[k])} XP</div></div></div>`;
+    const sm=(p,r,col)=>`<div class="p hall rise" style="background:var(--${col});animation-delay:${r===2?".15s":".3s"}"><div class="ghost" style="right:2px;bottom:-12px;font-size:96px;color:rgba(18,8,42,.12)">${r}</div><div class="lbl" style="position:relative;z-index:2">JUARA ${r}</div><div style="margin-top:10px"><div class="phW"><div class="fr">${personHTML(p,78)}</div><div class="medal" style="width:28px;height:28px;font-size:14px">${r}</div></div></div><div class="nm" style="margin-top:10px"><div class="d" style="font-size:16px;line-height:1.05">${nm(p).toUpperCase()}</div><div style="font-weight:700;font-size:14px;margin-top:3px">${num(p[k])} XP</div></div></div>`;
+    if(p2)pod+=`<div class="hallrow">${sm(p2,2,"pk")}${p3?sm(p3,3,"og"):"<div></div>"}</div>`;
+  }
+  const mine=meP(),hasF=!!(D.prof&&D.prof.foto);
+  Q("#s-town").innerHTML=(groups.length?tabs(groups,gTab,"data-tg"):"")+tabs([["day","Hari ini"],["week","Minggu ini"]],tTab,"data-tt")+(a.length?pod+`<div style="margin-top:6px">`+a.slice(3).map((p,i)=>`<div class="row" style="${p.me?"background:var(--yl)":""}"><b class="d" style="width:26px;font-size:16px">${i+4}</b><span style="flex:none;display:block;padding:2px">${personHTML(p,38)}</span><span class="t"><b>${nm(p)}</b></span><b>${num(p[k])} XP</b></div>`).join("")+`</div>`:`<div class="note" style="text-align:center;padding:20px 0">Belum ada peserta di kelompok ini.</div>`)+
+  `<div class="p cr" style="margin-top:6px;display:flex;align-items:center;gap:12px;border:2px solid var(--dk)"><div style="flex:none;padding:6px 8px 4px 4px">${personHTML(mine,64)}</div><div style="flex:1;min-width:0"><div class="lbl">FOTO PROFILKU</div><div style="font-weight:600;font-size:12px;color:var(--mut);margin:2px 0 6px">Tampil di podium kalau kamu masuk 3 besar.</div><div style="display:flex;gap:6px"><button class="cc" id="phPick" style="margin:0">Pilih foto</button><button class="cc" data-go="koleksi" style="margin:0">Frame</button>${hasF?`<button class="cc" id="phDel" style="margin:0">Hapus</button>`:""}</div><input type="file" id="phFile" accept="image/*" hidden></div></div>`;
+  needFotos(a.concat([mine]));
+}
+function guildPeople(){const r=[];if(D.crew)D.crew.list.forEach(p=>r.push(p));if(D.guildTim)D.guildTim.list.forEach(p=>r.push(p));return r}
+function gRow(p,o){
+  const xp=p.xp||0,pc=Math.min(100,Math.round(100*xp/(D.target||2500))),open=gOpen===p.kode&&o.tap,dn=["S","S","R","K","J","S","M"];
+  const last=p.diam===0?"Hari ini":p.diam===1?"Kemarin":p.diam>=99?"Belum mencatat":p.diam+" hari lalu";
+  const tag=o.tag?`<span class="tag" style="display:inline-block;font-size:10px;padding:0 5px;margin-left:6px;vertical-align:2px;background:${p.peran==="leader"?"var(--pu);color:#fff":"var(--cr)"}">${p.peran.toUpperCase()}</span>`:"";
+  const pp=o.me?Object.assign({},p,{pf:D.prof||p.pf}):p;
+  return `<div class="row" ${o.tap?`data-gm="${p.kode}"`:""} style="flex-wrap:wrap;align-items:flex-start;padding:10px;gap:10px;${o.tap?"cursor:pointer;":""}${o.me?"background:var(--yl);":""}">
+  <span style="flex:none;display:block">${avHTML(pp,44)}</span>
+  <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px;line-height:1.2">${nmOf(pp)}${o.me?" (kamu)":""}${tag}</div>
+   <div style="font-size:12px;font-weight:600;color:var(--mut);margin:2px 0 6px">Aktif ${p.hari}/7 hari \u00b7 ${last}</div>
+   <div style="display:flex;gap:3px">${(p.hr||[]).map((d,k)=>`<span style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid var(--dk);background:${d?"var(--tl)":"#F1ECF8"}">${dn[k]}</span>`).join("")}</div></div>
+  <div style="flex:none;text-align:right"><div class="d" style="font-size:20px;line-height:1">${num(xp)}</div><div style="font-size:11px;font-weight:700;color:var(--mut)">XP</div><div style="font-size:12px;font-weight:800;margin-top:6px">${pc}%</div>
+   <div style="width:48px;height:6px;border:2px solid var(--dk);background:#fff;margin-top:2px;box-sizing:content-box"><i style="display:block;height:100%;width:${pc}%;background:var(--pk)"></i></div></div>
+  ${open?`<div style="flex-basis:100%;border-top:2px dashed var(--dk);padding-top:6px">${(p.log||[]).length?p.log.map(l=>`<div style="padding:4px 0;font-size:13px"><b>${esc(l[0])}</b> \u00b7 ${esc(l[1])}${l[2]?`<span style="color:var(--mut)"> \u00b7 ${esc(l[2])}</span>`:""}</div>`).join(""):`<div class="note">Belum ada catatan minggu ini.</div>`}</div>`:""}</div>`;
+}
+
+/* ---------- Info Game ---------- */
+let iTab="sd";
+function rInfo(){
+  const tabs=`<div class="tabs">${[["sd","Structured Day"],["ratio","Rasio 10-3-1"]].map(([k,l])=>`<button class="${iTab===k?"on":""}" data-i="${k}">${l}</button>`).join("")}</div>`;
+  let body="";
+  if(iTab==="sd"){
+    const B=[["pk","LOCK IN","07.30 - 09.00","Siapkan diri, target, dan daftar nama hari ini."],["tl","DIAL HOUR","09.00 - 10.30","Waktu fokus telepon dan chat (Call, Chat)."],["yl","FIELD TIME","10.30 - 17.00","Bertemu orang: Ice Breaker, Deep Dive, Real Talk."],["og","SAVE POINT","17.00 - 18.00","Catat hasil, review poin, siapkan besok."]];
+    body=B.map(([c,t,w,d],i)=>`<div class="p ${c}" style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:center"><div class="lbl">0${i+1}</div><span class="tag" style="background:#fff;color:var(--dk)">${w}</span></div><div class="d" style="font-size:22px">${t}</div><div style="font-weight:600;font-size:14px;margin-top:2px">${d}</div></div>`).join("");
+  }else{
+    body=`<div class="p pk"><div class="lbl">FORMULA 10-3-1</div><div class="d" style="font-size:20px;margin:4px 0">Hitung targetmu</div><label style="margin-top:6px">Jumlah Concept Pitch</label><input type="number" id="rIn" value="10" min="0" max="500" inputmode="numeric"><div style="display:flex;gap:6px;margin-top:8px"><div class="p cr" style="flex:1;padding:10px"><div class="lbl">CASE DEMO</div><div class="d" style="font-size:26px" id="rDD"></div></div><div class="p yl" style="flex:1;padding:10px"><div class="lbl">NEW CLIENT</div><div class="d" style="font-size:26px" id="rWin"></div></div></div></div>
+    <div class="p pu" style="margin-top:6px;color:#fff"><div class="lbl" style="color:#FFD23F">BLUEPRINT 60-4-2 \u00b7 TARGET TAHUNAN</div><div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:6px;margin-top:8px"><div style="background:#FFD23F;color:var(--dk);border:2px solid var(--dk);padding:10px 8px;text-align:center"><div class="d" style="font-size:44px;line-height:1">60<span style="font-size:20px"> JT</span></div><div style="font-weight:800;font-size:11px;letter-spacing:.12em;margin-top:4px">API</div></div><div style="background:#FF3E9A;color:#fff;border:2px solid var(--dk);padding:10px 8px;text-align:center"><div class="d" style="font-size:44px;line-height:1">4</div><div style="font-weight:800;font-size:11px;letter-spacing:.12em;margin-top:4px">PARTNER</div></div><div style="background:#19C6B7;color:var(--dk);border:2px solid var(--dk);padding:10px 8px;text-align:center"><div class="d" style="font-size:44px;line-height:1">2</div><div style="font-weight:800;font-size:11px;letter-spacing:.12em;margin-top:4px">PROMOSI</div></div></div><div style="font-weight:700;font-size:14px;margin-top:10px;text-align:center">API 60 juta, rekrut 4 partner, promosikan 2 setiap tahun.</div></div>`;
+  }
+  Q("#s-info").innerHTML=tabs+body;
+  if(iTab==="ratio"){const f=()=>{const v=Math.max(0,+Q("#rIn").value||0);Q("#rDD").textContent=Math.round(v*.3);Q("#rWin").textContent=Math.round(v*.1)};Q("#rIn").oninput=f;f()}
+}
+
+/* ---------- Daftar Nama + kartu nama ---------- */
+const NF=[["job","Pekerjaan","text"],["age","Usia","num"],["mar","Status pernikahan","sel",["Belum menikah","Menikah","Single"]],["kids","Jumlah anak","num"],
+["inc","Tingkat income per bulan","sel",["Di bawah 5 juta","5-10 juta","10-20 juta","20-30 juta","30-50 juta","Di atas 50 juta"]],
+["basis","Dasar penilaian income","sel",["Perkiraan bisnis/pekerjaan","Asumsi","Life style"]],
+["prem","Kemampuan premi per tahun","sel",["Di bawah 12 juta","12-24 juta","Di atas 24 juta"]],
+["know","Pengetahuan asuransi","sel",["Belum tahu","Rendah","Menengah","Tinggi"]],
+["pov","POV terhadap asuransi","sel",["Open","Netral","Trauma","Belum diketahui"]],
+["close","Kedekatan hubungan","sel",["Cold","Warm","Hot"]],
+["strat","Strategi pendekatan","sel",["Warming up","Fact finding","Cerita konsep"]],
+["pot","Potensi","sel",["Client","Partner","Both"]]];
+const stIx=s=>Math.max(0,D.status.indexOf(s));
+function rNames(){
+  Q("#s-names").innerHTML=`<div class="p pk" style="margin-bottom:6px"><div class="lbl">DAFTAR NAMA</div><div class="d" style="font-size:26px">${D.names.length} NAMA</div><div style="font-weight:700;font-size:13px">Leader kamu bisa melihat daftar ini.</div></div>
+  <button class="btn" id="addNama" style="margin-bottom:8px">+ TAMBAH NAMA \u00b7 +50 XP</button>`+D.names.map((n,i)=>`<button class="row nrow" data-n="${n.id}" aria-label="Buka detail ${esc(n.nama)}"><b class="d" style="width:26px;font-size:14px">${i+1}</b><span class="t"><b>${esc(n.nama)}</b></span><span class="tag" style="background:${STC[stIx(n.status)]}">${esc(n.status)}</span></button>`).join("")+`<div class="note">Ketuk satu nama untuk melihat dan mengisi detailnya.</div>`;
+}
+const nowStr=()=>{const d=new Date(Date.now()+(7*60+new Date().getTimezoneOffset())*60000);return D.today+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
+function nameForm(id){
+  const nw=id==null,p=nw?{nama:"",status:D.status[0],cat:"",prof:{},hist:[],appt:""}:D.names.find(x=>x.id===id);if(!p)return;
+  const pr=p.prof||{};
+  const f=NF.map(([k,l,t,o])=>`<label for="nf_${k}">${l}</label>`+(t==="sel"?`<select id="nf_${k}"><option value="">Belum diisi</option>${o.map(x=>`<option${pr[k]===x?" selected":""}>${x}</option>`).join("")}</select>`:`<input id="nf_${k}" ${t==="num"?'type="number" inputmode="numeric" min="0"':'type="text"'} value="${esc(pr[k]??"")}" autocomplete="off">`)).join("");
+  const hist=(p.hist||[]).map(h=>`<div class="row" style="padding:8px 10px;min-height:0"><span class="t" style="font-size:13px"><b>${esc(h[0])}</b>${h[1]?" \u00b7 "+esc(h[1]):""}${h[2]?` \u00b7 <b style="color:#B0105E">janji ${esc(h[2])}</b>`:""}<br><span style="opacity:.65">${esc(h[3])}${h[4]?" \u00b7 "+esc(h[4]):""}</span></span></div>`).join("");
+  const qa=nw?"":`<div class="lbl" style="margin:10px 0 6px">CATAT AKSI KE ${esc(p.nama.toUpperCase())}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">${[["call","Call"],["chat","Chat"],["dive","Deep Dive"],["concept","Concept Pitch"]].map(([k,l])=>`<button type="button" class="btn sm" data-qa="${k}" style="background:var(--tl);color:var(--dk);border:2px solid var(--dk)">${l}</button>`).join("")}</div>${p.appt?`<div class="note" style="margin-top:8px;background:#FFD23F;border:2px solid var(--dk);padding:6px 8px;font-weight:700">Janji temu: ${esc(p.appt)}</div>`:""}${hist?`<div class="lbl" style="margin:12px 0 6px">RIWAYAT</div>${hist}`:""}<div class="lbl" style="margin:14px 0 0">DETAIL PROFIL</div>`;
+  modal(`<div class="d" style="font-size:20px">${nw?"Tambah nama":"Detail nama"}</div>${nw?"":`<div class="d" style="font-size:26px;margin-top:2px">${esc(p.nama)}</div><span class="tag" style="background:${STC[stIx(p.status)]}">${esc(p.status)}</span>`}${qa}<label for="nf_n">Nama</label><input id="nf_n" value="${esc(p.nama)}" autocomplete="off">${f}<label for="nf_st">Status pipeline</label><select id="nf_st">${D.status.map((x,k)=>`<option value="${k}"${p.status===x?" selected":""}>${x}</option>`).join("")}</select><label for="nf_note">Catatan</label><textarea id="nf_note" rows="3">${esc(p.cat||"")}</textarea><div id="nf_err" class="note" style="color:#B0105E"></div>${nw?"":`<button type="button" class="btn sm" id="nDel" style="width:100%;margin-top:14px;background:#fff;color:#B0105E;border:2px solid #B0105E">Hapus nama</button>`}<div style="display:flex;gap:6px;margin-top:10px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Batal</button><button class="btn sm pk" id="mYes" style="flex:1">Simpan</button></div>`);
+  QA("[data-qa]").forEach(b=>b.onclick=()=>quickLog(p.id,b.dataset.qa));
+  if(Q("#nDel"))Q("#nDel").onclick=()=>{modal(`<div class="d" style="font-size:20px">Hapus ${esc(p.nama)}?</div><div class="note" style="margin-top:6px">Detail dan riwayat nama ini ikut hilang. XP yang sudah didapat <b>tidak</b> ditarik, dan catatan di Catatan hari ini tetap ada. Admin masih bisa memulihkan kalau salah hapus.</div><div style="display:flex;gap:6px;margin-top:14px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Batal</button><button class="btn sm" id="mYes" style="flex:1;background:#B0105E;color:#fff">Ya, hapus</button></div>`);
+    Q("#mNo").onclick=()=>nameForm(p.id);
+    Q("#mYes").onclick=async()=>{closeModal();D.names=D.names.filter(x=>x.id!==p.id);toast(p.nama+" dihapus");render();const r=await act("namaDel",{id:p.id},1);if(!r||r.error){toast((r&&r.error)||"Gagal menghapus");await act("state",null,1);render()}}};
+  Q("#mNo").onclick=closeModal;
+  Q("#mYes").onclick=async()=>{
+    const nm=Q("#nf_n").value.trim(),err=m=>Q("#nf_err").textContent=m;if(!nm){err("Isi nama dulu.");return}
+    if(D.names.some(x=>x.id!==p.id&&x.nama.toLowerCase()===nm.toLowerCase())){err(nm+" sudah ada di Daftar Nama.");return}
+    const o={};NF.forEach(([k])=>{const v=Q("#nf_"+k).value.trim();if(v!=="")o[k]=v});
+    const st=D.status[+Q("#nf_st").value]||D.status[0],cat=Q("#nf_note").value.trim();
+    closeModal();
+    if(nw){
+      D.names.push({id:"t"+Date.now(),nama:nm,status:st,cat,prof:o,hist:[],appt:""});D.xpDay+=50;D.xpWeek+=50;D.counts.drop=(D.counts.drop||0)+1;
+      D.entries.unshift({id:"tmp"+Date.now(),tc:D.today,te:D.today,jam:"...",act:"drop",an:"Name Drop",nama:nm,cat,hasil:"",status:"aktif",xp:50,bisaBatal:false});
+      toast("+50 XP \u00b7 Name Drop");render();pop(Q("#chXp"));
+      const r=await act("add",{act:"drop",namaBaru:nm,cat,status:st,prof:o,tgl:D.today},1);if(!r||r.error){toast((r&&r.error)||"Gagal menyimpan");await act("state",null,1)}render();
+    }else{
+      Object.assign(p,{nama:nm,status:st,cat,prof:o});toast("Data "+nm+" tersimpan");render();
+      const r=await act("namaSet",{id:p.id,nama:nm,status:st,cat,prof:o},1);if(!r||r.error){toast((r&&r.error)||"Gagal menyimpan");await act("state",null,1)}render();
+    }
+  };
+}
+function quickLog(nid,actId){
+  const p=D.names.find(x=>x.id===nid),a=D.acts.find(x=>x[0]===actId);if(!p||!a)return;let out="Nyambung";
+  const opts=[["Tidak nyambung","Belum respon"],["Nyambung","Nyambung"],["Janji","Dapat janji temu"]];
+  modal(`<div class="d" style="font-size:20px">${a[1]}</div><div class="d" style="font-size:26px">${esc(p.nama)}</div><label>Hasilnya?</label><div class="chips" id="qOut">${opts.map(([k,l])=>`<button type="button" class="chip" data-o="${k}" aria-pressed="false">${l}</button>`).join("")}</div><div id="qJ" style="display:none"><label for="qd">Tanggal janji</label><input id="qd" placeholder="Misal: Sabtu"><label for="qh">Jam</label><input id="qh" type="time" value="10:00"></div><div id="qS" style="display:none;margin-top:10px"><label style="display:flex;gap:8px;align-items:center;min-height:44px"><input type="checkbox" id="qUp" checked style="width:22px;height:22px"> Naikkan status ke Warming Up</label></div><label for="qDt">Tanggal</label><input type="date" id="qDt" max="${D.today}" value="${D.today}"><label for="qn">Catatan (opsional)</label><textarea id="qn" rows="2" placeholder="Misal: tertarik soal dana pendidikan"></textarea><div id="qE" class="note" style="color:#B0105E"></div><div style="display:flex;gap:6px;margin-top:10px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Kembali</button><button class="btn sm pk" id="mYes" style="flex:1">Simpan</button></div>`);
+  QA("[data-o]").forEach(b=>b.onclick=()=>{out=b.dataset.o;QA("[data-o]").forEach(x=>{const on=x===b;x.setAttribute("aria-pressed",on);x.style.background=on?"var(--yl)":""});Q("#qJ").style.display=out==="Janji"?"block":"none";Q("#qS").style.display=out==="Janji"&&p.status==="New Leads"?"block":"none"});
+  Q('[data-o="Nyambung"]').click();
+  Q("#mNo").onclick=()=>nameForm(nid);
+  Q("#mYes").onclick=async()=>{
+    let jt="";if(out==="Janji"){const d=Q("#qd").value.trim();if(!d){Q("#qE").textContent="Isi tanggal janji dulu.";return}jt=d+" "+Q("#qh").value}
+    const tgl=Q("#qDt").value||D.today,note=Q("#qn").value.trim(),lbl=out==="Janji"?"Dapat janji temu":out==="Nyambung"?"Nyambung":"Belum respon",naik=out==="Janji"&&p.status==="New Leads"&&Q("#qUp").checked;
+    if(a[5]&&(D.entries||[]).some(e=>e.act===actId&&e.te===tgl&&e.status==="aktif"&&e.nama.toLowerCase()===p.nama.toLowerCase())){Q("#qE").textContent=`${p.nama} sudah dicatat di ${a[1]} pada tanggal itu.`;return}
+    const opt=tgl===D.today,c0=(D.counts[actId]||0)+1,gain=opt?(a[5]?(c0===a[5]?a[2]:0):a[2]):0;
+    if(opt){D.counts[actId]=c0;D.xpDay+=gain;D.xpWeek+=gain}
+    p.hist.unshift([a[1],lbl,jt,nowStr(),note]);if(jt)p.appt=jt;if(naik)p.status="Warming Up";
+    if(opt)D.entries.unshift({id:"tmp"+Date.now(),tc:D.today,te:tgl,jam:"...",act:actId,an:a[1],nama:p.nama,cat:note,hasil:lbl,status:"aktif",xp:gain,bisaBatal:false});
+    toast(gain?`+${gain} XP \u00b7 ${a[1]} ${p.nama}`:(a[5]?`${a[1]} ${Math.min(c0,a[5])}/${a[5]} orang`:`${a[1]} dicatat`));
+    nameForm(nid);render();
+    const r=await act("add",{act:actId,nid,tgl,cat:note,hasil:lbl,janji:jt,naik:naik?1:0},1);
+    if(!r||r.error){toast((r&&r.error)||"Gagal menyimpan");await act("state",null,1)}render();
+  };
+}
+
+/* ---------- Battle Log + Flex ---------- */
+let fMode="story";
+function rng(){const [Y,M]=D.today.split("-").map(Number),dim=new Date(Date.UTC(Y,M,0)).getUTCDate(),key=d=>`${Y}-${String(M).padStart(2,"0")}-${String(d).padStart(2,"0")}`,from=rFrom||key(1),to=rTo||D.today;
+  let tot=0,aktif=0,best=0,days=0;for(let d=1;d<=dim;d++){const k=key(d);if(k>=from&&k<=to&&k<=D.today){days++;const x=D.dayXp[k]||0;tot+=x;if(x)aktif++;if(x>best)best=x}}
+  return{Y,M,from,to,tot,aktif,best,days,key,dim}}
+const BLN=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+function rLog(){
+  const s=rng(),first=new Date(Date.UTC(s.Y,s.M-1,1)).getUTCDay(),off=(first+6)%7,td=+D.today.slice(8);
+  let cells="";for(let i=0;i<off;i++)cells+=`<div class="day off"></div>`;
+  for(let d=1;d<=s.dim;d++){const k=s.key(d);if(d>td){cells+=`<div class="day off" style="color:#B8AED0">${d}</div>`;continue}const x=D.dayXp[k]||0,bg=x===0?"#F1ECF8":x<200?"#C9F0EC":x<400?"#7FDDD3":"#19C6B7";
+    cells+=`<button class="day ${k===pickD?"sel":""} ${k>=s.from&&k<=s.to?"in":""}" data-day="${k}" style="background:${bg};cursor:pointer" aria-label="Tanggal ${d}, ${x} XP">${d}</button>`}
+  Q("#s-log").innerHTML=`<div class="p og" style="margin-bottom:6px"><div class="lbl">BATTLE LOG \u00b7 ${BLN[s.M-1].toUpperCase()} ${s.Y}</div><div class="d" style="font-size:30px">${num(s.tot)} XP</div><div style="font-weight:700;font-size:13px">${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} \u00b7 ${s.aktif} hari aktif</div></div>
+  <div class="cal">${["Sen","Sel","Rab","Kam","Jum","Sab","Min"].map(h=>`<b>${h}</b>`).join("")}${cells}</div>
+  <div class="note">${pickD?`Mulai ${fmtTgl(pickD)} (${num(D.dayXp[pickD]||0)} XP). Tap tanggal akhir untuk jumlahkan XP. Tap tanggal yang sama untuk 1 hari.`:"Tap tanggal awal, lalu tanggal akhir: XP otomatis dijumlahkan. Kotak kuning = rentang flex."}</div>
+  <div class="p cr c3"><div class="lbl">RENTANG TANGGAL</div><div style="display:flex;gap:6px;margin-top:6px"><div style="flex:1"><label style="margin-top:0">Dari</label><input type="date" id="dFrom" min="${s.key(1)}" max="${D.today}" value="${s.from}"></div><div style="flex:1"><label style="margin-top:0">Sampai</label><input type="date" id="dTo" min="${s.key(1)}" max="${D.today}" value="${s.to}"></div></div>
+  <div style="margin-top:8px"><button class="cc" data-r="1">Hari ini</button><button class="cc" data-r="7">7 hari</button><button class="cc" data-r="0">Bulan ini</button></div></div>
+  <button class="btn pk" data-go="flex" style="margin-top:6px">BUAT FLEX CARD</button>`;
+}
+function rFlex(){
+  const s=rng(),story=fMode==="story",m=meP();
+  Q("#s-flex").innerHTML=`<div class="tabs">${[["story","Story 9:16"],["feed","Feed 1:1"]].map(([k,l])=>`<button class="${fMode===k?"on":""}" data-f="${k}">${l}</button>`).join("")}</div>
+  <div class="flex" id="fCard" style="aspect-ratio:${story?"9/14":"1/1"};max-width:${story?"300px":"100%"}"><div class="lbl" style="color:#FFD23F">LEGACYQUEST \u00b7 BATTLE LOG</div><div style="font-weight:700;font-size:13px;margin-top:2px">${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}</div>
+  <div class="d" style="font-size:${story?54:44}px;line-height:1.05;color:#FF3E9A;margin-top:${story?30:14}px">${num(s.tot)}</div><div class="d" style="font-size:18px">XP DIKUMPULKAN</div>
+  <div style="display:flex;gap:6px;margin-top:14px"><div style="flex:1;background:#FFD23F;color:#12082A;padding:8px"><div class="lbl">HARI AKTIF</div><div class="d" style="font-size:22px">${s.aktif}/${s.days}</div></div><div style="flex:1;background:#19C6B7;color:#12082A;padding:8px"><div class="lbl">STREAK</div><div class="d" style="font-size:22px">${D.streak}</div></div><div style="flex:1;background:#FF8A2B;color:#12082A;padding:8px"><div class="lbl">TERBAIK</div><div class="d" style="font-size:22px">${num(s.best)}</div></div></div>
+  <div style="position:absolute;right:14px;top:14px">${personHTML(m,52)}</div><div style="position:absolute;right:6px;bottom:0">${mas(story?150:110)}</div><div style="position:absolute;left:14px;bottom:14px;font-weight:700;font-size:13px">${esc(D.me.nama.toUpperCase())}<br><span style="color:#FFD23F">#LegacyQuest</span></div></div>
+  <div style="display:flex;gap:6px;margin-top:8px"><button class="btn pk" id="fShare" style="flex:1">BAGIKAN</button><button class="btn" id="fSave" style="flex:1;color:var(--yl)">SIMPAN PNG</button></div>
+  <div class="note">Bagikan membuka pilihan Instagram, WhatsApp, dan aplikasi lain di HP kamu. Di komputer, gambar tersimpan lalu kamu unggah sendiri.</div>`;
+  needFotos([m]);
+}
+function loadImg(src){return new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src})}
+async function flexPng(){
+  const s=rng(),story=fMode==="story",W=1080,H=story?1920:1080,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  const cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim(),FD="'Bowlby One',Impact,sans-serif",FB="Inter,'Helvetica Neue',Arial,sans-serif";
+  try{await document.fonts.load("40px 'Bowlby One'");await document.fonts.load("700 30px Inter")}catch(e){}
+  x.fillStyle="#12082A";x.fillRect(0,0,W,H);
+  const T=(t,xx,yy,font,col,al)=>{x.font=font;x.fillStyle=col;x.textAlign=al||"left";x.textBaseline="alphabetic";x.fillText(t,xx,yy)},pad=70;
+  T("LEGACYQUEST \u00b7 BATTLE LOG",pad,pad+34,"700 34px "+FB,"#FFD23F");
+  T(`${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}`,pad,pad+90,"700 42px "+FB,"#fff");
+  const y0=story?600:430;
+  T(num(s.tot),pad,y0,`${story?240:190}px ${FD}`,cv("--pk")||"#FF3E9A");
+  T("XP DIKUMPULKAN",pad,y0+96,`66px ${FD}`,"#fff");
+  const bw=(W-pad*2-40)/3,by=y0+170,bh=200;
+  [["HARI AKTIF",`${s.aktif}/${s.days}`,"#FFD23F"],["STREAK",String(D.streak),"#19C6B7"],["TERBAIK",num(s.best),"#FF8A2B"]].forEach((b,i)=>{const bx=pad+i*(bw+20);x.fillStyle=b[2];x.fillRect(bx,by,bw,bh);T(b[0],bx+26,by+62,"700 30px "+FB,"#12082A");T(b[1],bx+26,by+150,`70px ${FD}`,"#12082A")});
+  // avatar kanan atas
+  try{const m=meP(),sz=190,ax=W-pad-sz,ay=pad;x.fillStyle="#fff";x.fillRect(ax-14,ay-14,sz+28,sz+28);
+    let src;if(isFoto(m))src=FOT[m.kode].d;else src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(avSvgP(m,sz).replace(/<svg /,'<svg xmlns="http://www.w3.org/2000/svg" '));
+    x.drawImage(await loadImg(src),ax,ay,sz,sz)}catch(e){}
+  // maskot kanan bawah
+  try{const im=await loadImg(MASC),mw=story?560:420,mh=mw*im.height/im.width;x.drawImage(im,W-mw-30,H-mh-20,mw,mh)}catch(e){}
+  T(D.me.nama.toUpperCase(),pad,H-pad-46,"700 44px "+FB,"#fff");T("#LegacyQuest",pad,H-pad,"700 44px "+FB,"#FFD23F");
+  return new Promise(ok=>c.toBlob(ok,"image/png"))
+}
+async function flexShare(save){
+  const b=await flexPng();if(!b){toast("Gagal membuat gambar");return}
+  const file=new File([b],"legacyquest-flex.png",{type:"image/png"});
+  if(!save&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:"LegacyQuest",text:"#LegacyQuest"});return}catch(e){if(e&&e.name==="AbortError")return}}
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="legacyquest-flex.png";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+  toast(save?"PNG tersimpan":"Perangkat ini belum bisa Bagikan langsung, PNG tersimpan. Unggah dari galeri.");
+}
+
+/* ---------- Koleksi ---------- */
+let kTab="frame";
+const KTABS=[["frame","Frame"],["latar","Latar"],["stiker","Stiker"],["efek","Efek"],["avatar","Avatar"],["warna","Theme"]];
+function pfE(){const p=D.prof=D.prof||{};p.eq=p.eq||{};return p}
+function avCfg(){const p=pfE(),d=avDef(D.me.nama);p.av=Object.assign({g:d.g,hair:d.hair,skin:d.skin,st:"k"},p.av||{});return p.av}
+function pfSave(){const p=pfE();act("profSet",{av:p.av,frame:p.frame||null,eq:p.eq,useAv:!!p.useAv},1).then(r=>{if(r&&r.error)toast(r.error)})}
+function itemCard(i){
+  const own=(D.owned||[]).includes(i.id),slot=i.cat,p=pfE(),on=slot==="frame"?p.frame===i.id:(p.eq[slot]===i.id),m=meP();
+  let pv;
+  if(slot==="frame")pv=wrapFrame(i.id,own?avHTML(m,64):`<span style="display:block;width:64px;height:64px;background:#4A3A78"></span>`).replace('class="fw','class="fw'+(own?"":" lkd"));
+  else if(slot==="latar")pv=`<svg viewBox="0 0 100 100" width="64" height="64" style="display:block;border:2px solid var(--dk);${own?"":"filter:grayscale(1) brightness(.7)"}">${latarSvg(i.id)}</svg>`;
+  else if(slot==="stiker")pv=`<span style="display:inline-block;${own?"":"filter:grayscale(1) brightness(.7)"}">${stkSvg(i.id,56)}</span>`;
+  else if(slot==="efek")pv=`<span class="d" style="font-size:20px;${own?nmStyle(i.id):"color:#4A3A78"}">${own?esc(D.me.nama.split(/[ &]+/)[0]):"???"}</span>`;
+  else pv=`<span style="display:inline-block;border:2px solid var(--dk);${own?"":"filter:grayscale(1) brightness(.7)"}">${avSvgP(m,60,{[slot]:i.id},'<rect width="100" height="100" fill="#EDE6F7"/>')}</span>`;
+  const rc={Rare:"var(--pk)",Epic:"#9B6BFF",Legend:"var(--yl)"}[i.r];
+  return `<div class="kcard ${own?"":"lk"} ${on?"on":""}"><span class="rb" style="background:${rc}">${i.r.toUpperCase()}</span><div style="margin-top:12px;min-height:70px;display:flex;align-items:center;justify-content:center"><div class="fw-wrap" style="display:inline-block">${pv}</div></div><b>${own?i.n:"Belum didapat"}</b><small>${own?i.r:"Dari Brankas"}</small>${own?`<button ${slot==="frame"?`data-fr="${i.id}"`:`data-eq="${slot}|${i.id}"`}>${on?"Terpasang":"Pasang"}</button>`:""}</div>`}
+function rKoleksi(){
+  const p=pfE(),m=meP(),cur=p.frame&&FRI[p.frame],own=D.owned||[],w=kTab==="warna",hasF=!!(p.foto&&FOT[m.kode]&&FOT[m.kode].v===p.foto);
+  const eqn=Object.keys(p.eq).filter(k=>p.eq[k]).length+(p.frame?1:0);
+  const done=D.daily.filter(Boolean).length,mon=MON[+D.today.slice(5,7)-1];
+  const kHome=w?`<div class="p dk" style="padding:12px 0 0;height:318px"><div class="lbl" style="color:var(--yl);text-align:center">PREVIEW HALAMAN DEPAN</div><div style="width:366px;transform:scale(.72);transform-origin:top center;margin:6px auto 0;pointer-events:none;position:relative"><div class="grid"><div class="p pk c2" style="min-height:110px"><div class="lbl">XP MINGGU INI</div><div class="d" style="font-size:40px;line-height:1.05">${num(D.xpWeek)}</div><div class="bar" style="margin-top:6px"><i style="width:${Math.min(100,D.xpWeek/D.target*100)}%"></i></div></div><div class="p yl" style="min-height:110px"><div class="lbl">TIKET</div><div class="d" style="font-size:34px">${D.tiket}</div></div><div class="p tl c2" style="min-height:150px"><div class="lbl">${esc(D.me.nama.toUpperCase())}</div><div class="d" style="font-size:24px;line-height:1.1;margin-top:4px">HALO!</div><div style="position:absolute;right:4px;bottom:0">${mas(120)}</div></div><div style="display:grid;gap:6px;grid-template-rows:1fr 1fr"><div class="p pu" style="min-height:72px"><div class="lbl">STREAK</div><div class="d" style="font-size:30px">${D.streak}</div></div><div class="p og" style="min-height:72px"><div class="lbl">SEASON</div><div class="d" style="font-size:20px;margin-top:2px">${mon}</div></div></div></div><div class="p cr c3" style="margin-top:6px;color:var(--dk)"><div class="lbl" style="color:var(--dk)">DAILY QUEST \u00b7 ${done} DARI 4</div><div style="font-weight:700;font-size:14px;margin-top:4px">Lock In \u00b7 Brain Buff \u00b7 Real Talk \u00b7 Save Point</div></div></div></div>`
+  :`<div class="p dk" style="text-align:center;padding:16px 12px 18px"><div class="lbl" style="color:var(--yl)">PREVIEW FRAME</div><div style="margin:34px 0 10px">${personHTML(m,120)}</div><div class="d" style="font-size:20px"><span style="${nmStyle(p.eq.efek)}">${esc(D.me.nama)}</span></div><div style="font-weight:600;font-size:12px;color:#D9CCF3;margin-top:2px">${eqn} item terpasang${cur?" \u00b7 "+cur.n:""}</div></div>`;
+  let av="",grid="";
+  if(kTab==="avatar"){
+    const a=avCfg(),mode=hasF?`<div class="lbl" style="margin-top:6px">TAMPILKAN</div><div class="chp"><button data-mode="0" class="${p.useAv?"":"on"}">Foto</button><button data-mode="1" class="${p.useAv?"on":""}">Avatar</button></div>`:`<div class="note">Belum ada foto, jadi kamu memakai avatar. Foto dipilih dari halaman Town Hall.</div>`;
+    const hs=HAIRS[a.g].map((n,i)=>`<button data-hair="${i}" class="${a.hair===i?"on":""}">${n}</button>`).join(""),ks=SKINS.map((c,i)=>`<button class="sw ${a.skin===i?"on":""}" data-skin="${i}" aria-label="Warna kulit ${i+1}" style="background:${c}"></button>`).join("");
+    av=`${mode}<div class="lbl">JENIS</div><div class="chp"><button data-gen="w" class="${a.g==="w"?"on":""}">Wanita</button><button data-gen="p" class="${a.g==="p"?"on":""}">Pria</button></div><div class="lbl">RAMBUT</div><div class="chp">${hs}</div><div class="lbl">WARNA KULIT</div><div class="chp">${ks}</div>`;
+    grid=AVSLOTS.map(([sl,l])=>`<div class="lbl" style="grid-column:1/-1;margin-top:8px">${l.toUpperCase()}</div>`+CAT.filter(i=>i.cat===sl).map(itemCard).join("")).join("");
+  }else if(w){
+    av=`<div class="lbl" style="margin-top:6px">THEME APP KAMU</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">`+Object.keys(PAL).map(q=>{const v=PAL[q][1],on=q===palK;return `<button data-pal="${q}" aria-pressed="${on}" style="text-align:left;padding:10px;border:3px solid var(--dk);background:${on?"var(--yl)":"#fff"};min-height:92px"><div style="display:flex;height:26px;border:2px solid #12082A">${["--pk","--tl","--yl","--pu","--og"].map(c=>v[c]).map(c=>`<i style="flex:1;background:${c}"></i>`).join("")}</div><div style="font-weight:800;font-size:15px;margin-top:8px;color:#12082A">${PAL[q][0]}${on?" \u2713":""}</div></button>`}).join("")+`</div><div class="note">Pilihan theme hanya berlaku di HP kamu.</div>`;
+  }else grid=CAT.filter(i=>i.cat===kTab).map(itemCard).join("");
+  Q("#s-koleksi").innerHTML=`${kHome}<div class="note" style="margin-top:6px">Koleksi ${own.length} dari ${CAT.length} item</div><div class="kt">${KTABS.map(([k,l])=>`<button class="${kTab===k?"on":""}" data-kt="${k}" aria-pressed="${kTab===k}">${l}</button>`).join("")}</div>${av}<div class="kgrid">${grid}</div>${kTab==="frame"?`<button class="cc" id="kOff" style="margin-top:6px" ${p.frame?"":"disabled"}>Lepas frame</button>`:""}<div class="note">Item didapat dari Brankas. Frame, stiker, dan efek nama tampil di foto maupun avatar. Latar dan dandanan hanya tampil saat memakai avatar.</div>`;
+  needFotos([m]);
+}
+function photoPicked(f){
+  if(!f)return;if(!/^image\//.test(f.type)){toast("Pilih file gambar ya");return}
+  const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=async()=>{const c=document.createElement("canvas");c.width=c.height=144;const m=Math.min(im.width,im.height),x=(im.width-m)/2,y=(im.height-m)/2;c.getContext("2d").drawImage(im,x,y,m,m,0,0,144,144);
+    const data=c.toDataURL("image/jpeg",.72),v=Date.now(),p=pfE();FOT[D.me.kode]={v,d:data};saveFot();p.foto=v;p.useAv=false;toast("Foto terpasang!");render();
+    const r=await act("foto",{data},1);if(!r||r.error){toast((r&&r.error)||"Foto gagal tersimpan");return}
+    if(D.prof&&D.prof.foto){FOT[D.me.kode]={v:D.prof.foto,d:data};saveFot()}render()};
+    im.onerror=()=>toast("Foto tidak bisa dibuka");im.src=rd.result};rd.readAsDataURL(f)}
+
+/* ---------- Quest ---------- */
 function actForm(id){
   const a=D.acts.find(x=>x[0]===id),isDrop=id==="drop";
   let picked=null;
@@ -1318,14 +1684,16 @@ function actForm(id){
     const ex=D.names.find(x=>x.nama.toLowerCase()===low),p={act:id,tgl:Q("#inDate").value||D.today,cat:Q("#inNote").value.trim(),hasil};
     if(isDrop){if(ex){err(ex.nama+" sudah ada di Daftar Nama.");return}p.namaBaru=n}
     else if(ex)p.nid=ex.id;else if(picked&&picked.nw&&picked.n.toLowerCase()===low)p.namaBaru=n;else{err("Nama ini belum ada di Daftar Nama. Tap \u201c+ Tambah\u201d untuk menambahkannya.");return}
-    const before=D.daily.every(Boolean),a2=D.acts.find(x=>x[0]===id),opt=a2&&!a2[5]&&p.tgl===D.today;
+    const before=D.daily.every(Boolean),a2=D.acts.find(x=>x[0]===id),opt=a2&&p.tgl===D.today;
     closeModal();
-    if(opt){D.xpDay+=a2[2];D.xpWeek+=a2[2];toast("+"+a2[2]+" XP \u00b7 "+a2[1]);render()}else toast("Menyimpan...");
+    if(opt){const c0=(D.counts[id]||0)+1;D.counts[id]=c0;const gain=a2[5]?(c0===a2[5]?a2[2]:0):a2[2];D.xpDay+=gain;D.xpWeek+=gain;
+      D.entries.unshift({id:"tmp"+Date.now(),tc:D.today,te:D.today,jam:"...",act:id,an:a2[1],nama:n,cat:p.cat,hasil:"",status:"aktif",xp:gain,bisaBatal:false});
+      toast(gain?"+"+gain+" XP \u00b7 "+a2[1]:a2[1]+" "+Math.min(c0,a2[5])+"/"+a2[5]+" orang");render()}else toast("Menyimpan...");
     const r=await act("add",p);
     if(!r||r.error){toast((r&&r.error)||"Gagal menyimpan");await act("state",null,1);render();return}
     const h=r.hasil,tag=h.te!==D.today?` (${fmtTgl(h.te)})`:"";
     const c=D.counts[id]||0;
-    if(h.perlu5&&r.entries.filter(e=>e.act===id&&e.xp>0&&e.te===h.te&&e.status==="aktif").length===0)toast(`${h.act} ${Math.min(r.entries.filter(e=>e.act===id&&e.te===h.te&&e.status==="aktif").length,h.perlu5)}/${h.perlu5} orang${tag}`);
+    if(opt){}else if(h.perlu5&&r.entries.filter(e=>e.act===id&&e.xp>0&&e.te===h.te&&e.status==="aktif").length===0)toast(`${h.act} ${Math.min(r.entries.filter(e=>e.act===id&&e.te===h.te&&e.status==="aktif").length,h.perlu5)}/${h.perlu5} orang${tag}`);
     else if(!opt){toast(`+${h.xp} XP \u00b7 ${h.act}${tag}`);pop(Q("#chXp"))}
     if(!before&&r.daily.every(Boolean)){confetti();toast("Daily Quest selesai! +1 tiket")}
     render();
@@ -1333,75 +1701,12 @@ function actForm(id){
 }
 
 /* ---------- Spin ---------- */
-function vaultHTML(L,can){const n=D.daily.filter(Boolean).length;
- const inner=L?`<div class="vstars">${Array.from({length:{Rare:3,Epic:4,Legend:5}[L.rar]},()=>`<span>${ic("star",20)}</span>`).join("")}</div><div class="d" style="font-size:34px;margin-top:6px">${rp(L.uang)}</div>`:`<div class="d" style="font-size:34px;color:#4A3A78">???</div>`;
- const lock=!can&&!L?`<div class="vlock"><svg width="52" height="62" viewBox="0 0 40 48" aria-hidden="true"><path d="M10 22V14a10 10 0 0 1 20 0v8" fill="none" stroke="#fff" stroke-width="5"/><rect x="4" y="22" width="32" height="24" fill="#FFD23F"/><circle cx="20" cy="33" r="3.5" fill="#12082A"/></svg><b class="d">BELUM ADA TIKET</b><div class="ch">${[0,1,2,3].map(i=>`<i class="${D.daily[i]?"on":""}"></i>`).join("")}</div><p>Daily Quest ${n} dari 4. Selesaikan 4 centang untuk dapat 1 tiket.</p></div>`:"";
- return `<div class="dots"></div><div class="tag">BRANKAS HARIAN</div><div class="vW ${L?"":"idle"}"><div class="vIn ${L?L.rar.toLowerCase()+" lit":""}" id="vIn">${inner}</div><div class="vDoor ${L?"open":""}" id="vDoor"><div class="vRing"></div><i class="bt a"></i><i class="bt b"></i><i class="bt c"></i><i class="bt d"></i><div class="ptr"></div><div class="dial" id="dial"><i></i></div><div class="hdl" id="hdl"></div></div></div><div class="vfl" id="vfl"></div>${lock}`}
-function rSpin(){
-  if(spinning)return;
-  const can=D.tiket>0,n=D.daily.filter(Boolean).length,sd=D.saldo,pc=Math.min(100,sd/500);
-  const note=sd>=50000?`<div style="background:var(--yl);border:2px solid var(--dk);padding:10px"><div class="d" style="font-size:18px">SALDO SIAP DICAIRKAN</div><div style="font-weight:700;font-size:14px;margin-top:4px">Kamu masuk daftar cash Elevate Sabtu. Ambil langsung dari Ko Andre.</div><div style="font-weight:800;font-size:13px;margin-top:6px;color:#B0105E">Tidak hadir di Elevate = hadiah hangus.</div></div>`:`<div style="background:#fff;border:2px solid var(--dk);padding:10px"><div class="d" style="font-size:18px">KURANG ${rp(50000-sd)} LAGI</div><div style="font-weight:600;font-size:13px;margin-top:4px">Capai Rp50.000 sebelum Jumat 15.00 untuk dapat cash di Elevate hari Sabtu.</div></div>`;
-  Q("#s-spin").innerHTML=`<div class="vstage" id="vstage">${vaultHTML(null,can)}</div>
-  <div class="grid" style="margin-top:6px"><div class="p pk" style="min-height:52px;text-align:center;display:flex;align-items:center;justify-content:center"><div class="d" style="font-size:16px">RARE</div></div><div class="p pu" style="min-height:52px;text-align:center;display:flex;align-items:center;justify-content:center"><div class="d" style="font-size:16px">EPIC</div></div><div class="p yl" style="min-height:52px;text-align:center;display:flex;align-items:center;justify-content:center"><div class="d" style="font-size:16px">LEGEND</div></div></div>
-  <div class="p cr c3" style="margin-top:6px"><div style="display:flex;justify-content:space-between"><span class="lbl">SALDO HADIAH</span><b class="d" style="font-size:16px">${rp(sd)}</b></div><div class="bar l" style="margin-top:6px"><i style="width:${pc}%"></i></div><div role="status" style="margin-top:8px">${note}</div></div>
-  <button class="btn pk" id="spinGo" style="margin-top:6px" ${can?"":"disabled"}>${can?"BUKA BRANKAS \u00b7 "+D.tiket+" TIKET":"BELUM ADA TIKET \u00b7 DAILY QUEST "+n+"/4"}</button>
-  <div class="note">1 hari Daily Quest 4 dari 4 = 1 tiket. Tiket bisa ditabung dan tidak hangus. Setiap spin pasti dapat uang.</div>
-  ${D.spins.length?`<div class="lbl" style="margin:12px 0 6px">SPIN TERAKHIR</div>`+D.spins.map(s=>`<div class="row" style="min-height:44px"><span class="tag" style="background:${s.rar==="Legend"?"var(--yl)":s.rar==="Epic"?"var(--pk)":"var(--tl)"}">${s.rar.toUpperCase()}</span><span class="t"><b style="font-size:15px">${rp(s.uang)}</b><span>${s.waktu.slice(0,16)}</span></span></div>`).join(""):""}`;
-}
 let spinning=false;
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function countUp(el,to,ms){const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-k,3);el.textContent=rp(Math.round(to*e));if(k<1)requestAnimationFrame(f)})(t0)}
-async function doSpin(){
-  if(spinning)return;
-  if(!D.tiket){toast("Belum ada tiket. Selesaikan Daily Quest dulu.");return}
-  spinning=true;Q("#spinGo").disabled=true;
-  const call_=act("spin"),d=Q("#dial"),door=Q("#vDoor"),vin=Q("#vIn");Q(".vW").classList.remove("idle");
-  let a=0;
-  for(const [deg,ms] of [[540,520],[-360,460],[260,460]]){a+=deg;d.style.transition=`transform ${ms}ms cubic-bezier(.3,.1,.2,1)`;d.style.transform=`rotate(${a}deg)`;await wait(ms+40);door.classList.add("click");await wait(90);door.classList.remove("click")}
-  const r=await call_;
-  if(!r||r.error){spinning=false;render();return}
-  const L=r.hasil;Q("#hdl").classList.add("turn");await wait(350);
-  vin.className="vIn "+L.rar.toLowerCase();vin.innerHTML=`<div class="vstars">${Array.from({length:{Rare:3,Epic:4,Legend:5}[L.rar]},(_,i)=>`<span style="animation-delay:${.3+i*.1}s">${ic("star",20)}</span>`).join("")}</div><div class="d" style="font-size:34px;margin-top:6px" id="vAmt">${rp(0)}</div>`;
-  door.classList.add("open");await wait(450);Q("#vfl").classList.add("go");countUp(Q("#vAmt"),L.uang,900);vin.classList.add("lit");confetti();toast(L.rar.toUpperCase()+"! "+rp(L.uang)+" masuk saldo");await wait(1100);
-  spinning=false;render();
-}
-
 /* ---------- Town Hall ---------- */
-function rTown(){
-  const me=D.me.peran,hasRole=D.town.some(p=>p.peran);
-  const groups=!hasRole||me==="partner"?[]:me==="admin"?[["leader","Leader"],["partner","Partner"]]:[["tim","Direct Partner"],["leader","Leader"],["partner","Partner"]];
-  if(!gTab||(groups.length&&!groups.some(g=>g[0]===gTab)))gTab=groups.length?groups[0][0]:"partner";
-  const k=tTab==="day"?"day":"week";
-  const a=D.town.filter(p=>!hasRole||!groups.length?true:gTab==="tim"?p.tim:p.peran===gTab).sort((x,y)=>y[k]-x[k]);
-  const tabs=(arr,cur,at)=>`<div class="tabs">${arr.map(([x,l])=>`<button class="${cur===x?"on":""}" ${at}="${x}">${l}</button>`).join("")}</div>`;
-  const note="";
-  const nm=p=>esc(p.nama)+(p.me?" (kamu)":"");
-  const sp=(l,t,d,sz=18)=>`<span class="sp" style="left:${l}%;top:${t}%;animation-delay:${d}s">${ic("star",sz)}</span>`;
-  let pod="";
-  if(a.length){
-    const p1=a[0],p2=a[1],p3=a[2];
-    pod=`<div class="p hall k1 rise"><div class="rays"></div>${sp(8,14,0)}${sp(86,10,.5,22)}${sp(12,60,1,14)}${sp(88,56,.3,16)}<div class="ghost" style="left:-6px;bottom:-14px;font-size:150px">1</div><div class="lbl" style="position:relative;z-index:2">JUARA 1 \u00b7 ${tTab==="day"?"HARI INI":"MINGGU INI"}</div><div style="margin-top:26px"><div class="phW">${crownSvg}<div class="fr">${wrapFr(avFor(p1.nama,116))}</div><div class="medal">1</div></div></div><div class="nm"><div class="d" style="font-size:26px;line-height:1">${nm(p1).toUpperCase()}</div><div class="d" style="font-size:22px;margin-top:6px;color:var(--pkd)">${num(p1[k])} XP</div></div></div>`;
-    const sm=(p,r,col,txt)=>`<div class="p hall rise" style="background:var(--${col});${txt?"color:#fff;":""}animation-delay:${r===2?".15s":".3s"}"><div class="ghost" style="right:2px;bottom:-12px;font-size:96px;color:rgba(18,8,42,.12)">${r}</div><div class="lbl" style="position:relative;z-index:2">JUARA ${r}</div><div style="margin-top:10px"><div class="phW"><div class="fr">${wrapFr(avFor(p.nama,78))}</div><div class="medal" style="width:28px;height:28px;font-size:14px">${r}</div></div></div><div class="nm" style="margin-top:10px"><div class="d" style="font-size:16px;line-height:1.05">${nm(p).toUpperCase()}</div><div style="font-weight:700;font-size:14px;margin-top:3px">${num(p[k])} XP</div></div></div>`;
-    if(p2)pod+=`<div class="hallrow">${sm(p2,2,"pk")}${p3?sm(p3,3,"og"):"<div></div>"}</div>`;
-  }
-  Q("#s-town").innerHTML=(groups.length?tabs(groups,gTab,"data-tg"):"")+tabs([["day","Hari ini"],["week","Minggu ini"]],tTab,"data-tt")+(a.length?pod+`<div style="margin-top:6px">`+a.slice(3).map((p,i)=>`<div class="row" style="${p.me?"background:var(--yl)":""}"><b class="d" style="width:26px;font-size:16px">${i+4}</b><span style="flex:none;display:block;padding:2px">${wrapFr(avFor(p.nama,38))}</span><span class="t"><b>${nm(p)}</b></span><b>${num(p[k])} XP</b></div>`).join("")+`</div>`:`<div class="note" style="text-align:center;padding:20px 0">Belum ada peserta di kelompok ini.</div>`)+(note?`<div class="note">${note}</div>`:"");
-}
-
 /* ---------- Guild Map ---------- */
 let gOpen="";
-function gRow(p,o){
-  const xp=p.xp||0,pc=Math.min(100,Math.round(100*xp/(D.target||2500))),open=gOpen===p.kode&&o.tap,dn=["S","S","R","K","J","S","M"];
-  const last=p.diam===0?"Hari ini":p.diam===1?"Kemarin":p.diam>=99?"Belum mencatat":p.diam+" hari lalu";
-  const tag=o.tag?`<span class="tag" style="display:inline-block;font-size:10px;padding:0 5px;margin-left:6px;vertical-align:2px;background:${p.peran==="leader"?"var(--pu);color:#fff":"var(--cr)"}">${p.peran.toUpperCase()}</span>`:"";
-  return `<div class="row" ${o.tap?`data-gm="${p.kode}"`:""} style="flex-wrap:wrap;align-items:flex-start;padding:10px;gap:10px;${o.tap?"cursor:pointer;":""}${o.me?"background:var(--yl);":""}">
-  <span style="flex:none;display:block">${avFor(p.nama,44)}</span>
-  <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px;line-height:1.2">${esc(p.nama)}${o.me?" (kamu)":""}${tag}</div>
-   <div style="font-size:12px;font-weight:600;color:var(--mut);margin:2px 0 6px">Aktif ${p.hari}/7 hari \u00b7 ${last}</div>
-   <div style="display:flex;gap:3px">${(p.hr||[]).map((d,k)=>`<span style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid var(--dk);background:${d?"var(--tl)":"#F1ECF8"}">${dn[k]}</span>`).join("")}</div></div>
-  <div style="flex:none;text-align:right"><div class="d" style="font-size:20px;line-height:1">${num(xp)}</div><div style="font-size:11px;font-weight:700;color:var(--mut)">XP</div><div style="font-size:12px;font-weight:800;margin-top:6px">${pc}%</div>
-   <div style="width:48px;height:6px;border:2px solid var(--dk);background:#fff;margin-top:2px;box-sizing:content-box"><i style="display:block;height:100%;width:${pc}%;background:var(--pk)"></i></div></div>
-  ${open?`<div style="flex-basis:100%;border-top:2px dashed var(--dk);padding-top:6px">${(p.log||[]).length?p.log.map(l=>`<div style="padding:4px 0;font-size:13px"><b>${esc(l[0])}</b> \u00b7 ${esc(l[1])}${l[2]?`<span style="color:var(--mut)"> \u00b7 ${esc(l[2])}</span>`:""}</div>`).join(""):`<div class="note">Belum ada catatan minggu ini.</div>`}</div>`:""}</div>`;
-}
 function rGuild(){
   const G=D.guildTim;
   if(G){const L=G.list,tot=L.reduce((x,p)=>x+p.xp,0),act=L.filter(p=>p.diam===0).length;
@@ -1422,24 +1727,6 @@ function rGuild(){
 }
 
 /* ---------- Daftar Nama ---------- */
-function rNames(){
-  Q("#s-names").innerHTML=`<div class="p pk" style="margin-bottom:6px"><div class="lbl">DAFTAR NAMA</div><div class="d" style="font-size:26px">${D.names.length} nama</div><div style="font-weight:700;font-size:13px">Leader kamu bisa melihat daftar ini.</div></div>
-  <button class="btn" id="addNama" style="margin-bottom:8px">+ TAMBAH NAMA</button>`+(D.names.length?D.names.map((n,i)=>`<button class="row" data-n="${n.id}" style="width:100%;text-align:left"><b class="d" style="width:26px;font-size:15px">${i+1}</b><span class="t"><b style="font-size:15px">${esc(n.nama)}</b>${n.cat?`<span>${esc(n.cat)}</span>`:""}</span><span class="tag" style="background:${STC[Math.max(0,D.status.indexOf(n.status))]}">${esc(n.status)}</span></button>`).join(""):`<div class="note">Belum ada nama. Tambah dari sini, atau saat mencatat poin.</div>`);
-}
-function namaForm(){
-  modal(`<div class="d" style="font-size:20px">Tambah nama</div><label for="nNm">Nama</label><input id="nNm" autocomplete="off"><label for="nCt">Catatan (opsional)</label><input id="nCt"><div id="nEr" class="note" style="color:#B0105E"></div><div style="display:flex;gap:6px;margin-top:10px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Batal</button><button class="btn sm pk" id="mYes" style="flex:1">Simpan</button></div>`);
-  Q("#mNo").onclick=closeModal;Q("#nNm").focus();
-  Q("#mYes").onclick=async()=>{const nm=Q("#nNm").value.trim();if(!nm){Q("#nEr").textContent="Isi nama dulu.";return}const r=await act("namaAdd",{nama:nm,cat:Q("#nCt").value.trim()},1);if(!r||r.error){Q("#nEr").textContent=(r&&r.error)||"Gagal";return}closeModal();toast("Nama tersimpan");render()};
-}
-function namaDetail(id){
-  const n=D.names.find(x=>x.id===id);if(!n)return;
-  modal(`<div class="d" style="font-size:22px">${esc(n.nama)}</div>${n.cat?`<div class="note">${esc(n.cat)}</div>`:""}<label>Status</label><div class="chips">${D.status.map(s=>`<button type="button" class="chip" data-st="${s}" style="${n.status===s?"background:var(--yl)":""}">${s}</button>`).join("")}</div>
-  <div style="display:flex;gap:6px;margin-top:14px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Tutup</button><button class="btn sm" id="nDel" style="flex:1;background:#B0105E;color:#fff">Hapus</button></div>`);
-  Q("#mNo").onclick=closeModal;
-  QA("[data-st]").forEach(b=>b.onclick=async()=>{const r=await act("namaStatus",{id,status:b.dataset.st});if(r&&!r.error){closeModal();render()}});
-  Q("#nDel").onclick=()=>{modal(`<div class="d" style="font-size:20px">Hapus ${esc(n.nama)}?</div><div class="note">XP yang sudah didapat tidak ditarik. Admin masih bisa memulihkan kalau salah hapus.</div><div style="display:flex;gap:6px;margin-top:14px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Tidak</button><button class="btn sm" id="mYes" style="flex:1;background:#B0105E;color:#fff">Ya, hapus</button></div>`);Q("#mNo").onclick=closeModal;Q("#mYes").onclick=async()=>{const r=await act("namaDel",{id});if(r&&!r.error){closeModal();render()}}};
-}
-
 /* ---------- Crew HQ ---------- */
 const LVC={Rookie:"#C7C2D6",Hustler:"var(--tl)",Captain:"var(--yl)",Boss:"var(--og)",Mogul:"var(--pk)"},LVN=["Rookie","Hustler","Captain","Boss","Mogul"],LVT=[0,2,4,8,12];
 const lvPill=n=>`<span class="tag" style="background:${LVC[n]};font-size:11px;padding:1px 7px">${n.toUpperCase()}</span>`;
@@ -1480,21 +1767,6 @@ async function doReset(kode){
 }
 
 /* ---------- Battle Log ---------- */
-function rLog(){
-  const [Y,M]=D.today.split("-").map(Number),first=new Date(Date.UTC(Y,M-1,1)).getUTCDay(),off=(first+6)%7,days=new Date(Date.UTC(Y,M,0)).getUTCDate(),td=+D.today.slice(8);
-  const key=d=>`${Y}-${String(M).padStart(2,"0")}-${String(d).padStart(2,"0")}`,from=rFrom||key(1),to=rTo||D.today;
-  let tot=0,aktif=0;for(let d=1;d<=days;d++){const k=key(d);if(k>=from&&k<=to){const x=D.dayXp[k]||0;tot+=x;if(x)aktif++}}
-  let cells="";for(let i=0;i<off;i++)cells+=`<div class="day off"></div>`;
-  for(let d=1;d<=days;d++){const k=key(d);if(d>td){cells+=`<div class="day off" style="color:#B8AED0">${d}</div>`;continue}const x=D.dayXp[k]||0,bg=x===0?"#F1ECF8":x<200?"#C9F0EC":x<400?"#7FDDD3":"#19C6B7";
-    cells+=`<button class="day ${k===pickD?"sel":""} ${k>=from&&k<=to?"in":""}" data-day="${k}" style="background:${bg};cursor:pointer">${d}</button>`}
-  Q("#s-log").innerHTML=`<div class="p og" style="margin-bottom:6px"><div class="lbl">BATTLE LOG \u00b7 ${fmtTgl(from).toUpperCase()} - ${fmtTgl(to).toUpperCase()}</div><div class="d" style="font-size:30px">${num(tot)} XP</div><div style="font-weight:700;font-size:13px">${aktif} hari aktif</div></div>
-  <div class="cal">${["Sen","Sel","Rab","Kam","Jum","Sab","Min"].map(h=>`<b>${h}</b>`).join("")}${cells}</div>
-  <div class="note">${pickD?`Mulai ${fmtTgl(pickD)} (${num(D.dayXp[pickD]||0)} XP). Tap tanggal akhir untuk menjumlahkan. Tap tanggal yang sama untuk 1 hari.`:"Tap tanggal awal, lalu tanggal akhir: XP otomatis dijumlahkan. Kotak kuning = rentang."}</div>
-  <div style="margin:4px 0"><button class="cc" data-r="1">Hari ini</button><button class="cc" data-r="7">7 hari</button><button class="cc" data-r="0">Bulan ini</button></div>
-  <button class="btn pk" id="flexCopy" style="margin-top:4px">SALIN UNTUK FLEX</button><div class="note">Di pilot, Flex berupa teks yang bisa ditempel ke status atau story. Ekspor gambar menyusul di versi final.</div>`;
-  Q("#flexCopy").onclick=()=>copy(`LEGACYQUEST \u00b7 BATTLE LOG\n${fmtTgl(from)} sampai ${fmtTgl(to)} ${Y}\n${num(tot)} XP dikumpulkan \u00b7 ${aktif} hari aktif \u00b7 streak ${D.streak} hari`,"Teks Flex tersalin");
-}
-
 /* ---------- Brain Buff ---------- */
 const TOP=["Komunikasi","Keuangan","Leadership","Mindset","Manajemen prioritas","Habit","Membangun tim","Appointment","Closing","Menghadapi penolakan"];let bTop=0,bMode="topik",bPos="partner",bLang="Indonesia",bBook="";
 function prompt_(){const pos=bPos;
@@ -1517,32 +1789,49 @@ function rBrain(){
 
 /* ---------- Warna ---------- */
 function rPalet(){
-  Q("#s-palet").innerHTML=`<div class="lbl" style="margin:2px 2px 8px">WARNA APP KAMU</div><div class="grid" style="grid-template-columns:1fr 1fr">${Object.keys(PAL).map(k=>{const v=PAL[k][1],on=palK===k;return `<button data-pal="${k}" class="p ${on?"yl":"cr"}" style="border:2px solid var(--dk);padding:10px;min-height:76px"><div style="display:flex;border:2px solid var(--dk);height:20px">${["--pk","--tl","--yl","--pu","--og"].map(c=>`<i style="flex:1;background:${v[c]}"></i>`).join("")}</div><div class="d" style="font-size:14px;margin-top:8px">${PAL[k][0]} ${on?"\u2713":""}</div></button>`}).join("")}</div><div class="note">Warna tersimpan di HP ini saja.</div>`;
+  Q("#s-palet").innerHTML=`<div class="lbl" style="margin:2px 2px 8px">THEME KAMU</div><div class="grid" style="grid-template-columns:1fr 1fr">${Object.keys(PAL).map(k=>{const v=PAL[k][1],on=palK===k;return `<button data-pal="${k}" class="p ${on?"yl":"cr"}" style="border:2px solid var(--dk);padding:10px;min-height:76px"><div style="display:flex;border:2px solid var(--dk);height:20px">${["--pk","--tl","--yl","--pu","--og"].map(c=>`<i style="flex:1;background:${v[c]}"></i>`).join("")}</div><div class="d" style="font-size:14px;margin-top:8px">${PAL[k][0]} ${on?"\u2713":""}</div></button>`}).join("")}</div><div class="note">Warna tersimpan di HP ini saja.</div>`;
 }
 
 /* ---------- event ---------- */
 document.addEventListener("click",async e=>{
   const t=e.target;let b;
+  if(t.closest("#pNext")){const nq=nextQuest();const a=nq&&D.acts.find(x=>nq.txt.indexOf(x[1])===0);if(a)qTab=a[3];go("quest");return}
+  if(t.closest("#pMas")){tipI=(tipI+1)%tipsList().length;Q("#bub").textContent=tipsList()[tipI];const m=Q("#mHome");if(m&&m.animate){m.animate([{transform:"translateY(0) rotate(0)"},{transform:"translate(-18px,-38px) rotate(-10deg)"},{transform:"translate(10px,-14px) rotate(8deg)"},{transform:"translateY(0) rotate(0)"}],{duration:620,easing:"ease-out"})}return}
+  if(t.closest("#homeSpin")){doSpin();return}
+  if(b=t.closest("[data-i]")){iTab=b.dataset.i;rInfo();return}
+  if(b=t.closest("[data-f]")){fMode=b.dataset.f;rFlex();return}
+  if(t.closest("#fShare")){flexShare(false);return}
+  if(t.closest("#fSave")){flexShare(true);return}
+  if(b=t.closest("[data-kt]")){kTab=b.dataset.kt;rKoleksi();return}
+  if(b=t.closest("[data-fr]")){const p=pfE();p.frame=p.frame===b.dataset.fr?null:b.dataset.fr;pfSave();rKoleksi();return}
+  if(b=t.closest("[data-eq]")){const [sl,id]=b.dataset.eq.split("|"),p=pfE();if(p.eq[sl]===id)delete p.eq[sl];else p.eq[sl]=id;pfSave();rKoleksi();return}
+  if(t.closest("#kOff")){const p=pfE();p.frame=null;pfSave();rKoleksi();return}
+  if(b=t.closest("[data-mode]")){pfE().useAv=b.dataset.mode==="1";pfSave();rKoleksi();return}
+  if(b=t.closest("[data-hair]")){avCfg().hair=+b.dataset.hair;pfE().useAv=true;pfSave();rKoleksi();return}
+  if(b=t.closest("[data-skin]")){avCfg().skin=+b.dataset.skin;pfE().useAv=true;pfSave();rKoleksi();return}
+  if(b=t.closest("[data-gen]")){const a=avCfg();a.g=b.dataset.gen;a.hair=0;pfE().useAv=true;pfSave();rKoleksi();return}
+  if(t.closest("#phPick")){Q("#phFile").click();return}
+  if(t.closest("#phDel")){const p=pfE();delete FOT[D.me.kode];saveFot();p.foto=0;p.useAv=true;toast("Foto dihapus");render();act("fotoDel",{},1);return}
   if(b=t.closest("[data-nav]")){go(b.dataset.nav);return}
   if(b=t.closest("[data-go]")){go(b.dataset.go);return}
   if(t.closest("#back")){go(PARENT[tab]||"home");return}
   if(b=t.closest("[data-d]")){const i=+b.dataset.d;if(i===1){go("brain");return}if(i===0){lockForm();return}toast(DAILYTIP[i]);return}
   if(b=t.closest("[data-q]")){qTab=b.dataset.q;rQuest();return}
   if(b=t.closest("[data-a]")){actForm(b.dataset.a);return}
-  if(b=t.closest("[data-undo]")){const id=b.dataset.undo,en=D.entries.find(x=>x.id===id);modal(`<div class="d" style="font-size:20px">Batalkan ${esc(en.an)}?</div><div class="note" style="margin-top:6px"><b>${esc(en.nama)}</b> \u00b7 ${en.jam}${en.xp?`<br>XP berkurang <b>${en.xp}</b>`:""}. Pembatalan tercatat untuk audit leader.</div><div style="display:flex;gap:6px;margin-top:14px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Tidak</button><button class="btn sm" id="mYes" style="flex:1;background:#B0105E;color:#fff">Ya, batalkan</button></div>`);Q("#mNo").onclick=closeModal;Q("#mYes").onclick=async()=>{closeModal();if(en.status==="aktif"){en.status="batal";if(en.te===D.today)D.xpDay=Math.max(0,D.xpDay-(en.xp||0));D.xpWeek=Math.max(0,D.xpWeek-(en.xp||0));toast("Dibatalkan");render()}const r=await act("undo",{id});if(!r||r.error){await act("state",null,1)}render()};return}
+  if(b=t.closest("[data-undo]")){const id=b.dataset.undo,en=D.entries.find(x=>x.id===id);if(!en||en.status!=="aktif")return;en.status="batal";if(en.te===D.today)D.xpDay=Math.max(0,D.xpDay-(en.xp||0));D.xpWeek=Math.max(0,D.xpWeek-(en.xp||0));if(en.tc===D.today)D.counts[en.act]=Math.max(0,(D.counts[en.act]||1)-1);toast("Dibatalkan");render();const r=await act("undo",{id},1);if(!r||r.error){toast("Gagal membatalkan, memuat ulang");await act("state",null,1)}render();return}
   if(t.closest("#spinGo")){doSpin();return}
   if(b=t.closest("[data-gm]")){gOpen=gOpen===b.dataset.gm?"":b.dataset.gm;rGuild();return}
   if(b=t.closest("[data-tt]")){tTab=b.dataset.tt;rTown();return}
   if(b=t.closest("[data-tg]")){gTab=b.dataset.tg;rTown();return}
-  if(t.closest("#addNama")){namaForm();return}
-  if(b=t.closest("[data-n]")){namaDetail(b.dataset.n);return}
+  if(t.closest("#addNama")){nameForm(null);return}
+  if(b=t.closest("[data-n]")){nameForm(b.dataset.n);return}
   if(b=t.closest("[data-ct]")){cTab=b.dataset.ct;rCrew();return}
   if(t.closest("#salin")){copy(statsText(D.crew),"Stats tersalin");return}
   if(b=t.closest("[data-misi]")){const r=await act("misi",{kode:b.dataset.misi});if(r&&!r.error){toast("Diperbarui");rCrew()}return}
   if(b=t.closest("[data-reset]")){doReset(b.dataset.reset);return}
   if(b=t.closest("[data-day]")){const k=b.dataset.day;if(!pickD)pickD=k;else{rFrom=pickD<k?pickD:k;rTo=pickD<k?k:pickD;pickD=""}rLog();return}
   if(b=t.closest("[data-r]")){const n=+b.dataset.r;pickD="";if(n===0){rFrom=null;rTo=null}else{rTo=D.today;const p=D.today.split("-");const d=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]-(n-1)));rFrom=d.toISOString().slice(0,10)}rLog();return}
-  if(b=t.closest("[data-pal]")){setPal(b.dataset.pal,1);rPalet();toast("Warna "+PAL[palK][0]+" dipakai");return}
+  if(b=t.closest("[data-pal]")){setPal(b.dataset.pal,1);render();toast("Warna "+PAL[palK][0]+" dipakai");return}
   if(t.closest("#logout")){TOK=null;try{localStorage.removeItem("lqp_tok");localStorage.removeItem("lqp_cache")}catch(x){}D=null;showLogin();return}
   if(t.closest("#bCopy")){copy(prompt_(),"Prompt tersalin! Tempel ke AI kamu.");return}
   if(t.closest("#bDone")){const r=await act("brain");if(r&&!r.error){toast("Brain Buff selesai!");if(r.daily.every(Boolean)){confetti()}go("home")}return}
