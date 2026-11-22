@@ -1172,7 +1172,14 @@ const NAV=[["home","Base Camp","home"],["quest","Quest","quest"],["spin","Spin",
 const rootOf=s=>PARENT[s]||s;
 const fmtTgl=t=>{const p=t.split("-");return +p[2]+" "+["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][+p[1]-1]};
 const DAILY=["Lock In","Brain Buff","Real Talk","Save Point"];
-const DAILYTIP=["Otomatis: target hari ini sudah diatur","","Otomatis: tercentang setelah 2 orang berbeda tatap muka tercatat hari ini","Otomatis: tercentang setelah ada 1 aktivitas tercatat hari ini"];
+function lockForm(){
+  modal(`<div class="d" style="font-size:20px">LOCK IN</div><div class="note" style="margin:2px 0 0">Tetapkan target XP hari ini. Saran: 417 XP (2.500 : 6 hari kerja).</div><label for="lkT">Target XP hari ini</label><input id="lkT" type="number" inputmode="numeric" min="100" max="5000" value="${D.lockT||417}"><div id="lkE" class="note" style="color:#B0105E"></div><div style="display:flex;gap:6px;margin-top:10px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Batal</button><button class="btn sm pk" id="mYes" style="flex:1">LOCK IN</button></div>`);
+  Q("#mNo").onclick=closeModal;
+  Q("#mYes").onclick=async()=>{const v=Math.round(+Q("#lkT").value);if(!(v>=100&&v<=5000)){Q("#lkE").textContent="Isi 100 sampai 5.000.";return}
+    const before=D.daily.every(Boolean);closeModal();const r=await act("lock",{target:v});if(!r||r.error){toast((r&&r.error)||"Gagal menyimpan");return}
+    toast("Lock In! Target "+num(v)+" XP");if(!before&&r.daily.every(Boolean)){confetti();toast("Daily Quest selesai! +1 tiket")}render()};
+}
+const DAILYTIP=["Ketuk untuk set target hari ini","","Otomatis: tercentang setelah 2 orang berbeda tatap muka tercatat hari ini","Otomatis: tercentang setelah ada 1 aktivitas tercatat hari ini"];
 const ICON={Hustle:"phone",Squad:"users",Solo:"star"};
 
 function shell(on){var b=document.getElementById("boot");if(b)b.style.display="none";Q("#app").classList.toggle("nolog",!on)}
@@ -1273,16 +1280,16 @@ function rHome(){
    <div class="p og" style="min-height:96px"><div class="lbl">SALDO</div><div class="d" style="font-size:18px;margin-top:4px">${rp(D.saldo)}</div><div style="font-weight:700;font-size:11px">cash di Elevate</div></div></div></div>
   <div class="p cr c3" style="margin-top:6px"><div class="lbl">DAILY QUEST \u00b7 ${done} DARI 4</div><div style="margin-top:4px">${DAILY.map((n,i)=>`<button class="dr" data-d="${i}"><span class="chk ${D.daily[i]?"on":""}">${D.daily[i]?ic("check",16):""}</span><span class="n" style="${D.daily[i]?"text-decoration:line-through":""}">${n}</span><span class="st">${D.daily[i]?"SELESAI":i===2?D.rt+"/2":"BELUM"}</span></button>`).join("")}</div></div>
   <div class="grid" style="margin-top:6px"><button class="tile pk" data-go="names"><span>${ic("list",26)}</span>Daftar Nama</button><button class="tile tl" data-go="brain"><span>${ic("bulb",26)}</span>Brain Buff</button><button class="tile og" data-go="log"><span>${ic("cal",26)}</span>Battle Log</button></div>
-  ${L?`<button class="p dk c3" data-go="guild" style="margin-top:6px;border:1px solid var(--yl);display:flex;align-items:center;gap:10px;min-height:52px;color:#fff"><span class="d" style="flex:1;font-size:16px;color:var(--yl)">GUILD MAP</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}${L?`<button class="p pu c3" data-go="crew" style="margin-top:6px;border:0;display:flex;align-items:center;gap:10px;min-height:56px;color:#fff"><span class="d" style="flex:1;font-size:18px">${D.me.peran==="admin"?"ADMIN":"CREW HQ"}</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}
+  ${L||D.guildTim?`<button class="p dk c3" data-go="guild" style="margin-top:6px;border:1px solid var(--yl);display:flex;align-items:center;gap:10px;min-height:52px;color:#fff"><span class="d" style="flex:1;font-size:16px;color:var(--yl)">GUILD MAP</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}${L?`<button class="p pu c3" data-go="crew" style="margin-top:6px;border:0;display:flex;align-items:center;gap:10px;min-height:56px;color:#fff"><span class="d" style="flex:1;font-size:18px">${D.me.peran==="admin"?"ADMIN":"CREW HQ"}</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>`:""}
   <button class="p dk c3" data-go="palet" style="margin-top:6px;border:0;display:flex;align-items:center;gap:10px;min-height:52px;color:#fff"><span class="d" style="flex:1;font-size:16px;color:var(--yl)">WARNA APP</span><span class="d" style="font-size:18px;color:var(--yl)">&rsaquo;</span></button>
   <div class="note" style="text-align:center"><button id="logout" style="border:0;background:none;text-decoration:underline;font-weight:700;color:var(--mut);min-height:44px">Keluar</button></div>`;
 }
 
 /* ---------- Quest ---------- */
 function rQuest(){
-  const pct=Math.min(100,Math.round(D.xpDay/417*100));
+  const pct=Math.min(100,Math.round(D.xpDay/(D.lockT||417)*100));
   const list=D.acts.filter(a=>a[3]===qTab);
-  Q("#s-quest").innerHTML=`<div class="p yl" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between" class="lbl"><span>XP HARI INI</span><span>${num(D.xpDay)} XP</span></div><div class="bar" style="margin-top:6px"><i style="width:${pct}%"></i></div></div>
+  Q("#s-quest").innerHTML=`<div class="p yl" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between" class="lbl"><span>XP HARI INI</span><span>${num(D.xpDay)} / ${num(D.lockT||417)} XP</span></div><div class="bar" style="margin-top:6px"><i style="width:${pct}%"></i></div></div>
   <div class="tabs">${["Hustle","Squad","Solo"].map(k=>`<button class="${qTab===k?"on":""}" data-q="${k}">${k}</button>`).join("")}</div>
   ${list.map(a=>{const c=D.counts[a[0]]||0;return `<div class="row"><span class="ib" style="background:var(--cr)">${ic(AICON[a[0]]||ICON[a[3]],22)}</span><span class="t"><b>${a[1]}</b><span>${DESC[a[0]]||""}</span>${a[5]||c?`<span style="color:var(--pkd);font-weight:700">${a[5]?`${Math.min(c,a[5])}/${a[5]} orang${c>=a[5]?" \u00b7 XP masuk":""}`:`Dicatat ${c}x hari ini`}</span>`:""}</span><span class="xpb">+${a[2]}</span><button class="sq" data-a="${a[0]}" aria-label="Catat ${a[1]}">${ic("plus",24)}</button></div>`}).join("")}
   <div class="lbl" style="margin:14px 0 6px">CATATAN TERBARU</div>
@@ -1361,12 +1368,12 @@ async function doSpin(){
 /* ---------- Town Hall ---------- */
 function rTown(){
   const me=D.me.peran,hasRole=D.town.some(p=>p.peran);
-  const groups=!hasRole||me==="partner"?[]:me==="admin"?[["leader","Leader"],["partner","Partner"]]:[["tim","Tim saya"],["leader","Leader"],["partner","Partner"]];
+  const groups=!hasRole||me==="partner"?[]:me==="admin"?[["leader","Leader"],["partner","Partner"]]:[["tim","Direct Partner"],["leader","Leader"],["partner","Partner"]];
   if(!gTab||(groups.length&&!groups.some(g=>g[0]===gTab)))gTab=groups.length?groups[0][0]:"partner";
   const k=tTab==="day"?"day":"week";
   const a=D.town.filter(p=>!hasRole||!groups.length?true:gTab==="tim"?p.tim:p.peran===gTab).sort((x,y)=>y[k]-x[k]);
   const tabs=(arr,cur,at)=>`<div class="tabs">${arr.map(([x,l])=>`<button class="${cur===x?"on":""}" ${at}="${x}">${l}</button>`).join("")}</div>`;
-  const note=me==="partner"?"Peringkat sesama partner.":"Tim saya: partner di bawah garis kamu.";
+  const note="";
   const nm=p=>esc(p.nama)+(p.me?" (kamu)":"");
   const sp=(l,t,d,sz=18)=>`<span class="sp" style="left:${l}%;top:${t}%;animation-delay:${d}s">${ic("star",sz)}</span>`;
   let pod="";
@@ -1376,7 +1383,7 @@ function rTown(){
     const sm=(p,r,col,txt)=>`<div class="p hall rise" style="background:var(--${col});${txt?"color:#fff;":""}animation-delay:${r===2?".15s":".3s"}"><div class="ghost" style="right:2px;bottom:-12px;font-size:96px;color:rgba(18,8,42,.12)">${r}</div><div class="lbl" style="position:relative;z-index:2">JUARA ${r}</div><div style="margin-top:10px"><div class="phW"><div class="fr">${wrapFr(avFor(p.nama,78))}</div><div class="medal" style="width:28px;height:28px;font-size:14px">${r}</div></div></div><div class="nm" style="margin-top:10px"><div class="d" style="font-size:16px;line-height:1.05">${nm(p).toUpperCase()}</div><div style="font-weight:700;font-size:14px;margin-top:3px">${num(p[k])} XP</div></div></div>`;
     if(p2)pod+=`<div class="hallrow">${sm(p2,2,"pk")}${p3?sm(p3,3,"og"):"<div></div>"}</div>`;
   }
-  Q("#s-town").innerHTML=(groups.length?tabs(groups,gTab,"data-tg"):"")+tabs([["day","Hari ini"],["week","Minggu ini"]],tTab,"data-tt")+(a.length?pod+`<div style="margin-top:6px">`+a.slice(3).map((p,i)=>`<div class="row" style="${p.me?"background:var(--yl)":""}"><b class="d" style="width:26px;font-size:16px">${i+4}</b><span style="flex:none;display:block;padding:2px">${wrapFr(avFor(p.nama,38))}</span><span class="t"><b>${nm(p)}</b></span><b>${num(p[k])} XP</b></div>`).join("")+`</div>`:`<div class="note" style="text-align:center;padding:20px 0">Belum ada peserta di kelompok ini.</div>`)+`<div class="note">${note}</div>`;
+  Q("#s-town").innerHTML=(groups.length?tabs(groups,gTab,"data-tg"):"")+tabs([["day","Hari ini"],["week","Minggu ini"]],tTab,"data-tt")+(a.length?pod+`<div style="margin-top:6px">`+a.slice(3).map((p,i)=>`<div class="row" style="${p.me?"background:var(--yl)":""}"><b class="d" style="width:26px;font-size:16px">${i+4}</b><span style="flex:none;display:block;padding:2px">${wrapFr(avFor(p.nama,38))}</span><span class="t"><b>${nm(p)}</b></span><b>${num(p[k])} XP</b></div>`).join("")+`</div>`:`<div class="note" style="text-align:center;padding:20px 0">Belum ada peserta di kelompok ini.</div>`)+(note?`<div class="note">${note}</div>`:"");
 }
 
 /* ---------- Guild Map ---------- */
@@ -1385,9 +1392,9 @@ function gRow(p,o){
   const xp=p.xp||0,pc=Math.min(100,Math.round(100*xp/(D.target||2500))),open=gOpen===p.kode&&o.tap,dn=["S","S","R","K","J","S","M"];
   const last=p.diam===0?"Hari ini":p.diam===1?"Kemarin":p.diam>=99?"Belum mencatat":p.diam+" hari lalu";
   const tag=o.tag?`<span class="tag" style="display:inline-block;font-size:10px;padding:0 5px;margin-left:6px;vertical-align:2px;background:${p.peran==="leader"?"var(--pu);color:#fff":"var(--cr)"}">${p.peran.toUpperCase()}</span>`:"";
-  return `<div class="row" ${o.tap?`data-gm="${p.kode}"`:""} style="flex-wrap:wrap;align-items:flex-start;padding:10px;gap:10px;${o.tap?"cursor:pointer;":""}">
+  return `<div class="row" ${o.tap?`data-gm="${p.kode}"`:""} style="flex-wrap:wrap;align-items:flex-start;padding:10px;gap:10px;${o.tap?"cursor:pointer;":""}${o.me?"background:var(--yl);":""}">
   <span style="flex:none;display:block">${avFor(p.nama,44)}</span>
-  <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px;line-height:1.2">${esc(p.nama)}${tag}</div>
+  <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px;line-height:1.2">${esc(p.nama)}${o.me?" (kamu)":""}${tag}</div>
    <div style="font-size:12px;font-weight:600;color:var(--mut);margin:2px 0 6px">Aktif ${p.hari}/7 hari \u00b7 ${last}</div>
    <div style="display:flex;gap:3px">${(p.hr||[]).map((d,k)=>`<span style="width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid var(--dk);background:${d?"var(--tl)":"#F1ECF8"}">${dn[k]}</span>`).join("")}</div></div>
   <div style="flex:none;text-align:right"><div class="d" style="font-size:20px;line-height:1">${num(xp)}</div><div style="font-size:11px;font-weight:700;color:var(--mut)">XP</div><div style="font-size:12px;font-weight:800;margin-top:6px">${pc}%</div>
@@ -1395,6 +1402,11 @@ function gRow(p,o){
   ${open?`<div style="flex-basis:100%;border-top:2px dashed var(--dk);padding-top:6px">${(p.log||[]).length?p.log.map(l=>`<div style="padding:4px 0;font-size:13px"><b>${esc(l[0])}</b> \u00b7 ${esc(l[1])}${l[2]?`<span style="color:var(--mut)"> \u00b7 ${esc(l[2])}</span>`:""}</div>`).join(""):`<div class="note">Belum ada catatan minggu ini.</div>`}</div>`:""}</div>`;
 }
 function rGuild(){
+  const G=D.guildTim;
+  if(G){const L=G.list,tot=L.reduce((x,p)=>x+p.xp,0),act=L.filter(p=>p.diam===0).length;
+    Q("#s-guild").innerHTML=`<div class="p og" style="margin-bottom:6px"><div class="lbl">GUILD MAP \u00b7 ${G.leader?"TIM "+esc(G.leader.split(/[ &]+/)[0].toUpperCase())+" \u00b7 ":""}MINGGU INI</div><div class="d" style="font-size:34px;line-height:1.1;margin-top:4px">${num(tot)} XP</div><div style="font-weight:700;font-size:13px;margin-top:2px">${L.length} partner satu tim \u00b7 ${act} sudah mencatat hari ini</div></div>
+    
+    <div class="lbl" style="margin:10px 2px 6px">SESAMA PARTNER DI TIM KAMU</div>`+L.map(p=>gRow(p,{me:p.me})).join("")+`<div class="note">Sesama partner hanya melihat XP dan hari aktif. Nama orang dan catatan tidak terlihat.</div>`;return}
   const C=D.crew;if(!C){Q("#s-guild").innerHTML="";return}
   const L=C.list,tot=L.reduce((s,p)=>s+(p.xp||0),0),act=L.filter(p=>p.diam===0).length;
   const ld=L.filter(p=>p.peran==="leader"),sec=t=>`<div class="lbl" style="margin:12px 2px 6px">${t}</div>`;
@@ -1513,7 +1525,7 @@ document.addEventListener("click",async e=>{
   if(b=t.closest("[data-nav]")){go(b.dataset.nav);return}
   if(b=t.closest("[data-go]")){go(b.dataset.go);return}
   if(t.closest("#back")){go(PARENT[tab]||"home");return}
-  if(b=t.closest("[data-d]")){const i=+b.dataset.d;if(i===1){go("brain");return}toast(DAILYTIP[i]);return}
+  if(b=t.closest("[data-d]")){const i=+b.dataset.d;if(i===1){go("brain");return}if(i===0){lockForm();return}toast(DAILYTIP[i]);return}
   if(b=t.closest("[data-q]")){qTab=b.dataset.q;rQuest();return}
   if(b=t.closest("[data-a]")){actForm(b.dataset.a);return}
   if(b=t.closest("[data-undo]")){const id=b.dataset.undo,en=D.entries.find(x=>x.id===id);modal(`<div class="d" style="font-size:20px">Batalkan ${esc(en.an)}?</div><div class="note" style="margin-top:6px"><b>${esc(en.nama)}</b> \u00b7 ${en.jam}${en.xp?`<br>XP berkurang <b>${en.xp}</b>`:""}. Pembatalan tercatat untuk audit leader.</div><div style="display:flex;gap:6px;margin-top:14px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--dk);border:2px solid var(--dk)">Tidak</button><button class="btn sm" id="mYes" style="flex:1;background:#B0105E;color:#fff">Ya, batalkan</button></div>`);Q("#mNo").onclick=closeModal;Q("#mYes").onclick=async()=>{closeModal();if(en.status==="aktif"){en.status="batal";if(en.te===D.today)D.xpDay=Math.max(0,D.xpDay-(en.xp||0));D.xpWeek=Math.max(0,D.xpWeek-(en.xp||0));toast("Dibatalkan");render()}const r=await act("undo",{id});if(!r||r.error){await act("state",null,1)}render()};return}
