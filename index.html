@@ -945,15 +945,12 @@ function nameForm(id){
   };
 }
 function quickLog(nid,actId){
-  const p=D.names.find(x=>x.id===nid),a=D.acts.find(x=>x[0]===actId);if(!p||!a)return;let out="Nyambung";
-  const opts=[["Tidak nyambung","Belum respon"],["Nyambung","Nyambung"],["Janji","Dapat janji temu"]];
-  modal(`<div class="d" style="font-size:20px">${a[1]}</div><div class="d" style="font-size:26px">${esc(p.nama)}</div><label>Hasilnya?</label><div class="chips" id="qOut">${opts.map(([k,l])=>`<button type="button" class="chip" data-o="${k}" aria-pressed="false">${l}</button>`).join("")}</div><div id="qJ" style="display:none"><label for="qd">Tanggal janji</label><input id="qd" placeholder="Misal: Sabtu"><label for="qh">Jam</label><input id="qh" type="time" value="10:00"></div><div id="qS" style="display:none;margin-top:10px"><label style="display:flex;gap:8px;align-items:center;min-height:44px"><input type="checkbox" id="qUp" checked style="width:22px;height:22px"> Naikkan status ke Warming Up</label></div><label for="qDt">Tanggal</label><input type="date" id="qDt" max="${D.today}" value="${D.today}"><label for="qn">Catatan (opsional)</label><textarea id="qn" rows="2" placeholder="Misal: tertarik soal dana pendidikan"></textarea><div id="qE" class="note" style="color:#B0105E"></div><div style="display:flex;gap:6px;margin-top:10px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--ink);border:2px solid var(--dk)">Kembali</button><button class="btn sm pk" id="mYes" style="flex:1">Simpan</button></div>`);
-  QA("[data-o]").forEach(b=>b.onclick=()=>{out=b.dataset.o;QA("[data-o]").forEach(x=>{const on=x===b;x.setAttribute("aria-pressed",on);x.style.background=on?"var(--yl)":""});Q("#qJ").style.display=out==="Janji"?"block":"none";Q("#qS").style.display=out==="Janji"&&p.status==="New Leads"?"block":"none"});
-  Q('[data-o="Nyambung"]').click();
+  const p=D.names.find(x=>x.id===nid),a=D.acts.find(x=>x[0]===actId);if(!p||!a)return;
+  modal(`<div class="d" style="font-size:20px">${a[1]}</div><div class="d" style="font-size:26px">${esc(p.nama)}</div><label for="qDt">Tanggal</label><input type="date" id="qDt" max="${D.today}" value="${D.today}"><label for="qn">Catatan (opsional)</label><textarea id="qn" rows="2" placeholder="Misal: tertarik soal dana pendidikan"></textarea><div id="qE" class="note" style="color:#B0105E"></div><div style="display:flex;gap:6px;margin-top:10px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--ink);border:2px solid var(--dk)">Kembali</button><button class="btn sm pk" id="mYes" style="flex:1">Simpan</button></div>`);
   Q("#mNo").onclick=()=>nameForm(nid);
   Q("#mYes").onclick=async()=>{
-    let jt="";if(out==="Janji"){const d=Q("#qd").value.trim();if(!d){Q("#qE").textContent="Isi tanggal janji dulu.";return}jt=d+" "+Q("#qh").value}
-    const tgl=Q("#qDt").value||D.today,note=Q("#qn").value.trim(),lbl=out==="Janji"?"Dapat janji temu":out==="Nyambung"?"Nyambung":"Belum respon",naik=out==="Janji"&&p.status==="New Leads"&&Q("#qUp").checked;
+    const jt="";
+    const tgl=Q("#qDt").value||D.today,note=Q("#qn").value.trim(),lbl="",naik=false;
     if(a[5]&&(D.entries||[]).some(e=>e.act===actId&&e.te===tgl&&e.status==="aktif"&&e.nama.toLowerCase()===p.nama.toLowerCase())){Q("#qE").textContent=`${p.nama} sudah dicatat di ${a[1]} pada tanggal itu.`;return}
     const opt=tgl===D.today,c0=(D.counts[actId]||0)+1,gain=opt?(a[5]?(c0===a[5]?a[2]:0):a[2]):0;
     if(opt){D.counts[actId]=c0;D.xpDay+=gain;D.xpWeek+=gain}
@@ -1131,8 +1128,7 @@ function actForm(id){
   modal(`<div class="d" style="font-size:20px">${a[1]}</div><div class="note" style="margin:2px 0 0">+${a[2]} XP${a[5]?" \u00b7 XP masuk saat orang ke-"+a[5]:""}</div>
   ${nmode===2?`<input id="inName" type="hidden" value="">`:`<label for="inName">${isDrop?"Nama baru":nmode===1?"Siapa orangnya? (opsional)":"Siapa orangnya?"}</label><input id="inName" autocomplete="off" placeholder="${isDrop?"Ketik nama baru":"Cari di Daftar Nama"}"><div class="chips" id="inRes"></div>`}
   <label for="inDate">Tanggal</label><input type="date" id="inDate" max="${D.today}" value="${D.today}">
-  ${a[4]&&id!=="concept"?`<label>Hasilnya?</label><div class="chips" id="inHasil">${["Belum respon","Nyambung","Dapat janji temu"].map(h=>`<button type="button" class="chip" data-h="${h}">${h}</button>`).join("")}</div>`:""}
-  <label for="inNote">Catatan</label><textarea id="inNote" rows="3" placeholder="Hasilnya apa? Misal: janji ketemu Sabtu"></textarea><div id="inErr" class="note" style="color:#B0105E"></div>
+  <label for="inNote">Catatan (opsional)</label><textarea id="inNote" rows="3" placeholder="Tulis sendiri kalau perlu. Misal: janji ketemu Sabtu"></textarea><div id="inErr" class="note" style="color:#B0105E"></div>
   <div style="display:flex;gap:6px;margin-top:10px"><button class="btn sm" id="mNo" style="flex:1;background:#fff;color:var(--ink);border:2px solid var(--dk)">Batal</button><button class="btn sm pk" id="mYes" style="flex:1">Simpan</button></div>`);
   let hasil="";
   QA("#inHasil [data-h]").forEach(b=>b.onclick=()=>{hasil=hasil===b.dataset.h?"":b.dataset.h;QA("#inHasil [data-h]").forEach(x=>x.style.background=x.dataset.h===hasil?"var(--yl)":"")});
