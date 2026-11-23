@@ -258,6 +258,18 @@ input::placeholder,textarea::placeholder{color:var(--mut);opacity:.8}
 html[data-dk="1"] option{color:#111}
 .tabs button.on,.kt button.on,.chp button.on,.lg2 button.on,.lg4 button.on,.cc.on,.day.sel,.chp button.sw.on{background:linear-gradient(180deg,color-mix(in srgb,var(--pk) 72%,#fff),var(--pk))!important;color:#fff!important;box-shadow:0 0 0 1px var(--edge),0 10px 14px -8px rgba(var(--pkr),.7)}
 .chp button.sw.on{outline:3px solid var(--pk);outline-offset:2px}
+.flex{color:var(--ink);border-radius:28px}
+.fpill{display:inline-block;padding:4px 10px;border-radius:99px;font-weight:800;font-size:9.5px;letter-spacing:.14em;background:rgba(255,255,255,.6);border:1.5px solid #fff}
+html[data-dk="1"] .fpill{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.4)}
+.ftile{flex:1;border-radius:18px;padding:8px 10px;background:linear-gradient(160deg,rgba(255,255,255,.65),var(--c));border:2px solid #fff;color:#12202B;box-shadow:0 8px 12px -8px rgba(0,0,0,.35)}
+.ftile .lbl{font-size:9.5px;letter-spacing:.12em;font-weight:800}.ftile .d{font-size:22px;line-height:1.1}
+.facc{color:var(--pkd)}html[data-dk="1"] .facc{color:var(--tl)}
+.frow{display:flex;justify-content:space-between;padding:5px 10px;border-radius:12px;background:rgba(255,255,255,.5);margin-bottom:3px}
+html[data-dk="1"] .frow{background:rgba(255,255,255,.1)}
+.chp button.sw{background:var(--c)!important;border:2.5px solid #fff!important;box-shadow:0 0 0 1px rgba(120,135,155,.45),0 6px 10px -4px rgba(0,0,0,.3)}
+.chp button.sw.on{background:var(--c)!important;box-shadow:0 0 0 1px rgba(120,135,155,.45),0 6px 10px -4px rgba(0,0,0,.3)!important;position:relative}
+.chp button.sw.on::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
+.chp button.sw{width:44px;height:44px;min-height:44px;border-radius:50%!important}
 .chp button.sw{border-radius:50%}
 .day.in{outline:3px solid var(--yl);outline-offset:-3px}
 .day.off{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none}
@@ -386,7 +398,7 @@ button:disabled{opacity:.5}
 </style>
 </head>
 <body>
-<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v19)</div>
+<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v21)</div>
 <script>(function(){function show(t){var b=document.getElementById("boot");if(b){b.style.display="block";b.innerHTML+="<p style='color:#B0105E;font-weight:700;word-break:break-all'>"+String(t).replace(/</g,"&lt;")+"</p>"}}window.addEventListener("unhandledrejection",function(e){show("Error: "+(e.reason&&e.reason.message||e.reason))});window.onerror=function(m,u,l,c){var info="";try{var src=(window.__src||"").split("\n"),ln=src[l-1]||"",cc=Math.max(0,(c||1)-1),seg=ln.substr(Math.max(0,cc-50),100),codes="";for(var i=0;i<seg.length;i++){var k=seg.charCodeAt(i);if(k<32||k>126)codes+="["+k+"]"}info=" | teks: "+seg+" | kode aneh: "+codes+" | panjang baris: "+ln.length}catch(x){info=" | gagal baca: "+x.message}show("Error: "+m+" (baris "+l+", kolom "+c+")"+info)}})();</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -517,7 +529,7 @@ async function doAct(action,payload,quiet){
   D=r;try{localStorage.setItem("lqp_cache",JSON.stringify(r))}catch(e){}return r;
 }
 const NAMA_ACT={};const PARENT={names:"home",guild:"home",crew:"home",log:"home",brain:"home",palet:"home",info:"home",flex:"log",koleksi:"home"};
-const TITLES={home:["BASE CAMP",""],quest:["CATAT XP","QUEST BOARD"],spin:["1 TIKET = 1 SPIN","SPIN ZONE"],town:["PERINGKAT","TOWN HALL"],names:["PROSPEK","DAFTAR NAMA"],crew:["LEADER","CREW HQ"],guild:["TIM","GUILD MAP"],log:["KALENDER","BATTLE LOG"],brain:["5 MENIT","BRAIN BUFF"],palet:["TAMPILAN","THEME"],info:["PANDUAN","INFO GAME"],flex:["BAGIKAN","FLEX CARD"],koleksi:["ISI PROFIL","KOLEKSI"]};
+const TITLES={home:["BASE CAMP",""],quest:["CATAT XP","QUEST BOARD"],spin:["1 TIKET = 1 SPIN","SPIN ZONE"],town:["PERINGKAT","TOWN HALL"],names:["PROSPEK","DAFTAR NAMA"],crew:["LEADER","CREW HQ"],guild:["TIM","GUILD MAP"],log:["KALENDER","BATTLE LOG"],brain:["5 MENIT","BRAIN BUFF"],palet:["TAMPILAN","THEME"],info:["PANDUAN","INFO GAME"],flex:["SHARE","FLEX CARD"],koleksi:["ISI PROFIL","KOLEKSI"]};
 const NAV=[["home","Base Camp","home"],["quest","Quest","quest"],["spin","Spin","ticket"],["town","Town Hall","trophy"]];
 const rootOf=s=>PARENT[s]?rootOf(PARENT[s]):s;
 const fmtTgl=t=>{const p=t.split("-");return +p[2]+" "+["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][+p[1]-1]};
@@ -977,63 +989,84 @@ function rLog(){
 }
 function rFlex(){
   const s=rng(),det=fMode==="detail",story=fMode==="story",m=meP();
-  const CC=[["Hustle","#19C6B7"],["Squad","#FF3E9A"],["Solo","#FFD23F"]];
+  const CC=[["Hustle","--tl"],["Squad","--pk"],["Solo","--yl"]];
   const tabs=`<div class="tabs">${[["story","Story 9:16"],["feed","Feed 1:1"],["detail","Detail"]].map(([k,l])=>`<button class="${fMode===k?"on":""}" data-f="${k}">${l}</button>`).join("")}</div>`;
-  const card=det?`<div class="flex" id="fCard" style="max-width:300px;min-height:500px;padding-bottom:70px"><div class="lbl" style="color:#FFD23F">LEGACYQUEST \u00b7 RINCIAN POIN</div><div style="font-weight:700;font-size:13px;margin-top:2px">${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}</div>
-  <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><span class="d" style="font-size:38px;line-height:1;color:#FF3E9A">${num(s.tot)}</span><span class="d" style="font-size:14px">XP</span></div>
-  <div style="display:flex;gap:6px;margin-top:10px">${CC.map(([k,c])=>`<div style="flex:1;background:${c};color:#12082A;padding:5px 8px"><div class="lbl" style="font-size:10px">${k.toUpperCase()}</div><div class="d" style="font-size:16px">${num(s.ca[k]||0)}</div></div>`).join("")}</div>
-  ${CC.map(([k,c])=>{const Lr=s.list.filter(x=>x[2]===k);return Lr.length?`<div class="lbl" style="font-size:10px;color:${c};margin:12px 0 3px">${k.toUpperCase()}</div><div style="font-size:13px;font-weight:700;line-height:1.55;max-width:200px">${Lr.map(x=>`<div style="display:flex;justify-content:space-between"><span>${x[1]} ${x[3]}x</span><span style="color:#FFD23F">${num(x[4])}</span></div>`).join("")}</div>`:""}).join("")}
-  ${s.list.length?"":`<div class="note" style="color:#fff">${D.dayAct?"Belum ada poin di rentang ini.":"Server belum diperbarui. Pasang Code.gs terbaru (New version)."}</div>`}
-  <div style="position:absolute;right:14px;top:14px">${personHTML(m,44)}</div><div style="position:absolute;right:6px;bottom:0">${mas(100)}</div><div style="position:absolute;left:14px;bottom:14px;font-weight:700;font-size:13px">${esc(D.me.nama.toUpperCase())}<br><span style="color:#FFD23F">#LegacyQuest</span></div></div>`
-  :`<div class="flex" id="fCard" style="aspect-ratio:${story?"9/14":"1/1"};max-width:${story?"300px":"100%"}"><div class="lbl" style="color:#FFD23F">LEGACYQUEST \u00b7 BATTLE LOG</div><div style="font-weight:700;font-size:13px;margin-top:2px">${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}</div>
-  <div class="d" style="font-size:${story?54:44}px;line-height:1.05;color:#FF3E9A;margin-top:${story?30:14}px">${num(s.tot)}</div><div class="d" style="font-size:18px">XP DIKUMPULKAN</div>
-  <div style="display:flex;gap:6px;margin-top:14px"><div style="flex:1;background:#FFD23F;color:#12082A;padding:8px"><div class="lbl">HARI AKTIF</div><div class="d" style="font-size:22px">${s.aktif}/${s.days}</div></div><div style="flex:1;background:#19C6B7;color:#12082A;padding:8px"><div class="lbl">STREAK</div><div class="d" style="font-size:22px">${D.streak}</div></div><div style="flex:1;background:#FF8A2B;color:#12082A;padding:8px"><div class="lbl">TERBAIK</div><div class="d" style="font-size:22px">${num(s.best)}</div></div></div>
-  <div style="position:absolute;right:14px;top:14px">${personHTML(m,52)}</div><div style="position:absolute;right:6px;bottom:0">${mas(story?150:110)}</div><div style="position:absolute;left:14px;bottom:14px;font-weight:700;font-size:13px">${esc(D.me.nama.toUpperCase())}<br><span style="color:#FFD23F">#LegacyQuest</span></div></div>`;
+  const tl=(l,v,c)=>`<div class="ftile" style="--c:var(${c})"><div class="lbl">${l}</div><div class="d">${v}</div></div>`;
+  const hd=(t)=>`<div class="fpill">LEGACYQUEST · ${t}</div><div style="font-weight:700;font-size:13px;margin-top:6px">${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}</div>`;
+  const ft=`<div style="position:absolute;left:16px;bottom:16px;font-weight:800;font-size:13px;line-height:1.35">${esc(D.me.nama.toUpperCase())}<br><span class="facc">#LegacyQuest</span></div>`;
+  const card=det?`<div class="flex" id="fCard" style="max-width:300px;min-height:500px;padding-bottom:70px">${hd("RINCIAN POIN")}
+  <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><span class="d facc" style="font-size:38px;line-height:1">${num(s.tot)}</span><span class="d" style="font-size:14px">XP</span></div>
+  <div style="display:flex;gap:6px;margin-top:10px">${CC.map(([k,c])=>tl(k.toUpperCase(),num(s.ca[k]||0),c)).join("")}</div>
+  ${CC.map(([k,c])=>{const Lr=s.list.filter(x=>x[2]===k);return Lr.length?`<div class="lbl" style="font-size:10px;margin:12px 0 4px;display:flex;align-items:center;gap:6px"><i style="width:10px;height:10px;border-radius:50%;background:var(${c});display:inline-block"></i>${k.toUpperCase()}</div><div style="font-size:12.5px;font-weight:700;max-width:210px">${Lr.map(x=>`<div class="frow"><span>${x[1]} ${x[3]}x</span><span class="facc">${num(x[4])}</span></div>`).join("")}</div>`:""}).join("")}
+  ${s.list.length?"":`<div class="note">${D.dayAct?"Belum ada poin di rentang ini.":"Server belum diperbarui. Pasang Code.gs terbaru (New version)."}</div>`}
+  <div style="position:absolute;right:14px;top:14px">${personHTML(m,44)}</div><div style="position:absolute;right:6px;bottom:0">${mas(100)}</div>${ft}</div>`
+  :`<div class="flex" id="fCard" style="aspect-ratio:${story?"9/14":"1/1"};max-width:${story?"300px":"100%"}">${hd("BATTLE LOG")}
+  <div class="d facc" style="font-size:${story?54:44}px;line-height:1.05;margin-top:${story?30:14}px">${num(s.tot)}</div><div class="d" style="font-size:18px">XP DIKUMPULKAN</div>
+  <div style="display:flex;gap:6px;margin-top:14px">${tl("HARI AKTIF",s.aktif+"/"+s.days,"--yl")}${tl("STREAK",D.streak,"--tl")}${tl("TERBAIK",num(s.best),"--pk")}</div>
+  <div style="position:absolute;right:14px;top:14px">${personHTML(m,52)}</div><div style="position:absolute;right:6px;bottom:0">${mas(story?150:110)}</div>${ft}</div>`;
   Q("#s-flex").innerHTML=tabs+card+`
-  <div style="display:flex;gap:6px;margin-top:8px"><button class="btn pk" id="fShare" style="flex:1">BAGIKAN</button><button class="btn" id="fSave" style="flex:1;color:var(--yl)">SIMPAN PNG</button></div>
-  <div class="note">Bagikan membuka pilihan Instagram, WhatsApp, dan aplikasi lain di HP kamu. Di komputer, gambar tersimpan lalu kamu unggah sendiri.</div>`;
+  <div style="display:flex;gap:8px;margin-top:10px"><button class="btn pk" id="fShare" style="flex:1">SHARE</button><button class="btn" id="fSave" style="flex:1;background:var(--glw)!important;color:var(--ink)!important;border:2px solid #fff">SAVE</button></div>
+  <div class="note">Share membuka pilihan Instagram, WhatsApp, dan aplikasi lain di HP kamu. Di komputer, gambar tersimpan lalu kamu unggah sendiri.</div>`;
   needFotos([m]);
 }
 function loadImg(src){return new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src})}
 async function flexPng(){
-  const s=rng(),det=fMode==="detail",story=fMode==="story",W=1080,pad=70,FD="'Bowlby One',Impact,sans-serif",FB="Inter,'Helvetica Neue',Arial,sans-serif";
-  const CC=[["Hustle","#19C6B7"],["Squad","#FF3E9A"],["Solo","#FFD23F"]],cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const s=rng(),det=fMode==="detail",story=fMode==="story",W=1080,mg=40,pad=96,FD="'Archivo Black','Bowlby One',Impact,sans-serif",FB="Inter,'Helvetica Neue',Arial,sans-serif";
+  const CC=[["Hustle","--tl"],["Squad","--pk"],["Solo","--yl"]],cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const dk=document.documentElement.dataset.dk==="1",ink=cv("--ink")||"#1D2A33",pk=cv("--pk"),acc=dk?cv("--tl"):(cv("--pkd")||pk);
   let H=story?1920:1080;
-  if(det){const rows=s.list.length,grp=CC.filter(([k])=>s.list.some(r=>r[2]===k)).length;H=Math.max(1920,560+grp*90+rows*60+300)}
+  if(det){const rows=s.list.length,grp=CC.filter(([k])=>s.list.some(r=>r[2]===k)).length;H=Math.max(1920,600+grp*90+rows*72+300)}
   const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
-  try{await document.fonts.load("40px 'Bowlby One'");await document.fonts.load("700 30px Inter")}catch(e){}
-  x.fillStyle="#12082A";x.fillRect(0,0,W,H);
+  try{await document.fonts.load("40px 'Archivo Black'");await document.fonts.load("700 30px Inter")}catch(e){}
+  const rr=(X,Y,w,h,r)=>{x.beginPath();x.roundRect(X,Y,w,h,r)};
+  const rgb=h=>{h=(h||"#000").replace("#","");return[0,2,4].map(i=>parseInt(h.substr(i,2),16)).join(",")};
+  let g=x.createLinearGradient(0,0,W*.4,H);g.addColorStop(0,cv("--bgA"));g.addColorStop(.55,cv("--bgB"));g.addColorStop(1,cv("--bgC"));x.fillStyle=g;x.fillRect(0,0,W,H);
+  const CW=W-mg*2,CH=H-mg*2;
+  g=x.createLinearGradient(mg,mg,mg+CW*.5,mg+CH);
+  if(dk){g.addColorStop(0,"rgba(255,255,255,.18)");g.addColorStop(.55,"rgba(255,255,255,.05)");g.addColorStop(1,`rgba(${rgb(pk)},.32)`)}else{g.addColorStop(0,"rgba(255,255,255,.88)");g.addColorStop(.55,"rgba(255,255,255,.3)");g.addColorStop(1,`rgba(${rgb(pk)},.4)`)}
+  x.save();x.shadowColor=dk?"rgba(0,0,0,.5)":"rgba(50,62,82,.35)";x.shadowBlur=60;x.shadowOffsetY=30;rr(mg,mg,CW,CH,90);x.fillStyle=g;x.fill();x.restore();
+  rr(mg,mg,CW,CH,90);x.lineWidth=6;x.strokeStyle=dk?"rgba(255,255,255,.35)":"#fff";x.stroke();
   const T=(t,xx,yy,font,col,al)=>{x.font=font;x.fillStyle=col;x.textAlign=al||"left";x.textBaseline="alphabetic";x.fillText(t,xx,yy)};
-  T(det?"LEGACYQUEST \u00b7 RINCIAN POIN":"LEGACYQUEST \u00b7 BATTLE LOG",pad,pad+34,"700 34px "+FB,"#FFD23F");
-  T(`${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}`,pad,pad+90,"700 42px "+FB,"#fff");
+  const lab=det?"RINCIAN POIN":"BATTLE LOG",ptxt="LEGACYQUEST · "+lab;
+  x.font="800 28px "+FB;const pw=x.measureText(ptxt).width+(ptxt.length*3.5)+56;
+  rr(pad,pad+4,pw,64,32);x.fillStyle=dk?"rgba(255,255,255,.14)":"rgba(255,255,255,.6)";x.fill();
+  if("letterSpacing" in x)x.letterSpacing="3.5px";T(ptxt,pad+28,pad+48,"800 28px "+FB,ink);if("letterSpacing" in x)x.letterSpacing="0px";
+  T(`${fmtTgl(s.from)} sampai ${fmtTgl(s.to)} ${s.Y}`,pad,pad+120,"700 40px "+FB,ink);
   const bw=(W-pad*2-40)/3;
+  const tile=(bx,by,bh,l,v,cvar,fs)=>{const col=cv(cvar);let t=x.createLinearGradient(bx,by,bx+bw*.6,by+bh);t.addColorStop(0,"rgba(255,255,255,.65)");t.addColorStop(1,col);
+    x.save();x.shadowColor="rgba(0,0,0,.3)";x.shadowBlur=30;x.shadowOffsetY=16;rr(bx,by,bw,bh,52);x.fillStyle=t;x.fill();x.restore();rr(bx,by,bw,bh,52);x.lineWidth=6;x.strokeStyle="#fff";x.stroke();
+    T(l,bx+30,by+62,"800 28px "+FB,"#12202B");T(v,bx+30,by+bh-34,`${fs}px ${FD}`,"#12202B")};
   if(!det){
-    const y0=story?600:430;
-    T(num(s.tot),pad,y0,`${story?240:190}px ${FD}`,cv("--pk")||"#FF3E9A");
-    T("XP DIKUMPULKAN",pad,y0+96,`66px ${FD}`,"#fff");
-    const by=y0+170,bh=200;
-    [["HARI AKTIF",`${s.aktif}/${s.days}`,"#FFD23F"],["STREAK",String(D.streak),"#19C6B7"],["TERBAIK",num(s.best),"#FF8A2B"]].forEach((b,i)=>{const bx=pad+i*(bw+20);x.fillStyle=b[2];x.fillRect(bx,by,bw,bh);T(b[0],bx+26,by+62,"700 30px "+FB,"#12082A");T(b[1],bx+26,by+150,`70px ${FD}`,"#12082A")});
+    const y0=story?640:470;
+    T(num(s.tot),pad,y0,`${story?230:180}px ${FD}`,acc);
+    T("XP DIKUMPULKAN",pad,y0+96,`62px ${FD}`,ink);
+    tile(pad,y0+170,210,"HARI AKTIF",`${s.aktif}/${s.days}`,"--yl",64);tile(pad+bw+20,y0+170,210,"STREAK",String(D.streak),"--tl",64);tile(pad+(bw+20)*2,y0+170,210,"TERBAIK",num(s.best),"--pk",64);
   }else{
-    T(num(s.tot),pad,pad+300,`170px ${FD}`,cv("--pk")||"#FF3E9A");T("XP",pad+num(s.tot).length*118,pad+300,`60px ${FD}`,"#fff");
-    const by=pad+370,bh=170;
-    CC.forEach(([k,col],i)=>{const bx=pad+i*(bw+20);x.fillStyle=col;x.fillRect(bx,by,bw,bh);T(k.toUpperCase(),bx+26,by+56,"700 30px "+FB,"#12082A");T(num(s.ca[k]||0),bx+26,by+134,`64px ${FD}`,"#12082A")});
+    T(num(s.tot),pad,pad+330,`160px ${FD}`,acc);x.font=`160px ${FD}`;T("XP",pad+x.measureText(num(s.tot)).width+24,pad+330,`58px ${FD}`,ink);
+    const by=pad+400,bh=190;
+    CC.forEach(([k,cvr],i)=>tile(pad+i*(bw+20),by,bh,k.toUpperCase(),num(s.ca[k]||0),cvr,58));
     let ly=by+bh+90;
-    CC.forEach(([k,col])=>{const Lr=s.list.filter(r=>r[2]===k);if(!Lr.length)return;T(k.toUpperCase(),pad,ly,"700 32px "+FB,col);ly+=56;Lr.forEach(r=>{T(`${r[1]} ${r[3]}x`,pad,ly,"700 40px "+FB,"#fff");T(num(r[4]),pad+620,ly,"700 40px "+FB,"#FFD23F","right");ly+=60});ly+=34});
-    if(!s.list.length)T(D.dayAct?"Belum ada poin di rentang ini.":"Server belum diperbarui.",pad,ly,"700 38px "+FB,"#fff");
+    CC.forEach(([k,cvr])=>{const Lr=s.list.filter(r=>r[2]===k);if(!Lr.length)return;x.beginPath();x.arc(pad+14,ly-12,14,0,7);x.fillStyle=cv(cvr);x.fill();T(k.toUpperCase(),pad+40,ly,"800 30px "+FB,ink);ly+=34;Lr.forEach(r=>{rr(pad,ly,W-pad*2,64,28);x.fillStyle=dk?"rgba(255,255,255,.1)":"rgba(255,255,255,.5)";x.fill();T(`${r[1]} ${r[3]}x`,pad+26,ly+44,"700 36px "+FB,ink);T(num(r[4]),W-pad-26,ly+44,"800 36px "+FB,acc,"right");ly+=76});ly+=50});
+    if(!s.list.length)T(D.dayAct?"Belum ada poin di rentang ini.":"Server belum diperbarui.",pad,ly,"700 38px "+FB,ink);
   }
-  try{const m=meP(),sz=det?150:190,ax=W-pad-sz,ay=pad;x.fillStyle="#fff";x.fillRect(ax-14,ay-14,sz+28,sz+28);
+  try{const m=meP(),sz=det?150:190,ax=W-pad-sz,ay=pad-6;
     let src;if(isFoto(m))src=FOT[m.kode].d;else src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(avSvgP(m,sz).replace(/<svg /,'<svg xmlns="http://www.w3.org/2000/svg" '));
-    x.drawImage(await loadImg(src),ax,ay,sz,sz)}catch(e){}
-  try{const im=await loadImg(MASC),mw=det?380:story?560:420,mh=mw*im.height/im.width;x.drawImage(im,W-mw-30,H-mh-20,mw,mh)}catch(e){}
-  T(D.me.nama.toUpperCase(),pad,H-pad-46,"700 44px "+FB,"#fff");T("#LegacyQuest",pad,H-pad,"700 44px "+FB,"#FFD23F");
+    const fid=m.pf&&m.pf.frame,im=await loadImg(src);
+    x.save();x.shadowColor="rgba(0,0,0,.3)";x.shadowBlur=24;x.shadowOffsetY=10;x.beginPath();x.arc(ax+sz/2,ay+sz/2,sz/2,0,7);x.fillStyle="#fff";x.fill();x.restore();
+    x.save();x.beginPath();x.arc(ax+sz/2,ay+sz/2,sz/2-(fid&&FRI[fid]?0:6),0,7);x.clip();x.drawImage(im,ax,ay,sz,sz);x.restore();
+    if(!fid||!FRI[fid]){x.beginPath();x.arc(ax+sz/2,ay+sz/2,sz/2-3,0,7);x.lineWidth=6;x.strokeStyle="#fff";x.stroke()}
+    else{try{const sv=FRS[fid].replace(/<svg /,'<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" ');const fi=await loadImg("data:image/svg+xml;charset=utf-8,"+encodeURIComponent(sv)),fs=sz*1.477;x.drawImage(fi,ax-sz*.2385,ay-sz*.2385,fs,fs)}catch(e){}}
+  }catch(e){}
+  try{const im=await loadImg(MASC),mw=det?380:story?560:420,mh=mw*im.height/im.width;x.save();x.shadowColor="rgba(30,40,60,.3)";x.shadowBlur=30;x.shadowOffsetY=16;x.drawImage(im,W-mw-60,H-mh-mg-10,mw,mh);x.restore()}catch(e){}
+  T(D.me.nama.toUpperCase(),pad,H-pad-46,"800 44px "+FB,ink);T("#LegacyQuest",pad,H-pad,"800 44px "+FB,acc);
   return new Promise(ok=>c.toBlob(ok,"image/png"))
 }
 async function flexShare(save){
-  const b=await flexPng();if(!b){toast("Gagal membuat gambar");return}
+  const b=await flexPng();if(!b){toast("Failed to create image");return}
   const file=new File([b],"legacyquest-flex.png",{type:"image/png"});
   if(!save&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:"LegacyQuest",text:"#LegacyQuest"});return}catch(e){if(e&&e.name==="AbortError")return}}
   const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="legacyquest-flex.png";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
-  toast(save?"PNG tersimpan":"Perangkat ini belum bisa Bagikan langsung, PNG tersimpan. Unggah dari galeri.");
+  toast(save?"Image saved":"Share is not available on this device, image saved. Upload it from your gallery.");
 }
 
 /* ---------- Koleksi ---------- */
@@ -1061,7 +1094,7 @@ function rKoleksi(){
   let av="",grid="";
   if(kTab==="avatar"){
     const a=avCfg(),mode=hasF?`<div class="lbl" style="margin-top:6px">TAMPILKAN</div><div class="chp"><button data-mode="0" class="${p.useAv?"":"on"}">Foto</button><button data-mode="1" class="${p.useAv?"on":""}">Avatar</button></div>`:`<div class="note">Belum ada foto, jadi kamu memakai avatar. Foto dipilih dari halaman Town Hall.</div>`;
-    const hs=PRE.map((q,i)=>`<button class="apre ${a.pre===i?"on":""}" data-pre="${i}" aria-label="Karakter ${i+1}" aria-pressed="${a.pre===i}">${avDraw({pre:i,skin:a.skin,hc:a.hc},60,{},`<rect width="100" height="100" fill="${q.bg}"/>`,"Karakter "+(i+1))}</button>`).join(""),ks=SKINS.map((c,i)=>`<button class="sw ${a.skin===i?"on":""}" data-skin="${i}" aria-label="Warna kulit ${i+1}" style="background:${c}"></button>`).join(""),hcs=HCS.map((c,i)=>`<button class="sw ${a.hc===c?"on":""}" data-hc="${c}" aria-label="Warna rambut ${i+1}" style="background:${c}"></button>`).join("");
+    const hs=PRE.map((q,i)=>`<button class="apre ${a.pre===i?"on":""}" data-pre="${i}" aria-label="Karakter ${i+1}" aria-pressed="${a.pre===i}">${avDraw({pre:i,skin:a.skin,hc:a.hc},60,{},`<rect width="100" height="100" fill="${q.bg}"/>`,"Karakter "+(i+1))}</button>`).join(""),ks=SKINS.map((c,i)=>`<button class="sw ${a.skin===i?"on":""}" data-skin="${i}" aria-label="Warna kulit ${i+1}" style="--c:${c}"></button>`).join(""),hcs=HCS.map((c,i)=>`<button class="sw ${a.hc===c?"on":""}" data-hc="${c}" aria-label="Warna rambut ${i+1}" style="--c:${c}"></button>`).join("");
     av=`${mode}<div class="lbl">PILIH KARAKTER</div><div class="apg">${hs}</div><div class="lbl">WARNA KULIT</div><div class="chp"><button data-skin="-1" class="${a.skin==null?"on":""}">Asli</button>${ks}</div><div class="lbl">WARNA RAMBUT</div><div class="chp"><button data-hc="" class="${a.hc?"":"on"}">Asli</button>${hcs}</div>`;
     grid=AVSLOTS.map(([sl,l])=>`<div class="lbl" style="grid-column:1/-1;margin-top:8px">${l.toUpperCase()}</div>`+CAT.filter(i=>i.cat===sl).map(itemCard).join("")).join("");
   }else if(w){
