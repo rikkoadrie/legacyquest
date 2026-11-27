@@ -422,7 +422,7 @@ button:disabled{opacity:.5}
 </style>
 </head>
 <body>
-<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v24)</div>
+<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v25)</div>
 <script>(function(){function show(t){var b=document.getElementById("boot");if(b){b.style.display="block";b.innerHTML+="<p style='color:#B0105E;font-weight:700;word-break:break-all'>"+String(t).replace(/</g,"&lt;")+"</p>"}}window.addEventListener("unhandledrejection",function(e){show("Error: "+(e.reason&&e.reason.message||e.reason))});window.onerror=function(m,u,l,c){var info="";try{var src=(window.__src||"").split("\n"),ln=src[l-1]||"",cc=Math.max(0,(c||1)-1),seg=ln.substr(Math.max(0,cc-50),100),codes="";for(var i=0;i<seg.length;i++){var k=seg.charCodeAt(i);if(k<32||k>126)codes+="["+k+"]"}info=" | teks: "+seg+" | kode aneh: "+codes+" | panjang baris: "+ln.length}catch(x){info=" | gagal baca: "+x.message}show("Error: "+m+" (baris "+l+", kolom "+c+")"+info)}})();</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -591,7 +591,7 @@ function renderLogin(){
     mode="login";start();
   };
 }
-function start(){shell(true);go("home");showQuote();showCekin()}
+function start(q){shell(true);go("home");if(q!==false){showQuote();showCekin()}}
 
 /* ---------- navigasi ---------- */
 function go(s){
@@ -1380,9 +1380,10 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden){QH=Date.no
 (async()=>{
   if(!TOK){showLogin();return}
   let c=null;try{c=JSON.parse(localStorage.getItem("lqp_cache")||"null")}catch(e){}
-  if(c&&c.me&&c.acts){D=c;start();
+  if(c&&c.me&&c.acts){D=c;start(false);
     const r=await act("state",null,1);
     if(r&&!r.error&&!Q("#modal").classList.contains("on")&&Q("#s-login").classList.contains("on")===false)render();
+    if(r&&!r.error){showQuote();showCekin()}
     return}
   const r=await act("state",null,1);
   if(r&&!r.error)start();else showLogin();
