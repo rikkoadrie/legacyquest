@@ -152,6 +152,30 @@ label{display:block;font-weight:700;font-size:13px;margin:10px 0 4px}
 .kcard button{margin-top:6px;width:100%;min-height:40px;border:2px solid var(--dk);background:var(--pk);font-weight:700;font-size:13px}
 .kt{display:flex;gap:4px;margin:6px 0}.kt button{flex:1;min-height:44px;border:2px solid var(--dk);background:#fff;font-weight:700;font-size:12px;padding:0 2px}.kt button.on{background:var(--dk);color:#fff}
 .chp{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.chp button{min-height:44px;padding:0 12px;border:2px solid var(--dk);background:#fff;font-weight:700;font-size:13px}.chp button.on{background:var(--yl)}
+.qv{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;justify-content:space-between;padding:96px 24px 48px;background:linear-gradient(160deg,var(--bgA),var(--bgB) 55%,var(--bgC));color:var(--ink);opacity:0;transition:opacity .3s}
+.qv.on{opacity:1}
+.qv .qc{border-radius:32px;padding:30px 24px 26px;position:relative;background:linear-gradient(160deg,rgba(255,255,255,.85),rgba(255,255,255,.3) 55%,rgba(var(--pkr),.4));border:2px solid #fff;box-shadow:0 0 0 1px rgba(120,135,155,.3),0 18px 24px -10px rgba(50,62,82,.35)}
+html[data-dk="1"] .qv .qc{background:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,.05) 55%,rgba(var(--pkr),.32));border-color:rgba(255,255,255,.35);box-shadow:0 0 0 1px rgba(120,135,155,.3),0 18px 24px -10px rgba(0,0,0,.5)}
+.qv .qp{display:inline-block;padding:4px 12px;border-radius:99px;font-weight:800;font-size:10px;letter-spacing:.14em;background:rgba(255,255,255,.6);border:1.5px solid #fff}
+html[data-dk="1"] .qv .qp{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.4)}
+.qv .qm{font-size:64px;line-height:.9;height:40px;margin-top:14px;color:var(--pkd)}html[data-dk="1"] .qv .qm{color:var(--tl)}
+.qv .qt{font-size:23px;line-height:1.3;margin-top:6px;overflow-wrap:anywhere}
+.qv .qa{margin-top:16px;font-weight:700;font-size:13px;color:var(--mut)}
+.qv .qs{position:absolute;right:20px;bottom:120px;pointer-events:none}
+.qv.ci{background:linear-gradient(rgba(10,16,28,.5),rgba(10,16,28,.5)),linear-gradient(160deg,var(--bgA),var(--bgB) 55%,var(--bgC));padding-top:110px;padding-bottom:36px}
+.qv .qc.ci:before{content:"";position:absolute;left:22px;right:22px;top:-2px;height:5px;border-radius:0 0 6px 6px;background:var(--og)}
+.ci .cih{display:flex;align-items:center;gap:8px;font-weight:800;font-size:10.5px;letter-spacing:.14em}
+.ci .cih i{width:10px;height:10px;border-radius:50%;background:var(--og);box-shadow:0 0 0 5px rgba(var(--ogr),.25)}
+.ci .cit{font-size:25px;line-height:1.2;margin-top:14px}
+.ci .cib{font-weight:600;font-size:14px;line-height:1.5;margin-top:10px;opacity:.9}
+.ci .cbars{display:flex;gap:10px;margin-top:16px;padding:12px 8px 8px;border-radius:20px;background:rgba(255,255,255,.45);border:1.5px solid rgba(255,255,255,.9)}
+html[data-dk="1"] .ci .cbars{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25)}
+.ci .cbars>div{flex:1;text-align:center}.ci .cbars .bw{height:64px;display:flex;align-items:flex-end;justify-content:center}
+.ci .cbars .b{width:44px;border-radius:14px 14px 6px 6px;background:linear-gradient(180deg,rgba(255,255,255,.7),var(--og));border:2px solid #fff}
+.ci .cbars .v{font-size:18px;margin-top:6px}.ci .cbars .l{font-weight:700;font-size:10.5px;color:var(--mut)}
+.ci .cmt{text-align:center;font-weight:700;font-size:11px;color:var(--mut);margin-top:8px}
+.qv .cbt{display:flex;flex-direction:column;gap:10px}
+.qv .btn{width:100%}
 .chp button.sw{width:44px;padding:0}
 .leadtabs{display:grid!important;grid-template-columns:repeat(2,1fr);gap:6px;overflow:visible!important}.leadtabs button{width:100%;padding:0 4px;white-space:nowrap}
 .lh{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--mut);margin:14px 2px 6px;display:flex;justify-content:space-between;align-items:center}
@@ -398,7 +422,7 @@ button:disabled{opacity:.5}
 </style>
 </head>
 <body>
-<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v21)</div>
+<div id="boot" style="padding:20px;font:16px system-ui;color:#12082A">Memuat LegacyQuest... (v24)</div>
 <script>(function(){function show(t){var b=document.getElementById("boot");if(b){b.style.display="block";b.innerHTML+="<p style='color:#B0105E;font-weight:700;word-break:break-all'>"+String(t).replace(/</g,"&lt;")+"</p>"}}window.addEventListener("unhandledrejection",function(e){show("Error: "+(e.reason&&e.reason.message||e.reason))});window.onerror=function(m,u,l,c){var info="";try{var src=(window.__src||"").split("\n"),ln=src[l-1]||"",cc=Math.max(0,(c||1)-1),seg=ln.substr(Math.max(0,cc-50),100),codes="";for(var i=0;i<seg.length;i++){var k=seg.charCodeAt(i);if(k<32||k>126)codes+="["+k+"]"}info=" | teks: "+seg+" | kode aneh: "+codes+" | panjang baris: "+ln.length}catch(x){info=" | gagal baca: "+x.message}show("Error: "+m+" (baris "+l+", kolom "+c+")"+info)}})();</script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -567,7 +591,7 @@ function renderLogin(){
     mode="login";start();
   };
 }
-function start(){shell(true);go("home")}
+function start(){shell(true);go("home");showQuote();showCekin()}
 
 /* ---------- navigasi ---------- */
 function go(s){
@@ -966,7 +990,7 @@ function quickLog(nid,actId){
 /* ---------- Battle Log + Flex ---------- */
 let fMode="story";
 function rng(){const [Y,M]=D.today.split("-").map(Number),dim=new Date(Date.UTC(Y,M,0)).getUTCDate(),key=d=>`${Y}-${String(M).padStart(2,"0")}-${String(d).padStart(2,"0")}`,from=rFrom||key(1),to=rTo||D.today;
-  let tot=0,aktif=0,best=0,bestK="",days=0;const ca={Hustle:0,Squad:0,Solo:0},am={};for(let d=1;d<=dim;d++){const k=key(d);if(k>=from&&k<=to&&k<=D.today){days++;const x=D.dayXp[k]||0;tot+=x;if(x)aktif++;if(x>best){best=x;bestK=k}const da=(D.dayAct||{})[k]||{};for(const id in da){const a=D.acts.find(z=>z[0]===id);if(!a)continue;ca[a[3]]=(ca[a[3]]||0)+da[id][1];const m=am[id]=am[id]||[id,a[1],a[3],0,0];m[3]+=da[id][0];m[4]+=da[id][1]}}}
+  let tot=0,aktif=0,best=0,bestK="",days=0;const ca={Hustle:0,Squad:0,Solo:0},am={};for(let d=1;d<=dim;d++){const k=key(d);if(k>=from&&k<=to&&k<=D.today){days++;const x=D.dayXp[k]||0;tot+=x;if((D.dayFtf||{})[k])aktif++;if(x>best){best=x;bestK=k}const da=(D.dayAct||{})[k]||{};for(const id in da){const a=D.acts.find(z=>z[0]===id);if(!a)continue;ca[a[3]]=(ca[a[3]]||0)+da[id][1];const m=am[id]=am[id]||[id,a[1],a[3],0,0];m[3]+=da[id][0];m[4]+=da[id][1]}}}
   const list=Object.values(am).sort((p,q)=>q[4]-p[4]);
   return{Y,M,from,to,tot,aktif,best,bestK,days,key,dim,ca,list}}
 function rincian(s){const C=[["Hustle","var(--tl)"],["Squad","var(--pk)"],["Solo","var(--yl)"]];
@@ -1215,9 +1239,27 @@ function cMission(C){
   const sapa=C.sapa.length?`<div class="lh" style="margin-top:8px"><span>MISSION MINGGU INI</span><span>${left} dari ${C.sapa.length}</span></div>`+C.sapa.map(s=>`<div class="row" style="display:block;padding:10px;opacity:${s.selesai?.55:1};border-left:8px solid ${s.selesai?"var(--tl)":s.tag==="BERHENTI"?"var(--pk)":"var(--yl)"}"><div style="display:flex;gap:10px;align-items:center"><span class="ib" style="background:var(--tl);font-weight:800;border:2px solid var(--dk)">${esc(s.nama)[0]}</span><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:6px;align-items:center"><b style="font-size:16px">${esc(s.nama)}</b><span class="tag" style="background:${s.selesai?"var(--tl)":"var(--yl)"};font-size:10px">${s.selesai?"SUDAH \u2713":s.tag}</span></div><div style="font-size:12px;font-weight:600;color:var(--mut);margin-top:2px">${s.why}</div></div></div><div style="display:grid;grid-template-columns:3fr 2fr;gap:6px;margin-top:10px"><a class="btn sm pk" href="${waLink(s.nama,s.via)}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;text-decoration:none;margin:0">${s.via?"KABARI "+esc(s.via.toUpperCase()):"SAPA"}</a><button class="btn sm" data-misi="${s.kode}" style="margin:0">${s.selesai?"BATAL":"SELESAI"}</button></div></div>`).join(""):`<div class="note" style="margin-top:8px">Tidak ada mission minggu ini. Semua aktif.</div>`;
   return sapa
 }
+function arsipRow(p,sub,btns){return `<div class="row" style="min-height:52px"><span class="t"><b style="font-size:14px">${esc(p.nama)}</b><span>${sub}</span></span>${btns}</div>`}
+function arsipHTML(){
+  const A=D.admin||[],H=A.filter(p=>!p.arsip&&p.diam>=90),R=A.filter(p=>p.arsip);let h="";
+  if(H.length)h+=`<div class="lh" style="margin-top:8px"><span>TIDAK AKTIF 3 BULAN+</span><span>${H.length} orang</span></div>`+H.map(p=>arsipRow(p,p.anak?"Masih punya anggota aktif di bawahnya":`Terakhir mencatat ${fmtTgl(p.last)} · ${p.diam} hari`,`<button class="cc ${p.anak?"":"on"}" data-arsip="${p.kode}|arsip" ${p.anak?"disabled":""} style="margin:0;min-height:38px">ARSIPKAN</button>`)).join("");
+  if(R.length)h+=`<div class="lh"${H.length?"":' style="margin-top:8px"'}><span>DIARSIPKAN</span><span>${R.length} orang</span></div>`+R.map(p=>{
+    if(p.hapus)return arsipRow(p,`Data dihapus ${fmtTgl(p.hapus)}`,"");
+    const ok=p.diam>=180,sisa=Math.max(0,180-p.diam);
+    return arsipRow(p,ok?`Diarsip ${fmtTgl(p.arsip)} · terakhir mencatat ${p.diam} hari lalu`:`Diarsip ${fmtTgl(p.arsip)} · data bisa dihapus ${sisa} hari lagi`,`<button class="cc" data-arsip="${p.kode}|pulih" style="margin:0;min-height:38px">PULIHKAN</button>${ok?`<button class="cc on" data-arsip="${p.kode}|hapus" style="margin:0;min-height:38px">HAPUS DATA</button>`:""}`)}).join("");
+  if(h)h+=`<div class="note" style="margin-top:4px">Arsip: login dimatikan dan hilang dari ranking, data tetap ada dan bisa dipulihkan. Hapus data (setelah 180 hari): daftar nama prospek, profil, foto, dan catatan dihapus. Total poin tetap tersimpan tanpa nama.</div>`;
+  return h}
+function doArsip(kode,m){
+  const p=(D.admin||[]).find(x=>x.kode===kode);if(!p)return;
+  const T={arsip:["Arsipkan "+esc(p.nama)+"?",`Terakhir mencatat ${p.diam} hari lalu. Login dimatikan dan ${esc(p.nama)} hilang dari ranking.${p.saldo>0?" Saldo "+rp(p.saldo)+" tidak ikut dicairkan.":""} Kamu bisa memulihkannya kapan saja.`,"ARSIPKAN"],
+    pulih:["Pulihkan "+esc(p.nama)+"?","Akun aktif lagi dengan PIN yang lama dan muncul kembali di ranking.","PULIHKAN"],
+    hapus:["Hapus data "+esc(p.nama)+"?","Daftar nama prospek, profil, foto, dan catatan akan dihapus permanen. Total poin tetap tersimpan tanpa nama. Tidak bisa dibatalkan.","HAPUS PERMANEN"]}[m];
+  modal(`<div class="d" style="font-size:20px">${T[0]}</div><div class="note">${T[1]}</div><div style="display:flex;gap:6px;margin-top:12px"><button class="btn sm" id="mNo" style="flex:1;background:#fff">Batal</button><button class="btn sm pk" id="mYes" style="flex:1">${T[2]}</button></div>`);
+  Q("#mNo").onclick=closeModal;Q("#mYes").onclick=async()=>{closeModal();const r=await act("arsip",{kode,mode:m});if(r&&!r.error)toast("Tercatat");render()};
+}
 function cAdmin(C){
-  const A=D.admin||[];
-  return `<div class="lh" style="margin-top:8px"><span>AKUN</span><span>${A.filter(x=>x.aktif).length} aktif dari ${A.length}</span></div>`+A.map(p=>`<div class="row" style="min-height:52px"><span class="t"><b style="font-size:14px">${esc(p.nama)}</b><span>${p.kode} \u00b7 ${p.aktif?"sudah aktif":"kode aktivasi: <b>"+(p.akt||"-")+"</b>"}</span></span><button class="cc" data-reset="${p.kode}" style="margin:0;min-height:38px">Reset</button></div>`).join("")+
+  const A=(D.admin||[]).filter(p=>!p.arsip);
+  return arsipHTML()+`<div class="lh" style="margin-top:8px"><span>AKUN</span><span>${A.filter(x=>x.aktif).length} aktif dari ${A.length}</span></div>`+A.map(p=>`<div class="row" style="min-height:52px"><span class="t"><b style="font-size:14px">${esc(p.nama)}</b><span>${p.kode} \u00b7 ${p.aktif?"sudah aktif":"kode aktivasi: <b>"+(p.akt||"-")+"</b>"}</span></span><button class="cc" data-reset="${p.kode}" style="margin:0;min-height:38px">Reset</button></div>`).join("")+
   `<div class="lh"><span>DAFTAR CASH ELEVATE</span><span>min. ${rp(50000)}</span></div>`+A.map(p=>`<div class="row" style="min-height:44px;flex-wrap:wrap;${p.masuk?"background:rgba(var(--ylr),.35)!important":""}"><span class="t"><b style="font-size:14px">${esc(p.nama)}</b></span><b>${rp(p.saldo)}</b><span class="tag" style="background:${p.masuk?"var(--tl)":"#fff"}">${p.masuk?"MASUK":"BELUM"}</span>${p.masuk?`<button class="cc" data-cair="${p.kode}|cair" style="margin:0;min-height:36px">Cairkan</button><button class="cc" data-cair="${p.kode}|hangus" style="margin:0;min-height:36px">Hangus</button>`:""}</div>`).join("")+`<div class="note">Aturan: saldo menumpuk dan tidak hangus. Jumat 15.00 catat yang berstatus MASUK. Setelah Elevate Sabtu, tekan Cairkan (hadir, dibayar) atau Hangus (tidak hadir). Keduanya mengosongkan saldo.</div>`;
 }
 async function doReset(kode){
@@ -1291,6 +1333,7 @@ document.addEventListener("click",async e=>{
   if(b=t.closest("[data-ct]")){cTab=b.dataset.ct;rCrew();return}
   if(t.closest("#salin")){copy(statsText(D.crew),"Stats tersalin");return}
   if(b=t.closest("[data-misi]")){const r=await act("misi",{kode:b.dataset.misi});if(r&&!r.error){toast("Diperbarui");rCrew()}return}
+  if(b=t.closest("[data-arsip]")){const [k,m]=b.dataset.arsip.split("|");doArsip(k,m);return}
   if(b=t.closest("[data-reset]")){doReset(b.dataset.reset);return}
   if(b=t.closest("[data-day]")){const k=b.dataset.day;if(!pickD)pickD=k;else{rFrom=pickD<k?pickD:k;rTo=pickD<k?k:pickD;pickD=""}rLog();return}
   if(b=t.closest("[data-r]")){const n=+b.dataset.r;pickD="";if(n===0){rFrom=null;rTo=null}else{rTo=D.today;const p=D.today.split("-");const d=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]-(n-1)));rFrom=d.toISOString().slice(0,10)}rLog();return}
@@ -1305,6 +1348,34 @@ document.addEventListener("click",async e=>{
 });
 Q("#modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
 Q("#sync").innerHTML=mas(22)+"<span>MENYIMPAN</span><i></i>";Q("#back").innerHTML=ic("back",24);Q("#av").innerHTML=mas(40);
+
+/* ---------- Quote pembuka ---------- */
+const BLE=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function showQuote(){
+  const q=D&&D.quote;if(!q||!q.q||Q("#qv")||Q("#s-login").classList.contains("on"))return;
+  const [Y,M]=D.today.split("-").map(Number),e=document.createElement("div");e.id="qv";e.className="qv";e.setAttribute("role","dialog");e.setAttribute("aria-label","Quote of the month");
+  e.innerHTML=`<div class="qc"><div class="qp">QUOTE OF ${BLE[M-1].toUpperCase()} ${Y}</div><div class="d qm" aria-hidden="true">“</div><div class="d qt">${esc(q.q)}</div>${q.a?`<div class="qa">${esc(q.a)}</div>`:""}</div><div class="qs">${mas(170)}</div><button class="btn pk" id="qGo">START</button>`;
+  document.body.appendChild(e);requestAnimationFrame(()=>e.classList.add("on"));
+  Q("#qGo").onclick=()=>{e.classList.remove("on");setTimeout(()=>{e.remove();showCekin()},300)};
+}
+
+function showCekin(){
+  const c=D&&D.cekin;if(!c||Q("#qv")||Q("#s-login").classList.contains("on"))return;
+  let seen="";try{seen=localStorage.getItem("lq_ci")||""}catch(e){}if(seen===c.w)return;
+  try{localStorage.setItem("lq_ci",c.w)}catch(e){}
+  const bh=v=>Math.max(6,Math.min(60,Math.round(v/500*54))),e=document.createElement("div");e.id="qv";e.className="qv ci";e.setAttribute("role","dialog");e.setAttribute("aria-label","Check-in");
+  e.innerHTML=`<div class="qc ci"><div class="cih"><i></i><span>CHECK-IN · PESAN PENTING</span></div><div class="d cit">Yuk ngobrol sama leader kamu</div><div class="cib">XP kamu di bawah 500 selama 2 minggu berturut-turut. Ini bukan soal salah atau benar. Ngobrol 15 menit bisa bantu cari langkah kecil berikutnya.</div>
+  <div class="cbars"><div><div class="bw"><div class="b" style="height:${bh(c.x2)}px"></div></div><div class="d v">${num(c.x2)}</div><div class="l">2 minggu lalu</div></div><div><div class="bw"><div class="b" style="height:${bh(c.x1)}px"></div></div><div class="d v">${num(c.x1)}</div><div class="l">Minggu lalu</div></div></div><div class="cmt">Target aman: 500 XP per minggu</div></div>
+  <div class="qs" style="bottom:150px;right:30px">${mas(88)}</div><div class="cbt"><button class="btn pk" id="ciGo">KIRIM KE LEADER</button><button class="btn" id="ciNo" style="background:var(--glw)!important;color:var(--ink)!important;border:2px solid #fff">NANTI</button></div>`;
+  document.body.appendChild(e);requestAnimationFrame(()=>e.classList.add("on"));
+  const bye=()=>{e.classList.remove("on");setTimeout(()=>e.remove(),300)};
+  Q("#ciNo").onclick=bye;
+  Q("#ciGo").onclick=async()=>{const t=`Halo ${c.leader||"Kak"}, XP aku 2 minggu terakhir di bawah 500 (${num(c.x2)} dan ${num(c.x1)}). Boleh ngobrol 15 menit? Aku mau cari langkah kecil berikutnya.`;
+    try{if(navigator.share){await navigator.share({text:t})}else{window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}}catch(x){if(x&&x.name==="AbortError")return}
+    bye()};
+}
+let QH=0;
+document.addEventListener("visibilitychange",()=>{if(document.hidden){QH=Date.now()}else if(QH&&Date.now()-QH>1800000){QH=0;if(TOK&&D&&D.me)showQuote()}});
 {let k="teal";try{k=localStorage.getItem("lq_pal")||"teal"}catch(e){}setPal(k)}
 (async()=>{
   if(!TOK){showLogin();return}
